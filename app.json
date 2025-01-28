@@ -10,14 +10,16 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pradneya.smallbites"
+      "bundleIdentifier": "com.pradneya.smallbites",
+      "googleServicesFile": "GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.pradneya.smallbites"
+      "package": "com.pradneya.smallbites",
+      "googleServicesFile": "google-services.json"
     },
     "web": {
       "bundler": "metro",
