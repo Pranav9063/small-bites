@@ -2,14 +2,52 @@ import { Pressable, Text, View, StyleSheet, Button } from "react-native";
 import { Ionicons } from "@expo/vector-icons"
 import { GoogleSignin, NativeModuleError, statusCodes, User } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
+import { setDoc, getFirestore, doc, getDoc, } from '@react-native-firebase/firestore';
 import { useEffect, useState } from "react";
 
 export default function Index() {
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState('');
+  const db = getFirestore();
+
+  type NewUser = {
+    id: string;
+    name: string | null;
+    email: string;
+    photo: string | null;
+    familyName: string | null;
+    givenName: string | null;
+  }
+
+  type FirestoreUser = {
+    name: string | null;
+    email: string;
+    role: "user" | "admin" | "staff";
+    createdAt: Date;
+  }
+
+  const addUserToFirestore = async (user: NewUser) => {
+    try {
+      const userRef = doc(db, "Users", user.id);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists) {
+        const newUser : FirestoreUser = {
+          name: user.name,
+          email: user.email,
+          role: "user", 
+          createdAt: new Date(),
+        };
+        await setDoc(userRef, newUser);
+        console.log("User added successfully!");
+      } else {
+        console.log("User already exists.");
+      }
+    } catch (error) {
+      console.error("Error adding user:", error);
+    }
+  };
+
   const googleSignIn = async () => {
     try {
       // Ensure Google Play Services are available
@@ -23,12 +61,17 @@ export default function Index() {
         throw new Error('Google Sign-In failed');
       }
 
-      // Authenticate with Firebase
+      if(!userInfo.data?.user) {
+        throw new Error('Google Sign-In failed : User data not found');
+      }
+
+       // Authenticate with Firebase
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       await auth().signInWithCredential(googleCredential);
 
       // Update user state
       setUser(userInfo.data);
+      await addUserToFirestore(userInfo.data.user);
       setError('');
       alert('Google Sign-In successful and linked to Firebase!');
     } catch (err) {
@@ -69,12 +112,6 @@ export default function Index() {
         <Ionicons name="logo-google" color="white" style={styles.buttonIcon} />
         <Text style={styles.buttonText}>  Google Sign In</Text>
       </Pressable>
-      {user && (
-        <View style={styles.userInfo}>
-          <Text>Welcome, {user.user.name}</Text>
-          <Text>Email: {user.user.email}</Text>
-        </View>
-      )}
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <Button title="Sign out" onPress={googleSignOut} />
     </View>
@@ -101,10 +138,6 @@ const styles = StyleSheet.create({
   },
   buttonIcon: {
     fontSize: 18,
-  },
-  userInfo: {
-    marginTop: 20,
-    alignItems: "center",
   },
   errorText: {
     color: "red",
