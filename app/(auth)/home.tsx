@@ -3,6 +3,7 @@ import React from 'react'
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Page() {
     const user = auth().currentUser;
@@ -23,7 +24,7 @@ export default function Page() {
     };
 
     return (
-        <View>
+        <SafeAreaView>
             <Text>Welcome {user?.displayName}</Text>
             {user && (
                 <View style={{
@@ -35,6 +36,6 @@ export default function Page() {
                 </View>
             )}
             <Button title="Sign Out" onPress={signOut} />
-        </View>
+        </SafeAreaView>
     );
 }
