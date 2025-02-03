@@ -1,4 +1,4 @@
-import { Pressable, Text, View, StyleSheet, Button } from "react-native";
+import { Pressable, Text, View, StyleSheet, Button, KeyboardAvoidingView, Platform, Image, ImageBackground } from "react-native";
 import { Ionicons } from "@expo/vector-icons"
 import { GoogleSignin, NativeModuleError, statusCodes, User } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
@@ -10,7 +10,7 @@ export default function Index() {
   const [error, setError] = useState('');
   const db = getFirestore();
 
-  type NewUser = {
+  type NewUser = {  
     id: string;
     name: string | null;
     email: string;
@@ -107,14 +107,19 @@ export default function Index() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Pressable style={styles.button} onPress={googleSignIn}>
-        <Ionicons name="logo-google" color="white" style={styles.buttonIcon} />
-        <Text style={styles.buttonText}>  Google Sign In</Text>
-      </Pressable>
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      <Button title="Sign out" onPress={googleSignOut} />
-    </View>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <View style={styles.container}>
+        <Pressable style={styles.button} onPress={googleSignIn}>
+          <Ionicons name="logo-google" color="white" style={styles.buttonIcon} />
+          <Text style={styles.buttonText}>Google Sign In</Text>
+        </Pressable>
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        <Button title="Sign out" onPress={googleSignOut} />
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
