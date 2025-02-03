@@ -152,8 +152,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     backgroundColor: "#4285F4",
-    borderRadius: 5,
-    marginBottom: 20
+    borderRadius: 8,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    marginBottom: 15,
   },
   buttonText: {
     color: "white",
