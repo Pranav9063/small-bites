@@ -1,9 +1,12 @@
 import { Stack, useRouter, useSegments } from "expo-router";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { configureOptions } from "@/config/config";
-import { useEffect, useState } from "react";
+import { configureOptions } from "@/constants/Config";
+import { useContext, useEffect, useState } from "react";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { ActivityIndicator, View } from "react-native";
+import { StatusBar } from 'expo-status-bar';
+import { ThemeContext } from "@/context/ThemeContext";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function RootLayout() {
 
@@ -11,6 +14,11 @@ export default function RootLayout() {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
   const router = useRouter();
   const segments = useSegments();
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('ThemeContext is undefined, make sure you are using ThemeProvider');
+  }
+  const { colorScheme, theme } = context;
 
   const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
     // console.log("onAuthStateChanged", user);
@@ -45,9 +53,12 @@ export default function RootLayout() {
   };
 
   return (
-  <Stack>
-    <Stack.Screen name="index" options={{ headerShown: false }} />
-    <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-  </Stack>
+    <SafeAreaProvider>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      </Stack>
+      <StatusBar backgroundColor={theme.background} style={colorScheme == 'dark' ? 'light' : 'dark'} />
+    </SafeAreaProvider>
   );
 }
