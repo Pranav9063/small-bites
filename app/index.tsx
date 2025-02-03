@@ -1,14 +1,24 @@
-import { Pressable, Text, View, StyleSheet, Button, KeyboardAvoidingView, Platform, Image, ImageBackground } from "react-native";
+import { Pressable, Text, View, StyleSheet, Button, KeyboardAvoidingView, Platform, Image, ImageBackground, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons"
 import { GoogleSignin, NativeModuleError, statusCodes, User } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import { setDoc, getFirestore, doc, getDoc, } from '@react-native-firebase/firestore';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function Index() {
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState('');
   const db = getFirestore();
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   type NewUser = {  
     id: string;
@@ -107,19 +117,27 @@ export default function Index() {
   }, []);
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+    <ImageBackground
+      source={require('@/assets/images/bg.jpg')} 
+      style={styles.background}
+      blurRadius={5}
     >
-      <View style={styles.container}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+      <Animated.View style={[styles.innerContainer, { opacity: fadeAnim }]}>
+      <Text style={styles.title}>Welcome to Small Bites 🍔</Text>
+      <Text style={styles.subtitle}>Order delicious food in just one click!</Text>
         <Pressable style={styles.button} onPress={googleSignIn}>
           <Ionicons name="logo-google" color="white" style={styles.buttonIcon} />
           <Text style={styles.buttonText}>Google Sign In</Text>
         </Pressable>
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <Button title="Sign out" onPress={googleSignOut} />
-      </View>
-    </KeyboardAvoidingView>
+      </Animated.View>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
@@ -148,4 +166,32 @@ const styles = StyleSheet.create({
     color: "red",
     marginTop: 10,
   },
+  background: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  innerContainer: {
+    backgroundColor: "rgba(0,0,0,0.7)",
+    padding: 25,
+    borderRadius: 15,
+    alignItems: "center",
+    width: "85%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#ddd",
+    marginBottom: 20,
+  }
 });
