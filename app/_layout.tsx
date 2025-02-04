@@ -1,32 +1,25 @@
 import { Stack, useRouter, useSegments } from "expo-router";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { configureOptions } from "@/constants/Config";
-import { useContext, useEffect, useState } from "react";
-import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import { ActivityIndicator, View } from "react-native";
+import { useEffect, useState } from "react";
+import auth from "@react-native-firebase/auth";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { StatusBar } from 'expo-status-bar';
-import { ThemeContext, ThemeProvider } from "@/context/ThemeContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ThemeProvider } from "@/lib/context/ThemeContext";
+import { AuthProvider, useAuth } from "@/lib/context/AuthContext";
+import { useTheme } from "@/lib/hooks/useTheme";
 
 function RootContent() {
-  const [initialising, setInitialising] = useState(true);
-  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [initializing, setInitializing] = useState(true);
+  const { user } = useAuth();
   const router = useRouter();
   const segments = useSegments();
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('ThemeContext is undefined, make sure you are using ThemeProvider');
-  }
-  const { colorScheme, theme } = context;
-
-  const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
-    // console.log("onAuthStateChanged", user);
-    setUser(user);
-    if (initialising) setInitialising(false);
-  }
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    const subscriber = auth().onAuthStateChanged((user) => {
+      setInitializing(false);
+    });
     return subscriber;
   }, []);
 
@@ -35,35 +28,51 @@ function RootContent() {
   }, []);
 
   useEffect(() => {
-    if (initialising) return;
-
+    if (initializing) return;
     const inAuth = segments[0] === '(auth)';
-    console.log("inAuth", inAuth);
     if (user && !inAuth) router.replace('/(auth)/home');
     else if (!user && inAuth) router.replace('/');
-  }, [user, initialising]);
+    console.log(user)
+  }, [user, initializing]);
 
-  if (initialising) {
+  if (initializing) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={styles.centered}>
         <ActivityIndicator size="large" />
       </View>
-    )
-  };
+    );
+  }
 
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
   return (
     <ThemeProvider>
       <SafeAreaProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar backgroundColor={theme.background} style={colorScheme == 'dark' ? 'light' : 'dark'} />
+        <AuthProvider>
+          <RootContent />
+          <ThemedStatusBar />
+        </AuthProvider>
       </SafeAreaProvider>
     </ThemeProvider>
   );
 }
 
-export default function RootLayout() {
-  return <ThemeProvider><RootContent /></ThemeProvider>;
+function ThemedStatusBar() {
+  const { colorScheme, theme } = useTheme();
+  return <StatusBar backgroundColor={theme.background} style={colorScheme === 'dark' ? 'light' : 'dark'} />;
 }
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
