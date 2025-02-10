@@ -4,8 +4,8 @@ import { Ionicons } from "@expo/vector-icons";
 export default function GoogleSignInButton({ onPress }: { onPress: () => void }) {
   return (
     <Pressable style={styles.button} onPress={onPress}>
-      <Ionicons name="logo-google" color="white" style={styles.buttonIcon} />
-      <Text style={styles.buttonText}> Google Sign In</Text>
+      <Ionicons name="logo-google" color="white" size={22} />
+      <Text style={styles.buttonText}> Sign in with Google</Text>
     </Pressable>
   );
 }
@@ -14,16 +14,19 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     backgroundColor: "#4285F4",
-    borderRadius: 5,
-    marginBottom: 20
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 5,
   },
   buttonText: {
     color: "white",
-    marginRight: 10,
-  },
-  buttonIcon: {
-    fontSize: 18,
+    fontSize: 16,
+    fontWeight: "500",
+    marginLeft: 10,
   },
 });
