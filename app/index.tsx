@@ -10,19 +10,21 @@ export default function AuthScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <View style={styles.header}>
+        <Image source={require("@/assets/images/Small Bites.png")} style={styles.logo} />
+        <Text style={styles.title}>Welcome to Small Bites</Text>
+        <Text style={styles.subtitle}>Your Campus Food Delivery</Text>
+      </View>
 
-      {/* Background Overlay */}
-      <Image source={require("@/assets/images/logo.jpg")} style={styles.logo} />
-      <Text style={styles.appName}>Small Bites</Text>
-      <Text style={styles.tagline}>Quick & Delicious Campus Meals</Text>
-
+      <View style={styles.buttonContainer}>
       <GoogleSignInButton onPress={signIn} />
       {/* {user ? <Text style={styles.text}>Welcome, {user.user.name}</Text> : null}
       {user ? <Button title="Sign Out" onPress={signOut} /> : null} */}
+      </View>
       <SettingsScreen />
     </View>
   );
+  
 }
 
 const createStyles = () => {
@@ -33,29 +35,55 @@ const createStyles = () => {
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: theme.background,
-      paddingHorizontal: 20,
+      padding: 20,
     },
-    appName: {
-      fontSize: 26,
-      fontWeight: "bold",
-      color: theme.foreground,
-      marginBottom: 5,
-    },
-    text: {
-      fontSize: 20,
-      fontWeight: "bold",
-      marginBottom: 20,
-      color: theme.foreground,
+    header: {
+      alignItems: "center",
+      marginBottom: 50,
+      padding: 20,
+      borderRadius: 15,
+      backgroundColor: theme.primary,
+      elevation: 5, // Shadow effect
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 5 },
+      shadowOpacity: 0.1,
+      shadowRadius: 10,
     },
     logo: {
-      width: 120,
-      height: 120,
+      width: 160,
+      height: 160,
+      borderRadius: 80,
+      borderWidth: 5,
+      borderColor: "#fff",
       marginBottom: 20,
     },
-    tagline: {
-      fontSize: 16,
+    title: {
+      fontSize: 32,
+      fontWeight: "bold",
       color: theme.foreground,
-      marginBottom: 30,
+      marginBottom: 10,
+      textAlign: "center",
+      textShadowColor: "#000",
+      textShadowOffset: { width: 2, height: 2 },
+      textShadowRadius: 5,
+    },
+    subtitle: {
+      fontSize: 18,
+      color: theme.foreground,
+      marginBottom: 20,
+      textAlign: "center",
+    },
+    buttonContainer: {
+      width: "80%",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    text: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: theme.foreground,
+      marginBottom: 20,
+      textAlign: "center",
     },
   });
 }
