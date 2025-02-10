@@ -38,9 +38,11 @@ export default function AuthScreen() {
       {/* {user ? <Text style={styles.text}>Welcome, {user.user.name}</Text> : null}
       {user ? <Button title="Sign Out" onPress={signOut} /> : null} */}
       </View>
-      
+      <TouchableOpacity style={styles.themeButton}>
       <SettingsScreen />
+      </TouchableOpacity>
       </Animated.View>
+      
     </ImageBackground>
   );
   
@@ -92,6 +94,18 @@ const createStyles = () => {
     buttonContainer: {
       width: "80%",
       marginTop: 20,
+    },
+    themeButton: {
+      position: "absolute",
+      top: 30,  
+      right: 20, 
+      width: 30, 
+      height: 30, 
+      backgroundColor: "transparent", 
+      borderRadius: 55, 
+      justifyContent: "center", 
+      alignItems: "center", 
+      borderWidth: 1, 
     },
   });
 }
