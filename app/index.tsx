@@ -22,15 +22,15 @@ export default function AuthScreen() {
 
   return (
     <ImageBackground 
-    source={require("@/assets/images/appBg.png")} 
+    source={require("@/assets/images/3dimg.jpg")} 
     style={styles.background}
     resizeMode="cover"
   >
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.header}>
-        <Image source={require("@/assets/images/Small Bites.png")} style={styles.logo} />
+        <Image source={require("@/assets/images/finalLogo.png")} style={styles.logo} />
         <Text style={styles.title}>Welcome to Small Bites</Text>
-        <Text style={styles.subtitle}>Your Campus Food Delivery</Text>
+        <Text style={styles.subtitle}>Your Campus Cravings App</Text>
       </View>
 
         <View style={styles.buttonContainer}>
@@ -57,6 +57,7 @@ const createStyles = () => {
       alignItems: "center",
       width: "100%",
       height: "100%",
+      backgroundColor: "transparent",
     },
     container: {
       width: "90%",
@@ -75,8 +76,8 @@ const createStyles = () => {
       marginBottom: 30,
     },
     logo: {
-      width: 120,
-      height: 120,
+      width: 200,
+      height: 130,
       borderRadius: 60,
       marginBottom: 15,
     },
