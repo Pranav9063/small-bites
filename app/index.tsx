@@ -1,37 +1,57 @@
-import { View, Button, Text, StyleSheet } from "react-native";
-import GoogleSignInButton from "../components/GoogleSignInButton";
-import { useAuth } from "../lib/context/AuthContext";
-import { useTheme } from "@/lib/hooks/useTheme";
-import SettingsScreen from "@/components/screens/SettingsScreen";
+import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '@/lib/context/AuthContext';
+import SettingsScreen from '@/components/screens/SettingsScreen';
+import { useTheme } from '@/lib/hooks/useTheme';
 
-export default function AuthScreen() {
-  const { user, signIn, signOut } = useAuth();
-  const styles = createStyles();
-
+export default function Page() {
+  const { user, signOut } = useAuth();
+  const styles = createStyles(); 
   return (
-    <View style={styles.container}>
-      <GoogleSignInButton onPress={signIn} />
-      {/* {user ? <Text style={styles.text}>Welcome, {user.user.name}</Text> : null}
-      {user ? <Button title="Sign Out" onPress={signOut} /> : null} */}
-      <SettingsScreen />
-    </View>
+    <SafeAreaView style={styles.container}>
+      {user ? (
+        <>
+          <Text style={styles.welcomeText}>Welcome, {user.user.name}!</Text>
+          <View style={styles.userInfo}>
+            <Text style={styles.infoText}>Email: {user.user.email}</Text>
+            <Button title="Sign Out" onPress={signOut} color="#d9534f" />
+          </View>
+          <SettingsScreen />
+        </>
+      ) : (
+        <ActivityIndicator size="large" color="#0000ff" />
+      )}
+    </SafeAreaView>
   );
 }
 
 const createStyles = () => {
-  const { colorScheme, theme } = useTheme();
-  return StyleSheet.create({
+  const { theme } = useTheme();
+
+  const styles = StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 20,
       backgroundColor: theme.background,
     },
-    text: {
-      fontSize: 20,
-      fontWeight: "bold",
-      marginBottom: 20,
+    welcomeText: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      marginBottom: 10,
       color: theme.foreground,
     },
+    userInfo: {
+      marginBottom: 20,
+      alignItems: 'center',
+    },
+    infoText: {
+      fontSize: 16,
+      color: theme.mutedForeground,
+      marginBottom: 20,
+    },
   });
+  return styles;
 }

@@ -15,6 +15,7 @@ function RootContent() {
   const { user } = useAuth();
   const router = useRouter();
   const segments = useSegments();
+  console.log(segments);
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged((user) => {
@@ -29,10 +30,9 @@ function RootContent() {
 
   useEffect(() => {
     if (initializing) return;
-    const inAuth = segments[0] === '(auth)';
-    if (user && !inAuth) router.replace('/(auth)/home');
-    else if (!user && inAuth) router.replace('/');
-    console.log(user)
+    const inAuth = segments[0] === 'auth';
+    if (!user && !inAuth) router.replace('/auth/login');
+    else if (user && inAuth) router.replace('/');
   }, [user, initializing]);
 
   if (initializing) {
@@ -46,7 +46,7 @@ function RootContent() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="auth" options={{ headerShown: false }} />
     </Stack>
   );
 }

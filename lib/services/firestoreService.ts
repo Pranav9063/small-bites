@@ -1,5 +1,5 @@
 import { db } from "@/lib/services/firebaseConfig";
-import { doc, setDoc, getDoc } from "@react-native-firebase/firestore";
+import { doc, setDoc, getDoc, addDoc, collection } from "@react-native-firebase/firestore";
 
 export type NewUser = {
   id: string;
@@ -36,5 +36,15 @@ export const addUserToFirestore = async (user: NewUser) => {
     }
   } catch (error) {
     console.error("Error adding user:", error);
+  }
+};
+
+export const registerCanteen = async (canteenData: any) => {
+  try {
+    await addDoc(collection(db, "canteens"), canteenData);
+    return { success: true };
+  } catch (error) {
+    console.error("Firestore Error:", error);
+    return { success: false, error };
   }
 };
