@@ -1,5 +1,6 @@
 import { db } from "@/lib/services/firebaseConfig";
 import { doc, setDoc, getDoc, addDoc, collection } from "@react-native-firebase/firestore";
+import { googleSignIn } from "./authService";
 
 export type NewUser = {
   id: string;
@@ -13,12 +14,17 @@ export type NewUser = {
 export type FirestoreUser = {
   name: string | null;
   email: string;
-  role: "user" | "admin" | "staff";
+  role: "user" | "admin" | "canteen";
   createdAt: Date;
 };
 
-export const addUserToFirestore = async (user: NewUser) => {
+export const addMemberToFirestore = async (role : "user" | "admin" | "canteen") => {
   try {
+    const userInfo = await googleSignIn();
+    if(!userInfo.data?.user) {
+      throw new Error('Google Sign-In failed : User data not found');
+    }
+    const user = userInfo.data.user
     const userRef = doc(db, "Users", user.id);
     const userSnap = await getDoc(userRef);
 
@@ -26,11 +32,12 @@ export const addUserToFirestore = async (user: NewUser) => {
       const newUser: FirestoreUser = {
         name: user.name,
         email: user.email,
-        role: "user",
+        role: role,
         createdAt: new Date(),
       };
       await setDoc(userRef, newUser);
       console.log("User added successfully!");
+      return user;
     } else {
       console.log("User already exists.");
     }

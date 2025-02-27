@@ -18,7 +18,7 @@ const LoginPage: FC = () => {
       <GoogleSignInButton onPress={signIn} />
       <Text style={styles.text}>
         New User? Continue to{" "}
-        <Link href="/auth/sign-up" style={styles.link}>
+        <Link href="/auth/sign-up/user" style={styles.link}>
           Sign up
         </Link>
       </Text>

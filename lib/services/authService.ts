@@ -3,7 +3,7 @@ import auth from "@react-native-firebase/auth";
 
 export const googleSignIn = async () => {
   try {
-    await GoogleSignin.hasPlayServices();
+    await GoogleSignin.hasPlayServices();  
     const userInfo = await GoogleSignin.signIn();
     const idToken = userInfo.data?.idToken;
 

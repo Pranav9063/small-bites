@@ -1,14 +1,22 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome6';
 import { Tabs } from 'expo-router';
+import { useTheme } from 'react-native-paper';
 
 export default function TabLayout() {
+    const theme = useTheme();
     return (
         <Tabs screenOptions={{
-            tabBarActiveTintColor: 'blue',
+            tabBarActiveTintColor: theme.colors.primary,
+            tabBarInactiveTintColor: theme.colors.backdrop,
             tabBarPosition: 'top',
+            tabBarStyle: {
+                height:110
+            },
+            tabBarLabelStyle: {
+                fontSize: 14,
+                padding: 8,
+            },
             headerShown: false,
-            tabBarStyle: { height: 120 },
-            tabBarLabelStyle: { marginTop: 8 , fontSize: 14 },
         }}>
             <Tabs.Screen
                 name="user"

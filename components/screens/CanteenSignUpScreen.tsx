@@ -1,112 +1,170 @@
-import React from "react";
-import { Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
-import { useForm, Controller } from "react-hook-form";
-import { useImageUpload } from "@/lib/hooks/useImageUpload";
-import { registerCanteen } from "@/lib/services/firestoreService";
+import React, { useState } from "react";
+import { Text, Alert, TouchableOpacity, Image, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "react-native-paper";  
-import { Theme } from "@/constants/Theme";
+import { ActivityIndicator, TextInput, useTheme } from "react-native-paper";
+import { Ionicons } from "@expo/vector-icons";
+import { useImageUpload } from "@/lib/hooks/useImageUpload";
+import { addMemberToFirestore, registerCanteen } from "@/lib/services/firestoreService";
 
-const CanteenSignUpScreen : React.FC = ({ navigation }: any) => {
-  const { control, handleSubmit, reset } = useForm();
-  const { image, pickImage, uploadImage, uploading } = useImageUpload();
+const CanteenSignUpScreen: React.FC = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
 
-  const onSubmit = async (data: any) => {
-    try {
-      const imageURL = await uploadImage();
-      const canteenData = { ...data, image: imageURL || "" };
+  // 📌 Single state object for all form fields
+  const [formData, setFormData] = useState({
+    name: "",
+    location: "",
+    timings: { open: "", close: "" },
+  });
+  const [error, setError] = useState<string | null>(null);
+  const { image, pickImage, uploadImage, uploading } = useImageUpload();
+  const [loading, setLoading] = useState(false);
 
+  // 🔼 Unified function to handle all input changes
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => {
+      const keys = field.split(".") as [("name" | "location" | "timings"), ("open" | "close")?];
+      if (keys[0] === "name" || keys[0] === "location") {
+        return { ...prev, [field]: value };
+      } else {
+        return {
+          ...prev,
+          [keys[0]]: {
+            ...prev[keys[0]],
+            ...(keys[1] ? { [keys[1]]: value } : {}),
+          },
+        };
+      }
+    });
+  };
+
+  // 🔼 Handle Form Submission
+  const onSubmit = async () => {
+    try {
+      if (!formData.name || !formData.location || !formData.timings.open || !formData.timings.close) {
+        setError("All fields are required");
+        return;
+      }
+      setLoading(true)
+      const user = await addMemberToFirestore("canteen");
+      if (!user) {
+        throw new Error('User not found');
+      }
+      const imageURL = await uploadImage();
+      const canteenData = { ...formData, image: imageURL || "", owner: user.id };
       const result = await registerCanteen(canteenData);
       if (result.success) {
         Alert.alert("Success", "Canteen registered successfully!");
-        reset();
-        navigation.navigate("Home");
+        setFormData({ name: "", location: "", timings: { open: "", close: "" } });
       } else {
         throw new Error("Firestore error");
       }
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert("Error", "Failed to register canteen.");
-      console.error(error);
+      setError(error.message || "Failed to register canteen.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Canteen Sign-Up</Text>
+      {loading ? <ActivityIndicator size="large" color={theme.colors.primary} /> : 
+        <View>
+          <Text style={styles.title}>Register Canteen</Text>
 
-      {/* Name Input */}
-      <Controller
-        control={control}
-        name="name"
-        rules={{ required: "Canteen name is required" }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput placeholder="Canteen Name" value={value} onChangeText={onChange} style={styles.input} placeholderTextColor={theme.colors.onSurfaceVariant} />
-        )}
-      />
+          {/* Name Input */}
+          <TextInput
+            label="Canteen Name"
+            mode="outlined"
+            value={formData.name}
+            onChangeText={(text) => handleChange("name", text)}
+          />
 
-      {/* Location Input */}
-      <Controller
-        control={control}
-        name="location"
-        rules={{ required: "Location is required" }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput placeholder="Location" value={value} onChangeText={onChange} style={styles.input} placeholderTextColor={theme.colors.onSurfaceVariant} />
-        )}
-      />
+          {/* Location Input */}
+          <TextInput
+            label="Location"
+            mode="outlined"
+            value={formData.location}
+            onChangeText={(text) => handleChange("location", text)}
+          />
 
-      {/* Opening & Closing Time */}
-      <Controller
-        control={control}
-        name="timings.open"
-        rules={{ required: "Opening time is required" }}
-        render={({ field }) => <TextInput placeholder="Opening Time" {...field} style={styles.input} placeholderTextColor={theme.colors.onSurfaceVariant} />}
-      />
-      <Controller
-        control={control}
-        name="timings.close"
-        rules={{ required: "Closing time is required" }}
-        render={({ field }) => <TextInput placeholder="Closing Time" {...field} style={styles.input} placeholderTextColor={theme.colors.onSurfaceVariant} />}
-      />
+          {/* Opening & Closing Time Inputs */}
+          <TextInput
+            label="Opening Time"
+            mode="outlined"
+            value={formData.timings.open}
+            onChangeText={(text) => handleChange("timings.open", text)}
+          />
+          <TextInput
+            label="Closing Time"
+            mode="outlined"
+            value={formData.timings.close}
+            onChangeText={(text) => handleChange("timings.close", text)}
+          />
 
-      {/* Image Picker */}
-      <TouchableOpacity onPress={pickImage} style={{ marginBottom: 10, alignItems: "center" }}>
-        {image ? (
-          <Image source={{ uri: image }} style={{ width: 100, height: 100, borderRadius: 50 }} />
-        ) : (
-          <Text style={{ color: "blue" }}>Select Canteen Image</Text>
-        )}
-      </TouchableOpacity>
+          {/* Image Picker */}
+          <TouchableOpacity onPress={pickImage} style={styles.button}>
+            <Text style={styles.text}>{image ? "Select a different image" : "Select Canteen Image"}</Text>
+          </TouchableOpacity>
 
-      {/* Submit Button */}
-      <Button title={uploading ? "Uploading..." : "Register Canteen"} onPress={handleSubmit(onSubmit)} disabled={uploading} />
+          {/* Display Selected Image */}
+          <View style={{ display: "flex", alignItems: "center" }}>
+            {image && <Image source={{ uri: image }} style={{ width: 100, height: 100, borderRadius: 50 }} />}
+          </View>
+
+          {/* Submit Button */}
+          <TouchableOpacity onPress={onSubmit} style={[styles.submitButton, uploading && { opacity: 0.5 }]} disabled={uploading}>
+            <Ionicons name="logo-google" color="white" style={styles.buttonIcon} />
+            <Text style={styles.text}>  Continue with Google</Text>
+          </TouchableOpacity>
+
+          {error && <Text style={{ color: theme.colors.error, textAlign: "center" }}>{error}</Text>}
+        </View>}
     </SafeAreaView>
   );
-}
+};
 
 export default CanteenSignUpScreen;
 
-const createStyles = (theme : Theme) => {
-  return StyleSheet.create({
+const createStyles = (theme: any) =>
+  StyleSheet.create({
     container: {
-      flex: 1,
+      display: "flex",
+      gap: 10,
+      flexDirection: "column",
       padding: 20,
       backgroundColor: theme.colors.background,
     },
     title: {
       fontSize: 24,
       fontWeight: "bold",
-      marginBottom: 20,
+      marginBottom: 10,
       color: theme.colors.onBackground,
     },
-    input: {
-      borderWidth: 1,
-      padding: 10,
-      marginBottom: 10,
+    button: {
+      backgroundColor: theme.colors.primary,
       borderRadius: 5,
-      color: theme.colors.onBackground,
-      backgroundColor: theme.colors.surface,
+      padding: 10,
+      alignItems: "center",
+      marginVertical: 10,
+    },
+    buttonIcon: {
+      fontSize: 18,
+    },
+    submitButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: theme.colors.primary,
+      borderRadius: 5,
+      marginTop: 20,
+      padding: 10,
+    },
+    text: {
+      textAlign: "center",
+      color: theme.colors.onPrimary,
+      fontWeight: "bold",
+      fontSize: 16,
     },
   });
-};

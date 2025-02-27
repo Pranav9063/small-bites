@@ -95,4 +95,5 @@ const darkTheme = {
 
 export default mytheme;
 export type Theme = typeof mytheme;
+export { darkTheme };
 export type DarkTheme = typeof darkTheme;

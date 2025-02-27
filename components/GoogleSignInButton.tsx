@@ -5,7 +5,7 @@ export default function GoogleSignInButton({ onPress }: { onPress: () => void })
   return (
     <Pressable style={styles.button} onPress={onPress}>
       <Ionicons name="logo-google" color="white" style={styles.buttonIcon} />
-      <Text style={styles.buttonText}> Google Sign In</Text>
+      <Text style={styles.buttonText}> Continue with Google</Text>
     </Pressable>
   );
 }
