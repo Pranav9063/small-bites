@@ -1,13 +1,15 @@
-import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
-import React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '@/lib/context/AuthContext';
 import SettingsScreen from '@/components/screens/SettingsScreen';
+import { Theme } from '@/constants/Colors';
+import { useAuth } from '@/lib/context/AuthContext';
 import { useTheme } from '@/lib/hooks/useTheme';
+import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function Page() {
+const Page: React.FC = () => {
   const { user, signOut } = useAuth();
-  const styles = createStyles(); 
+  const { theme } = useTheme(); // Moved useTheme hook here
+  const styles = createStyles(theme); // Pass theme to createStyles
+
   return (
     <SafeAreaView style={styles.container}>
       {user ? (
@@ -24,12 +26,12 @@ export default function Page() {
       )}
     </SafeAreaView>
   );
-}
+};
 
-const createStyles = () => {
-  const { theme } = useTheme();
+export default Page;
 
-  const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: 'center',
@@ -53,5 +55,3 @@ const createStyles = () => {
       marginBottom: 20,
     },
   });
-  return styles;
-}

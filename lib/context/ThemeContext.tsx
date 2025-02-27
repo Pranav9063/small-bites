@@ -1,11 +1,11 @@
 import { createContext, useState, ReactNode } from "react";
 import { Appearance } from "react-native";
-import { Colors } from "@/constants/Colors";
+import { Colors, Theme } from "@/constants/Colors";
 
 export interface ThemeContextType {
     colorScheme: "light" | "dark" | null | undefined;
     toggleTheme: React.Dispatch<React.SetStateAction<"light" | "dark" | null | undefined>>;
-    theme: typeof Colors.light | typeof Colors.dark;
+    theme: Theme;
 }
 
 export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);

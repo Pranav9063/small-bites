@@ -60,3 +60,4 @@ export const Colors = {
 };
 
 export type ColorScheme = keyof typeof Colors;
+export type Theme = typeof Colors.light | typeof Colors.dark;

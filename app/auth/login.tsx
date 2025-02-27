@@ -1,25 +1,32 @@
-import {StyleSheet, Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useTheme } from "@/lib/hooks/useTheme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
+import { FC } from "react";
 
-export default function LoginPage() {
+const LoginPage: FC = () => {
   const { signIn } = useAuth();
-  const styles = createStyles();
+  const { theme } = useTheme();
+
+  const styles = createStyles(theme);
 
   return (
     <SafeAreaView style={styles.container}>
       <GoogleSignInButton onPress={signIn} />
-      <Text style={styles.text}> New User ? Continue to <Link href="/auth/sign-up" style={styles.link}>Sign up</Link></Text>
+      <Text style={styles.text}>
+        New User? Continue to{" "}
+        <Link href="/auth/sign-up" style={styles.link}>
+          Sign up
+        </Link>
+      </Text>
     </SafeAreaView>
   );
-}
+};
 
-const createStyles = () => {
-  const { theme } = useTheme();
-  return StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: "center",
@@ -37,4 +44,5 @@ const createStyles = () => {
       textDecorationLine: "underline",
     },
   });
-}
+
+export default LoginPage;

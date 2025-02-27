@@ -15,7 +15,7 @@ export default {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
+        foregroundImage: "./assets/images/adaptive-icon.jpg",
         backgroundColor: "#ffffff",
       },
       package: "com.pradneya.smallbites",
