@@ -1,12 +1,12 @@
 import CanteenSignUpScreen from '@/components/screens/CanteenSignUpScreen';
-import { Theme } from '@/constants/Colors';
-import { useTheme } from '@/lib/hooks/useTheme';
+import { Theme } from '@/constants/Theme';
+import { useTheme } from 'react-native-paper';
 import React from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text } from 'react-native';
 
-const canteenLoginScreen = () => {
-    const { theme } = useTheme();
-    const styles = createStyles(theme);
+const CanteenLoginScreen = () => {
+    const theme = useTheme();
+    // const styles = createStyles(theme);
     return (
         <View>
             <Text>Canteen Login</Text>
@@ -15,7 +15,7 @@ const canteenLoginScreen = () => {
     );
 };
 
-export default canteenLoginScreen;
+export default CanteenLoginScreen;
 
 function createStyles(theme: Theme) {
     throw new Error('Function not implemented.');

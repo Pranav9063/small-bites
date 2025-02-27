@@ -1,13 +1,11 @@
-import { View, Text, StyleSheet } from "react-native";
-import ThemeToggleButton from "@/components/ThemeToggleButton";
-import { useTheme } from "@/lib/hooks/useTheme";
+import { View, StyleSheet } from "react-native";
+import { useTheme } from "react-native-paper";
 
 export default function SettingsScreen() {
-  const { theme } = useTheme();
+  const theme = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <ThemeToggleButton />
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
     </View>
   );
 }

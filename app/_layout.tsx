@@ -6,9 +6,10 @@ import auth from "@react-native-firebase/auth";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ThemeProvider } from "@/lib/context/ThemeContext";
 import { AuthProvider, useAuth } from "@/lib/context/AuthContext";
-import { useTheme } from "@/lib/hooks/useTheme";
+import { useTheme } from "react-native-paper";
+import { PaperProvider } from "react-native-paper";
+import mytheme from "@/constants/Theme";
 
 function RootContent() {
   const [initializing, setInitializing] = useState(true);
@@ -33,7 +34,7 @@ function RootContent() {
     const inAuth = segments[0] === 'auth';
     if (!user && !inAuth) router.replace('/auth/login');
     else if (user && inAuth) router.replace('/');
-  }, [user, initializing]);
+  }, [user, initializing, router ,segments]);
 
   if (initializing) {
     return (
@@ -53,20 +54,20 @@ function RootContent() {
 
 export default function RootLayout() {
   return (
-    <ThemeProvider>
+    <PaperProvider theme={mytheme}>
       <SafeAreaProvider>
         <AuthProvider>
           <RootContent />
           <ThemedStatusBar />
         </AuthProvider>
       </SafeAreaProvider>
-    </ThemeProvider>
+    </PaperProvider>
   );
 }
 
 function ThemedStatusBar() {
-  const { colorScheme, theme } = useTheme();
-  return <StatusBar backgroundColor={theme.background} style={colorScheme === 'dark' ? 'light' : 'dark'} />;
+  const theme = useTheme();
+  return <StatusBar backgroundColor={theme.colors.background} style={theme.colors.background === 'dark' ? 'light' : 'dark'} />;
 }
 
 const styles = StyleSheet.create({

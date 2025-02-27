@@ -4,12 +4,13 @@ import { useForm, Controller } from "react-hook-form";
 import { useImageUpload } from "@/lib/hooks/useImageUpload";
 import { registerCanteen } from "@/lib/services/firestoreService";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "@/lib/hooks/useTheme";
+import { useTheme } from "react-native-paper";  
+import { Theme } from "@/constants/Theme";
 
 const CanteenSignUpScreen : React.FC = ({ navigation }: any) => {
   const { control, handleSubmit, reset } = useForm();
   const { image, pickImage, uploadImage, uploading } = useImageUpload();
-  const { theme } = useTheme();
+  const theme = useTheme();
   const styles = createStyles(theme);
 
   const onSubmit = async (data: any) => {
@@ -41,7 +42,7 @@ const CanteenSignUpScreen : React.FC = ({ navigation }: any) => {
         name="name"
         rules={{ required: "Canteen name is required" }}
         render={({ field: { onChange, value } }) => (
-          <TextInput placeholder="Canteen Name" value={value} onChangeText={onChange} style={styles.input} placeholderTextColor={theme.mutedForeground} />
+          <TextInput placeholder="Canteen Name" value={value} onChangeText={onChange} style={styles.input} placeholderTextColor={theme.colors.onSurfaceVariant} />
         )}
       />
 
@@ -51,7 +52,7 @@ const CanteenSignUpScreen : React.FC = ({ navigation }: any) => {
         name="location"
         rules={{ required: "Location is required" }}
         render={({ field: { onChange, value } }) => (
-          <TextInput placeholder="Location" value={value} onChangeText={onChange} style={styles.input} placeholderTextColor={theme.mutedForeground} />
+          <TextInput placeholder="Location" value={value} onChangeText={onChange} style={styles.input} placeholderTextColor={theme.colors.onSurfaceVariant} />
         )}
       />
 
@@ -60,13 +61,13 @@ const CanteenSignUpScreen : React.FC = ({ navigation }: any) => {
         control={control}
         name="timings.open"
         rules={{ required: "Opening time is required" }}
-        render={({ field }) => <TextInput placeholder="Opening Time" {...field} style={styles.input} placeholderTextColor={theme.mutedForeground} />}
+        render={({ field }) => <TextInput placeholder="Opening Time" {...field} style={styles.input} placeholderTextColor={theme.colors.onSurfaceVariant} />}
       />
       <Controller
         control={control}
         name="timings.close"
         rules={{ required: "Closing time is required" }}
-        render={({ field }) => <TextInput placeholder="Closing Time" {...field} style={styles.input} placeholderTextColor={theme.mutedForeground} />}
+        render={({ field }) => <TextInput placeholder="Closing Time" {...field} style={styles.input} placeholderTextColor={theme.colors.onSurfaceVariant} />}
       />
 
       {/* Image Picker */}
@@ -86,26 +87,26 @@ const CanteenSignUpScreen : React.FC = ({ navigation }: any) => {
 
 export default CanteenSignUpScreen;
 
-const createStyles = (theme : any) => {
+const createStyles = (theme : Theme) => {
   return StyleSheet.create({
     container: {
       flex: 1,
       padding: 20,
-      backgroundColor: theme.background,
+      backgroundColor: theme.colors.background,
     },
     title: {
       fontSize: 24,
       fontWeight: "bold",
       marginBottom: 20,
-      color: theme.foreground,
+      color: theme.colors.onBackground,
     },
     input: {
       borderWidth: 1,
       padding: 10,
       marginBottom: 10,
       borderRadius: 5,
-      color: theme.foreground,
-      backgroundColor: theme.accent,
+      color: theme.colors.onBackground,
+      backgroundColor: theme.colors.surface,
     },
   });
 };

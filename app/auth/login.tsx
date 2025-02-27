@@ -1,14 +1,15 @@
 import { StyleSheet, Text } from "react-native";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import { useAuth } from "@/lib/context/AuthContext";
-import { useTheme } from "@/lib/hooks/useTheme";
+import { useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
 import { FC } from "react";
+import { Theme } from "@/constants/Theme";
 
 const LoginPage: FC = () => {
   const { signIn } = useAuth();
-  const { theme } = useTheme();
+  const theme = useTheme();
 
   const styles = createStyles(theme);
 
@@ -31,16 +32,16 @@ const createStyles = (theme: Theme) =>
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: theme.background,
+      backgroundColor: theme.colors.background,
     },
     text: {
       fontSize: 12,
       fontWeight: "bold",
       marginBottom: 20,
-      color: theme.foreground,
+      color: theme.colors.onBackground,
     },
     link: {
-      color: theme.primary,
+      color: theme.colors.primary,
       textDecorationLine: "underline",
     },
   });

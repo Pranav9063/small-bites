@@ -1,13 +1,13 @@
 import SettingsScreen from '@/components/screens/SettingsScreen';
-import { Theme } from '@/constants/Colors';
+import { Theme } from '@/constants/Theme';
 import { useAuth } from '@/lib/context/AuthContext';
-import { useTheme } from '@/lib/hooks/useTheme';
+import { useTheme } from 'react-native-paper';
 import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Page: React.FC = () => {
   const { user, signOut } = useAuth();
-  const { theme } = useTheme(); // Moved useTheme hook here
+  const theme = useTheme(); // Moved useTheme hook here
   const styles = createStyles(theme); // Pass theme to createStyles
 
   return (
@@ -37,13 +37,13 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: 20,
-      backgroundColor: theme.background,
+      backgroundColor: theme.colors.background,
     },
     welcomeText: {
       fontSize: 22,
       fontWeight: 'bold',
       marginBottom: 10,
-      color: theme.foreground,
+      color: theme.colors.onBackground,
     },
     userInfo: {
       marginBottom: 20,
@@ -51,7 +51,7 @@ const createStyles = (theme: Theme) =>
     },
     infoText: {
       fontSize: 16,
-      color: theme.mutedForeground,
+      color: theme.colors.onSurfaceVariant,
       marginBottom: 20,
     },
   });
