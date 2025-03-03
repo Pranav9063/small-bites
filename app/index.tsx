@@ -1,10 +1,13 @@
-import { Theme } from '@/constants/Theme';
 import { useAuth } from '@/lib/context/AuthContext';
 import { useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, StyleSheet, TextInput, Image, FlatList, TouchableOpacity, Button, ActivityIndicator, Modal } from "react-native";
+import { View, Text, StyleSheet, TextInput, Image, FlatList, TouchableOpacity, Button, ActivityIndicator, Modal, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 const Page: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -12,6 +15,24 @@ const Page: React.FC = () => {
   const styles = createStyles(theme);
 
   const [menuVisible, setMenuVisible] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_700Bold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      setAppIsReady(true);
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!appIsReady) {
+    return null;
+  }
 
   const canteens = [
     { id: "1", name: "MiniCampus", rating: 4.9, image: require("@/assets/images/icon.jpg") },
@@ -24,13 +45,9 @@ const Page: React.FC = () => {
     <View style={styles.card}>
       <Image source={item.image} style={styles.foodImage} />
       <Text style={styles.foodName}>{item.name}</Text>
-      <Text style={styles.restaurant}>{item.restaurant}</Text>
       <View style={styles.ratingContainer}>
         <Ionicons name="star" size={16} color="#FFA500" />
         <Text style={styles.rating}>{item.rating}</Text>
-        <TouchableOpacity>
-          <Ionicons name="heart-outline" size={20} color="#333" />
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -54,7 +71,18 @@ const Page: React.FC = () => {
             <Ionicons name="filter" size={20} color="#666" />
           </View>
 
-          {/* Food Items Grid */}
+          {/* Scrollable Filter Buttons */}
+          <View style={styles.filterWrapper}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {["⭐Ratings", "✅Open", "❌Closed", "🔥Popular", "📍Nearby"].map((filter, index) => (
+                <TouchableOpacity key={index} style={styles.filterButton} onPress={() => setSelectedFilter(filter)}>
+                  <Text style={styles.filterText}>{filter}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Canteen List */}
           <FlatList
             data={canteens}
             renderItem={renderItem}
@@ -75,13 +103,16 @@ const Page: React.FC = () => {
 
           {/* Profile Dropdown Menu */}
           <Modal transparent={true} visible={menuVisible} animationType="fade">
-            <TouchableOpacity style={styles.overlay} onPress={() => setMenuVisible(false)}>
+            <View style={styles.overlay}>
               <View style={styles.menu}>
                 <Text style={styles.menuText}>Hey, {user.user.name}</Text>
                 <Text style={styles.menuText}>{user.user.email}</Text>
                 <Button title="Sign Out" onPress={signOut} color="#d9534f" />
+                <TouchableOpacity onPress={() => setMenuVisible(false)} style={{ marginTop: 10 }}>
+                  <Text style={{ color: "#FA3C4C", fontWeight: "bold" }}>Close</Text>
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+            </View>
           </Modal>
         </>
       ) : (
@@ -97,7 +128,7 @@ const createStyles = (theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: "#FA3C4C",
+      backgroundColor: "#f78477",
     },
     header: {
       flexDirection: "row",
@@ -132,6 +163,24 @@ const createStyles = (theme) =>
       flex: 1,
       marginLeft: 10,
     },
+    filterWrapper: {
+      flexDirection: "row",
+      marginVertical: 10,
+    },
+    filterButton: {
+      backgroundColor: "#ffffff",
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 20,
+      margin: 5,
+      elevation: 2,
+      alignItems: "center",
+    },
+    filterText: {
+      fontSize: 14,
+      fontFamily: "Poppins_400Regular",
+      color: "#FA3C4C",
+    },
     row: {
       justifyContent: "space-between",
       paddingHorizontal: 20,
@@ -148,27 +197,23 @@ const createStyles = (theme) =>
       width: 80,
       height: 80,
       marginBottom: 10,
+      borderRadius: 50,
     },
     foodName: {
+      fontSize: 16,
       fontWeight: "bold",
-      fontSize: 14,
-      textAlign: "center",
-    },
-    restaurant: {
-      fontSize: 12,
-      color: "#666",
+      color: "#333",
       textAlign: "center",
     },
     ratingContainer: {
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-between",
-      width: "100%",
       marginTop: 5,
     },
     rating: {
       fontSize: 14,
       fontWeight: "bold",
+      color: "#FFA500",
       marginLeft: 5,
     },
     bottomNav: {
@@ -176,7 +221,7 @@ const createStyles = (theme) =>
       bottom: 0,
       left: 0,
       right: 0,
-      backgroundColor: "#FA3C4C",
+      backgroundColor: "#f78477",
       paddingVertical: 10,
       flexDirection: "row",
       justifyContent: "space-around",
@@ -189,20 +234,22 @@ const createStyles = (theme) =>
     },
     overlay: {
       flex: 1,
+      backgroundColor: "rgba(0,0,0,0.5)",
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "rgba(0,0,0,0.5)",
     },
     menu: {
       backgroundColor: "white",
       padding: 20,
       borderRadius: 10,
+      width: "80%",
       alignItems: "center",
-      width: 250,
     },
     menuText: {
       fontSize: 16,
       fontWeight: "bold",
-      marginBottom: 10,
+      color: "#333",
+      marginBottom: 5,
+      textAlign: "center",
     },
   });
