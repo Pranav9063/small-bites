@@ -3,17 +3,25 @@ import { useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, StyleSheet, TextInput, Image, FlatList, TouchableOpacity, Button, ActivityIndicator, Modal, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
 
 SplashScreen.preventAutoHideAsync();
 
+const canteens = [
+  { id: "1", name: "MiniCampus", rating: 4.9, image: require("@/assets/images/icon.jpg") },
+  { id: "2", name: "Nescafe", rating: 4.8, image: require("@/assets/images/icon.jpg") },
+  { id: "3", name: "HK-Cafe", rating: 4.6, image: require("@/assets/images/icon.jpg") },
+  { id: "4", name: "Bittu", rating: 4.5, image: require("@/assets/images/icon.jpg") },
+];
+
 const Page: React.FC = () => {
   const { user, signOut } = useAuth();
-  const theme = useTheme(); 
+  const theme = useTheme();
   const styles = createStyles(theme);
 
+  const [sortedCanteens, setSortedCanteens] = useState([...canteens]);
   const [menuVisible, setMenuVisible] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [appIsReady, setAppIsReady] = useState(false);
@@ -30,27 +38,36 @@ const Page: React.FC = () => {
     }
   }, [fontsLoaded]);
 
-  if (!appIsReady) {
-    return null;
-  }
+  useEffect(() => {
+    if (!selectedFilter) return;
 
-  const canteens = [
-    { id: "1", name: "MiniCampus", rating: 4.9, image: require("@/assets/images/icon.jpg") },
-    { id: "2", name: "Nescafe", rating: 4.8, image: require("@/assets/images/icon.jpg") },
-    { id: "3", name: "HK-Cafe", rating: 4.6, image: require("@/assets/images/icon.jpg") },
-    { id: "4", name: "Bittu", rating: 4.5, image: require("@/assets/images/icon.jpg") },
-  ];
+    let updatedCanteens = [...canteens];
+
+    if (selectedFilter === "⭐Ratings") {
+      updatedCanteens.sort((a, b) => b.rating - a.rating);
+    }
+
+    setSortedCanteens(updatedCanteens);
+  }, [selectedFilter]);
+
+  const handleCanteenPress = useCallback((canteenName) => {
+    console.log(`Selected Canteen: ${canteenName}`);
+  }, []);
 
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item.name)}>
       <Image source={item.image} style={styles.foodImage} />
       <Text style={styles.foodName}>{item.name}</Text>
       <View style={styles.ratingContainer}>
         <Ionicons name="star" size={16} color="#FFA500" />
         <Text style={styles.rating}>{item.rating}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
+
+  if (!appIsReady) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -74,9 +91,21 @@ const Page: React.FC = () => {
           {/* Scrollable Filter Buttons */}
           <View style={styles.filterWrapper}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {["⭐Ratings", "✅Open", "❌Closed", "🔥Popular", "📍Nearby"].map((filter, index) => (
-                <TouchableOpacity key={index} style={styles.filterButton} onPress={() => setSelectedFilter(filter)}>
-                  <Text style={styles.filterText}>{filter}</Text>
+              {["⭐Ratings", "✅Open", "🔥Popular", "📍Nearby"].map((filter, index) => (
+                <TouchableOpacity 
+                  key={index} 
+                  style={[
+                    styles.filterButton, 
+                    selectedFilter === filter && styles.activeFilter
+                  ]} 
+                  onPress={() => setSelectedFilter(filter)}
+                >
+                  <Text style={[
+    styles.filterText, 
+    selectedFilter === filter && styles.activeFilterText
+  ]}>
+    {filter}
+  </Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -84,7 +113,7 @@ const Page: React.FC = () => {
 
           {/* Canteen List */}
           <FlatList
-            data={canteens}
+            data={sortedCanteens}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             numColumns={2}
@@ -252,4 +281,11 @@ const createStyles = (theme) =>
       marginBottom: 5,
       textAlign: "center",
     },
+    activeFilter: {
+      backgroundColor: "#FF4D4D",
+      borderColor: "#FA3C4C",
+    },
+    activeFilterText: {
+      color: "white",
+    }
   });
