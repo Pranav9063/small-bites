@@ -51,7 +51,7 @@ const createStyles = (theme: Theme) =>
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "#a1f0f7",
+      backgroundColor: "#f78477",
       paddingHorizontal: 20,
     },
     innerContainer: {
@@ -68,7 +68,7 @@ const createStyles = (theme: Theme) =>
     heading: {
       fontSize: 26,
       fontWeight: "bold",
-      color: theme.colors.primary,
+      color: "#4a1e1e",
       marginBottom: 10,
       textAlign: "center",
     },
@@ -82,10 +82,10 @@ const createStyles = (theme: Theme) =>
       fontSize: 14,
       fontWeight: "500",
       marginTop: 20,
-      color: theme.colors.onBackground,
+      color: "#4a1e1e",
     },
     link: {
-      color: theme.colors.primary,
+      color: "#4a1e1e",
       textDecorationLine: "underline",
       fontWeight: "bold",
     },
