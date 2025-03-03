@@ -10,10 +10,10 @@ import * as SplashScreen from 'expo-splash-screen';
 SplashScreen.preventAutoHideAsync();
 
 const canteens = [
-  { id: "1", name: "MiniCampus", rating: 4.9, image: require("@/assets/images/icon.jpg") },
-  { id: "2", name: "Nescafe", rating: 4.8, image: require("@/assets/images/icon.jpg") },
-  { id: "3", name: "HK-Cafe", rating: 4.6, image: require("@/assets/images/icon.jpg") },
-  { id: "4", name: "Bittu", rating: 4.5, image: require("@/assets/images/icon.jpg") },
+  { id: "1", name: "MiniCampus", rating: 4.3, image: require("@/assets/images/canteenImg.png") },
+  { id: "2", name: "Nescafe", rating: 4.8, image: require("@/assets/images/canteenImg.png") },
+  { id: "3", name: "HK-Cafe", rating: 4.6, image: require("@/assets/images/canteenImg.png") },
+  { id: "4", name: "Bittu", rating: 4.5, image: require("@/assets/images/canteenImg.png") },
 ];
 
 const Page: React.FC = () => {
