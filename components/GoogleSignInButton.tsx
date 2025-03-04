@@ -17,18 +17,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 12,
     paddingHorizontal: 20,
-    backgroundColor: "#ffffff", // White for a minimal, modern feel
+    backgroundColor: "#ffffff", 
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: "#d36b5f", // Slightly darker than the theme color
+    borderColor: "#d36b5f",
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
-    elevation: 3, // Elevation for Android
+    elevation: 3, 
   },
   buttonText: {
-    color: "#4a1e1e", // Dark text for contrast
+    color: "#4a1e1e", 
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: 8,
