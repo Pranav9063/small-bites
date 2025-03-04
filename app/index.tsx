@@ -1,13 +1,19 @@
 import { useAuth } from '@/lib/context/AuthContext';
-import { useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, StyleSheet, TextInput, Image, FlatList, TouchableOpacity, Button, ActivityIndicator, Modal, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TextInput, Image, FlatList, TouchableOpacity, Button, ActivityIndicator, Modal, ScrollView, ImageSourcePropType } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect, useCallback } from "react";
 import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
 
 SplashScreen.preventAutoHideAsync();
+
+type ItemType = {
+  name: string,
+  image: ImageSourcePropType | undefined,
+  rating: number,
+  id: string
+}
 
 const canteens = [
   { id: "1", name: "MiniCampus", rating: 4.9, image: require("@/assets/images/icon.jpg") },
@@ -18,8 +24,7 @@ const canteens = [
 
 const Page: React.FC = () => {
   const { user, signOut } = useAuth();
-  const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = createStyles();
 
   const [sortedCanteens, setSortedCanteens] = useState([...canteens]);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -50,11 +55,11 @@ const Page: React.FC = () => {
     setSortedCanteens(updatedCanteens);
   }, [selectedFilter]);
 
-  const handleCanteenPress = useCallback((canteenName) => {
+  const handleCanteenPress = useCallback((canteenName : string) => {
     console.log(`Selected Canteen: ${canteenName}`);
   }, []);
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item } : {item: ItemType}) => (
     <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item.name)}>
       <Image source={item.image} style={styles.foodImage} />
       <Text style={styles.foodName}>{item.name}</Text>
@@ -153,7 +158,7 @@ const Page: React.FC = () => {
 
 export default Page;
 
-const createStyles = (theme) =>
+const createStyles = () =>
   StyleSheet.create({
     container: {
       flex: 1,

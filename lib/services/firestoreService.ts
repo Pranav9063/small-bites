@@ -21,6 +21,7 @@ export type FirestoreUser = {
 export const addMemberToFirestore = async (role : "user" | "admin" | "canteen") => {
   try {
     const userInfo = await googleSignIn();
+    console.log(userInfo)
     if(!userInfo.data?.user) {
       throw new Error('Google Sign-In failed : User data not found');
     }
