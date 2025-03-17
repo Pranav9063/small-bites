@@ -1,3 +1,4 @@
+import React from 'react';
 import { useAuth } from '@/lib/context/AuthContext';
 import { useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,10 +7,18 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect, useCallback } from "react";
 import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
+import { useRouter } from 'expo-router';
 
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 
-const canteens = [
+type Canteen = {
+  id: string;
+  name: string;
+  rating: number;
+  image: any;
+};
+
+const canteens: Canteen[] = [
   { id: "1", name: "MiniCampus", rating: 4.3, image: require("@/assets/images/canteenImg.png") },
   { id: "2", name: "Nescafe", rating: 4.8, image: require("@/assets/images/canteenImg.png") },
   { id: "3", name: "HK-Cafe", rating: 4.6, image: require("@/assets/images/canteenImg.png") },
@@ -21,9 +30,10 @@ const canteens = [
 const Page: React.FC = () => {
   const { user, signOut } = useAuth();
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = createStyles();
+  const router = useRouter();
 
-  const [sortedCanteens, setSortedCanteens] = useState([...canteens]);
+  const [sortedCanteens, setSortedCanteens] = useState<Canteen[]>([...canteens]);
   const [menuVisible, setMenuVisible] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [appIsReady, setAppIsReady] = useState(false);
@@ -52,12 +62,15 @@ const Page: React.FC = () => {
     setSortedCanteens(updatedCanteens);
   }, [selectedFilter]);
 
-  const handleCanteenPress = useCallback((canteenName) => {
-    console.log(`Selected Canteen: ${canteenName}`);
-  }, []);
+  const handleCanteenPress = useCallback((canteen: Canteen) => {
+    router.push({
+      pathname: "/canteen/[id]",
+      params: { id: canteen.id, name: canteen.name }
+    });
+  }, [router]);
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item.name)}>
+  const renderItem = ({ item }: { item: Canteen }) => (
+    <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item)}>
       <Image source={item.image} style={styles.foodImage} />
       <Text style={styles.foodName}>{item.name}</Text>
       <View style={styles.ratingContainer}>
@@ -155,7 +168,7 @@ const Page: React.FC = () => {
 
 export default Page;
 
-const createStyles = (theme) =>
+const createStyles = () =>
   StyleSheet.create({
     container: {
       flex: 1,
