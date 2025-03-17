@@ -4,6 +4,7 @@ import { useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useCart } from '../../app/context/CartContext';
 
 // Add types at the top of the file
 type MenuItem = {
@@ -15,6 +16,10 @@ type MenuItem = {
   rating: number;
   time: string;
   image: any; // Using 'any' for image require
+};
+
+type CartItem = MenuItem & {
+  quantity: number;
 };
 
 // Update mockMenuItems with type
@@ -39,7 +44,6 @@ const mockMenuItems: MenuItem[] = [
     time: '15-20 min',
     image: require('../../assets/images/menuItems/pasta.jpg'),
   },
-
   {
     id: '3',
     name: 'Burger',
@@ -74,6 +78,11 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const scaleValues = useRef(mockMenuItems.map(() => new Animated.Value(0))).current;
+  const { cart, dispatch } = useCart();
+  const [favorites, setFavorites] = useState<string[]>([]); // Array of item IDs
+  const [itemQuantities, setItemQuantities] = useState<Record<string, number>>(
+    mockMenuItems.reduce((acc, item) => ({ ...acc, [item.id]: 1 }), {})
+  );
 
   const categories = ['All', 'Pizza', 'Burger', 'Pasta', 'Drinks'];
 
@@ -89,7 +98,42 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
     });
   }, []);
 
+  const updateItemQuantity = (itemId: string, delta: number) => {
+    setItemQuantities(prev => ({
+      ...prev,
+      [itemId]: Math.max(1, (prev[itemId] || 1) + delta)
+    }));
+  };
+
+  // Add to cart function
+  const addToCart = (item: MenuItem) => {
+    const quantity = itemQuantities[item.id] || 1;
+    dispatch({ 
+      type: 'ADD_ITEM', 
+      payload: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: quantity
+      }
+    });
+    // Reset quantity after adding to cart
+    setItemQuantities(prev => ({ ...prev, [item.id]: 1 }));
+  };
+
+  // Toggle favorite function
+  const toggleFavorite = (itemId: string) => {
+    setFavorites(prev =>
+      prev.includes(itemId)
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+
   const renderMenuItem = ({ item, index }: { item: MenuItem; index: number }) => {
+    const isFavorite = favorites.includes(item.id);
+    const quantity = itemQuantities[item.id] || 1;
+
     return (
       <Animated.View style={[
         styles.menuItemContainer,
@@ -97,11 +141,19 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
           transform: [{ scale: scaleValues[index] }],
         }
       ]}>
-        <TouchableOpacity 
-          style={styles.menuItem}
-        >
+        <View style={styles.menuItem}>
           <Image source={item.image} style={styles.itemImage} />
           <View style={styles.imageOverlay} />
+          <TouchableOpacity 
+            style={styles.favoriteButton}
+            onPress={() => toggleFavorite(item.id)}
+          >
+            <Ionicons 
+              name={isFavorite ? "heart" : "heart-outline"} 
+              size={24} 
+              color={isFavorite ? "#FF4D4D" : "#fff"} 
+            />
+          </TouchableOpacity>
           <View style={styles.itemContent}>
             <View style={styles.itemHeader}>
               <Text style={styles.itemName}>{item.name}</Text>
@@ -124,8 +176,31 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
               </View>
               <Text style={styles.itemPrice}>Rs.{item.price.toFixed(2)}</Text>
             </View>
+            <View style={styles.actionContainer}>
+              <View style={styles.quantityControl}>
+                <TouchableOpacity 
+                  onPress={() => updateItemQuantity(item.id, -1)}
+                  style={styles.quantityButton}
+                >
+                  <Text style={styles.quantityButtonText}>−</Text>
+                </TouchableOpacity>
+                <Text style={styles.quantity}>{quantity}</Text>
+                <TouchableOpacity 
+                  onPress={() => updateItemQuantity(item.id, 1)}
+                  style={styles.quantityButton}
+                >
+                  <Text style={styles.quantityButtonText}>+</Text>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity 
+                style={styles.addButton}
+                onPress={() => addToCart(item)}
+              >
+                <Text style={styles.addButtonText}>Add to Cart</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Animated.View>
     );
   };
@@ -167,6 +242,9 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
     </>
   );
 
+  // Update cart badge count
+  const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Fixed Header */}
@@ -177,10 +255,13 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
             <Ionicons name="chevron-back" size={24} color="#333" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Search Food</Text>
-          <TouchableOpacity style={styles.cartButton}>
+          <TouchableOpacity 
+            style={styles.cartButton}
+            onPress={() => router.push("/cart")}
+          >
             <Ionicons name="cart-outline" size={24} color="#333" />
             <View style={styles.cartBadge}>
-              <Text style={styles.cartBadgeText}>2</Text>
+              <Text style={styles.cartBadgeText}>{cartItemsCount}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -494,6 +575,71 @@ const createStyles = (theme: any) =>
       shadowOpacity: 0.2,
       shadowRadius: 8,
       elevation: 5,
+    },
+    favoriteButton: {
+      position: 'absolute',
+      top: 10,
+      right: 10,
+      zIndex: 2,
+      backgroundColor: 'rgba(255,255,255,0.3)',
+      borderRadius: 20,
+      padding: 8,
+    },
+    actionContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: 12,
+      paddingTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: '#f0f0f0',
+    },
+    quantityControl: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#f5f5f5',
+      borderRadius: 25,
+      padding: 4,
+    },
+    quantityButton: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: '#fff',
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    quantityButtonText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#333',
+    },
+    quantity: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginHorizontal: 12,
+      color: '#333',
+    },
+    addButton: {
+      backgroundColor: '#FFD337',
+      borderRadius: 25,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    addButtonText: {
+      color: '#333',
+      fontSize: 14,
+      fontWeight: 'bold',
     },
   });
 
