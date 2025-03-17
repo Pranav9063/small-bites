@@ -27,7 +27,7 @@ const mockMenuItems: MenuItem[] = [
     calories: 90,
     rating: 4.8,
     time: '20-30 min',
-    image: require('../../../assets/images/menuItems/Piz.jpg'),
+    image: require('../../assets/images/menuItems/Piz.jpg'),
   },
   {
     id: '2',
@@ -37,7 +37,7 @@ const mockMenuItems: MenuItem[] = [
     calories: 78,
     rating: 4.5,
     time: '15-20 min',
-    image: require('../../../assets/images/menuItems/pasta.jpg'),
+    image: require('../../assets/images/menuItems/pasta.jpg'),
   },
 
   {
@@ -48,7 +48,7 @@ const mockMenuItems: MenuItem[] = [
     calories: 88,
     rating: 4.1,
     time: '10-15 min',
-    image: require('../../../assets/images/menuItems/burger.jpg'),
+    image: require('../../assets/images/menuItems/burger.jpg'),
   },
   {
     id: '4',
@@ -58,7 +58,7 @@ const mockMenuItems: MenuItem[] = [
     calories: 68,
     rating: 4.1,
     time: '0-5 min',
-    image: require('../../../assets/images/menuItems/samosa.jpg'),
+    image: require('../../assets/images/menuItems/samosa.jpg'),
   },
 ];
 
@@ -99,12 +99,6 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
       ]}>
         <TouchableOpacity 
           style={styles.menuItem}
-          onPress={() => {
-            router.push({
-              pathname: "/food/[id]" as const,
-              params: { ...item }
-            });
-          }}
         >
           <Image source={item.image} style={styles.itemImage} />
           <View style={styles.imageOverlay} />

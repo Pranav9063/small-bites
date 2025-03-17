@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect, useCallback } from "react";
 import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
+import { useRouter } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,6 +26,7 @@ const canteens = [
 const UserHomeScreen = () => {
     const { user, signOut } = useAuth();
     const styles = createStyles();
+    const router = useRouter();
 
     const [sortedCanteens, setSortedCanteens] = useState([...canteens]);
     const [menuVisible, setMenuVisible] = useState(false);
@@ -55,12 +57,15 @@ const UserHomeScreen = () => {
         setSortedCanteens(updatedCanteens);
     }, [selectedFilter]);
 
-    const handleCanteenPress = useCallback((canteenName: string) => {
-        console.log(`Selected Canteen: ${canteenName}`);
-    }, []);
+    const handleCanteenPress = useCallback((canteen: ItemType) => {
+        router.push({
+            pathname: "/canteen/[id]",
+            params: { id: canteen.id, name: canteen.name }
+        });
+    }, [router]);
 
     const renderItem = ({ item }: { item: ItemType }) => (
-        <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item.name)}>
+        <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item)}>
             <Image source={item.image} style={styles.foodImage} />
             <Text style={styles.foodName}>{item.name}</Text>
             <View style={styles.ratingContainer}>
