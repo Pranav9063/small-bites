@@ -52,7 +52,7 @@ const CanteenSignUpScreen: React.FC = () => {
         throw new Error('User not found');
       }
       const imageURL = await uploadImage();
-      const canteenData = { ...formData, image: imageURL || "", owner: user.id };
+      const canteenData = { ...formData, image: imageURL || "", owner: user.uid };
       const result = await registerCanteen(canteenData);
       if (result.success) {
         Alert.alert("Success", "Canteen registered successfully!");

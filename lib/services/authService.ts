@@ -33,7 +33,6 @@ export const googleSignIn = async () => {
 export const googleSignOut = async () => {
   try {
     await GoogleSignin.signOut();
-    await auth().signOut();
   } catch (error) {
     console.error("Error signing out:", error);
   }

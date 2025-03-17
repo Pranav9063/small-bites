@@ -139,7 +139,7 @@ const UserHomeScreen = () => {
                     <Modal transparent={true} visible={menuVisible} animationType="fade">
                         <View style={styles.overlay}>
                             <View style={styles.menu}>
-                                <Text style={styles.menuText}>Hey, {user.name}</Text>
+                                <Text style={styles.menuText}>Hey, {user.displayName}</Text>
                                 <Text style={styles.menuText}>{user.email}</Text>
                                 <Button title="Sign Out" onPress={signOut} color="#d9534f" />
                                 <TouchableOpacity onPress={() => setMenuVisible(false)} style={{ marginTop: 10 }}>

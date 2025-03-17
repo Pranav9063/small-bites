@@ -38,10 +38,10 @@ export const addMemberToFirestore = async (role: "user" | "admin" | "canteen") =
       };
       await setDoc(userRef, newUser);
       console.log("User added successfully!");
-      return user;
     } else {
       console.log("User already exists.");
     }
+    return user;
   } catch (error) {
     console.error("Error adding user:", error);
   }
