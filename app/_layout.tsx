@@ -10,6 +10,7 @@ import { AuthProvider, useAuth } from "@/lib/context/AuthContext";
 import { useTheme } from "react-native-paper";
 import { PaperProvider } from "react-native-paper";
 import mytheme from "@/constants/Theme";
+import { CartProvider } from './context/CartContext';
 
 function RootContent() {
   const [initializing, setInitializing] = useState(true);
@@ -65,8 +66,10 @@ export default function RootLayout() {
     <PaperProvider theme={mytheme}>
       <SafeAreaProvider>
         <AuthProvider>
-          <RootContent />
-          <ThemedStatusBar />
+          <CartProvider>
+            <RootContent />
+            <ThemedStatusBar />
+          </CartProvider>
         </AuthProvider>
       </SafeAreaProvider>
     </PaperProvider>
