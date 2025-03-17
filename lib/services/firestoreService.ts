@@ -21,7 +21,7 @@ export type FirestoreUser = {
 export const addMemberToFirestore = async (role : "user" | "admin" | "canteen") => {
   try {
     const userInfo = await googleSignIn();
-    console.log(userInfo)
+    // console.log(userInfo)
     if(!userInfo.data?.user) {
       throw new Error('Google Sign-In failed : User data not found');
     }
@@ -56,3 +56,17 @@ export const registerCanteen = async (canteenData: any) => {
     return { success: false, error };
   }
 };
+
+export const fetchRole = async (userId : string) => {
+  try {
+    const userRef = doc(db, "Users", userId);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists) {
+      return userSnap.data()!.role;
+    } else {
+      throw new Error('User not found');
+    }
+  } catch (error) {
+    console.error("Error fetching user role:", error);
+  }
+}

@@ -32,12 +32,12 @@ const LoginPage: FC = () => {
         Order your favorite food from campus canteens with ease!
       </Text>
 
-      <GoogleSignInButton onPress={signIn} />
+      <GoogleSignInButton onPress={() => signIn("user")} />
 
       <Text style={styles.text}>
-        New User?{" "}
-        <Link href="/auth/sign-up/user" style={styles.link}>
-          Sign up
+        Register your canteen{" "}
+        <Link href="/auth/canteen" style={styles.link}>
+          here
         </Link>
       </Text>
     </Animated.View>

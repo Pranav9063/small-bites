@@ -5,6 +5,7 @@ import { ActivityIndicator, TextInput, useTheme } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { useImageUpload } from "@/lib/hooks/useImageUpload";
 import { addMemberToFirestore, registerCanteen } from "@/lib/services/firestoreService";
+import { Link } from "expo-router";
 
 const CanteenSignUpScreen: React.FC = () => {
   const theme = useTheme();
@@ -69,7 +70,7 @@ const CanteenSignUpScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {loading ? <ActivityIndicator size="large" color={theme.colors.primary} /> : 
+      {loading ? <ActivityIndicator size="large" color={theme.colors.primary} /> :
         <View>
           <Text style={styles.title}>Register Canteen</Text>
 
@@ -120,6 +121,10 @@ const CanteenSignUpScreen: React.FC = () => {
           </TouchableOpacity>
 
           {error && <Text style={{ color: theme.colors.error, textAlign: "center" }}>{error}</Text>}
+          <Text style={{ textAlign: "center" , marginTop: 10, fontSize: 14 }}>
+            Already have an account?{" "}
+            <Link href={"/auth/login"} style={styles.link}>Login</Link>
+          </Text>
         </View>}
     </SafeAreaView>
   );
@@ -131,10 +136,12 @@ const createStyles = (theme: any) =>
   StyleSheet.create({
     container: {
       display: "flex",
-      gap: 10,
       flexDirection: "column",
+      justifyContent: "center",
+      height: "100%",
+      gap: 10,
       padding: 20,
-      backgroundColor: theme.colors.background,
+      backgroundColor: "#f78477",
     },
     title: {
       fontSize: 24,
@@ -166,5 +173,10 @@ const createStyles = (theme: any) =>
       color: theme.colors.onPrimary,
       fontWeight: "bold",
       fontSize: 16,
+    },
+    link: {
+      color: "#4a1e1e",
+      textDecorationLine: "underline",
+      fontWeight: "bold",
     },
   });
