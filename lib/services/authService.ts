@@ -12,9 +12,10 @@ export const googleSignIn = async () => {
     }
 
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    await auth().signInWithCredential(googleCredential);
+    const res = await auth().signInWithCredential(googleCredential);
+    console.log("User signed in successfully!", res);
 
-    return userInfo;
+    return res;
   } catch (err) {
     const error = err as any;
     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -32,7 +33,6 @@ export const googleSignIn = async () => {
 export const googleSignOut = async () => {
   try {
     await GoogleSignin.signOut();
-    await auth().signOut();
   } catch (error) {
     console.error("Error signing out:", error);
   }
