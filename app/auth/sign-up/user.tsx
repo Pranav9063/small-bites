@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     },
     subheading: {
         fontSize: 16,
-        color: "#5c2c2c", // Slightly darker tone for contrast
+        color: "#5c2c2c", 
         marginBottom: 25,
         textAlign: "center",
     },
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         color: "#4a1e1e",
     },
     link: {
-        color: "#ffffff", // White for standout contrast
+        color: "#ffffff", 
         fontWeight: "bold",
         textDecorationLine: "underline",
     },
