@@ -1,11 +1,11 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { GoogleSignin, User } from "@react-native-google-signin/google-signin";
-import { googleSignIn, googleSignOut } from "../services/authService";
+import { User } from "@react-native-google-signin/google-signin";
+import { googleSignOut } from "../services/authService";
 import { addMemberToFirestore } from "../services/firestoreService";
-import auth from "@react-native-firebase/auth";
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 type AuthContextType = {
-  user: User['user'] | null;
+  user: FirebaseAuthTypes.User | null;
   signIn: (role : "user" | "admin" | "canteen") => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -13,16 +13,11 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User['user'] | null>(null);
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged((fbuser) => {
-      if(!fbuser) {
-        setUser(null);
-        return;
-      }
-      const user = { id: fbuser?.uid, name: fbuser?.displayName, email: fbuser.email as string, photo: fbuser?.photoURL, familyName: fbuser?.displayName, givenName: fbuser?.displayName };
-      setUser(user);
+      setUser(fbuser);
     });
     return subscriber;
   }, []);
@@ -36,6 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signOut = async () => {
+    await auth().signOut();
     await googleSignOut();
     setUser(null);
   };

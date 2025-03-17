@@ -12,9 +12,10 @@ export const googleSignIn = async () => {
     }
 
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    await auth().signInWithCredential(googleCredential);
+    const res = await auth().signInWithCredential(googleCredential);
+    console.log("User signed in successfully!", res);
 
-    return userInfo;
+    return res;
   } catch (err) {
     const error = err as any;
     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
