@@ -313,7 +313,10 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
           <Ionicons name="bookmark-outline" size={24} color="#666" />
           <Text style={styles.navText}>Saved</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity 
+          style={styles.navItem}
+          onPress={() => router.push('/profile')}
+        >
           <Ionicons name="person-outline" size={24} color="#666" />
           <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
