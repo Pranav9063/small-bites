@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Animated } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -32,6 +32,11 @@ export default function FoodDetailScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Stack.Screen 
+        options={{
+          headerShown: false
+        }} 
+      />
       {/* Animated Header Background */}
       <Animated.View style={[styles.headerBackground, { opacity: headerOpacity }]} />
 
@@ -56,7 +61,7 @@ export default function FoodDetailScreen() {
         {/* Food Image */}
         <View style={styles.imageContainer}>
           <Animated.Image 
-            source={require('@/assets/images/canteenImg.png')} 
+            source={require('@/assets/images/menuItems/Piz.jpg')} 
             style={[styles.foodImage, { transform: [{ scale: imageScale }] }]}
             resizeMode="cover"
           />
