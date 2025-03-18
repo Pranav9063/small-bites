@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCart } from '../../lib/context/CartContext';
 
-// Add types at the top of the file
 type MenuItem = {
   id: string;
   name: string;
@@ -15,14 +14,13 @@ type MenuItem = {
   calories: number;
   rating: number;
   time: string;
-  image: any; // Using 'any' for image require
+  image: any; 
 };
 
 type CartItem = MenuItem & {
   quantity: number;
 };
 
-// Update mockMenuItems with type
 const mockMenuItems: MenuItem[] = [
   {
     id: '1',
