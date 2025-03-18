@@ -4,7 +4,7 @@ import { useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useCart } from '../../app/context/CartContext';
+import { useCart } from '../../lib/context/CartContext';
 
 // Add types at the top of the file
 type MenuItem = {

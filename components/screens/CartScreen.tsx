@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useCart } from '../../app/context/CartContext';
-import type { CartItem } from '../../app/context/CartContext';
+import { useCart } from '../../lib/context/CartContext';
+import type { CartItem } from '../../lib/context/CartContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CartScreen() {

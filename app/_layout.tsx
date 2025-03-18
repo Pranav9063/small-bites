@@ -10,7 +10,7 @@ import { AuthProvider, useAuth } from "@/lib/context/AuthContext";
 import { useTheme } from "react-native-paper";
 import { PaperProvider } from "react-native-paper";
 import mytheme from "@/constants/Theme";
-import { CartProvider } from './context/CartContext';
+import { CartProvider } from '../lib/context/CartContext';
 
 function RootContent() {
   const [initializing, setInitializing] = useState(true);
