@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { fetchRole } from "@/lib/services/firestoreService";
 import { ActivityIndicator, View } from "react-native";
 import CanteenHomeScreen from "@/components/screens/CanteenHomeScreen";
+import Dashboard from "./canteen/dashboard";
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ const HomePage = () => {
       try {
         const userRole = await fetchRole(user.uid);
         setRole(userRole);
+        console.log(userRole)
       } catch (error) {
         console.error("Error fetching role:", error);
       } finally {
@@ -36,7 +38,7 @@ const HomePage = () => {
   }
 
   if (role === "canteen") {
-    return <CanteenHomeScreen />;
+    return <Dashboard />;
   }
 
   return <UserHomeScreen />;
