@@ -3,17 +3,12 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/lib/context/AuthContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const {user} = useAuth()
 
-  const mockUserData = {
-    name: 'Pranav',
-    email: 'pranav123@example.com',
-    phone: '+1 234 567 8900',
-    address: '123 Food Street',
-    profileImage: require('../../assets/images/canteenImg.png'),
-  };
 
   const menuItems = [
     { icon: 'person-outline', label: 'Edit Profile', route: '/edit-profile' },
@@ -50,10 +45,10 @@ export default function ProfileScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Profile Card */}
         <View style={styles.profileCard}>
-          <Image source={mockUserData.profileImage} style={styles.profileImage} />
+          <Image source={user?.photoURL ? {uri: user?.photoURL} : require('../../assets/images/canteenImg.png')} style={styles.profileImage} />
           <View style={styles.profileInfo}>
-            <Text style={styles.name}>{mockUserData.name}</Text>
-            <Text style={styles.email}>{mockUserData.email}</Text>
+            <Text style={styles.name}>{user?.displayName}</Text>
+            <Text style={styles.email}>{user?.email}</Text>
           </View>
           <TouchableOpacity style={styles.editButton}>
             <Ionicons name="pencil" size={20} color="#FFD337" />
