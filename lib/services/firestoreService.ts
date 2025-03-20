@@ -49,8 +49,9 @@ export const addMemberToFirestore = async (role: "user" | "admin" | "canteen") =
 
 export const registerCanteen = async (canteenData: any) => {
   try {
-    await addDoc(collection(db, "canteens"), canteenData);
-    return { success: true };
+    const res = await addDoc(collection(db, "canteens"), canteenData);
+    console.log("Canteen registered with ID:", res.id);
+    return { success: true , id : res.id};
   } catch (error) {
     console.error("Firestore Error:", error);
     return { success: false, error };
@@ -69,5 +70,36 @@ export const fetchRole = async (userId: string) => {
     }
   } catch (error) {
     console.log("Error fetching role:", error);
+  }
+}
+
+export const addCanteenOwnerToFirestore = async (canteenId: string) => {
+  try {
+    const userInfo = await googleSignIn();
+    // console.log(userInfo)
+    if (!userInfo.user) {
+      throw new Error('Google Sign-In failed : User data not found');
+    }
+    const user = userInfo.user
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists) {
+      const newUser = {
+        name: user.displayName,
+        email: user.email,
+        role: "canteen",
+        canteenId: canteenId,
+        createdAt: new Date(),
+      };
+      await setDoc(userRef, newUser);
+      console.log("User added successfully!");
+    } else {
+      console.log("User already exists.");
+    }
+    return {success: true , user};
+  } catch (error) {
+    console.error("Error adding user:", error);
+    return {success: false, error};
   }
 }
