@@ -1,5 +1,5 @@
 import { db } from "@/lib/services/firebaseConfig";
-import { doc, setDoc, getDoc, addDoc, collection } from "@react-native-firebase/firestore";
+import { doc, setDoc, getDoc, addDoc, collection, getDocs } from "@react-native-firebase/firestore";
 import { googleSignIn } from "./authService";
 
 export type NewUser = {
@@ -103,3 +103,40 @@ export const addCanteenOwnerToFirestore = async (canteenId: string) => {
     return {success: false, error};
   }
 }
+
+export const addSampleMenusToCanteen = async (canteenId: string, menu: any[]) => {
+  try {
+    const canteenRef = doc(db, "canteens", canteenId);
+    const canteenSnap = await getDoc(canteenRef);
+
+    if (canteenSnap.exists) {
+      await setDoc(canteenRef, { menu }, { merge: true });
+      console.log("Sample menus added successfully!");
+      return { success: true };
+    } else {
+      console.log("Canteen not found.");
+      return { success: false, error: "Canteen not found" };
+    }
+  } catch (error) {
+    console.error("Error adding sample menus:", error);
+    return { success: false, error };
+  }
+};
+
+export const fetchAllCanteens = async () => {
+  try {
+    const canteensRef = collection(db, "canteens"); // ✅ Corrected: Use collection
+    const canteensSnap = await getDocs(canteensRef);
+
+    if (!canteensSnap.empty) {
+      const canteensData = canteensSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log(canteensData);
+      return canteensData;
+    } else {
+      throw new Error("No canteens found");
+    }
+  } catch (error) {
+    console.error("Error fetching canteens:", error);
+    return [];
+  }
+};
