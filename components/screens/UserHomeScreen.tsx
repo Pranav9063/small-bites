@@ -29,8 +29,8 @@ const UserHomeScreen = () => {
     const router = useRouter();
 
     const [sortedCanteens, setSortedCanteens] = useState([...canteens]);
-    const [menuVisible, setMenuVisible] = useState(false);
-    const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+        const [menuVisible, setMenuVisible] = useState(false);
+        const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
     const [appIsReady, setAppIsReady] = useState(false);
 
     const [fontsLoaded] = useFonts({
