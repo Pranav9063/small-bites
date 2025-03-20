@@ -32,6 +32,7 @@ const UserHomeScreen = () => {
     const [menuVisible, setMenuVisible] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
     const [appIsReady, setAppIsReady] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [fontsLoaded] = useFonts({
         Poppins_400Regular,
@@ -46,16 +47,20 @@ const UserHomeScreen = () => {
     }, [fontsLoaded]);
 
     useEffect(() => {
-        if (!selectedFilter) return;
-
         let updatedCanteens = [...canteens];
 
         if (selectedFilter === "⭐Ratings") {
             updatedCanteens.sort((a, b) => b.rating - a.rating);
         }
 
+        if (searchQuery) {
+            updatedCanteens = updatedCanteens.filter(canteen =>
+                canteen.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
         setSortedCanteens(updatedCanteens);
-    }, [selectedFilter]);
+    }, [selectedFilter, searchQuery]);
 
     const handleCanteenPress = useCallback((canteen: ItemType) => {
         router.push({
@@ -107,6 +112,8 @@ const UserHomeScreen = () => {
                                     placeholder="Search canteens..." 
                                     style={styles.searchInput}
                                     placeholderTextColor="#999"
+                                    value={searchQuery}
+                                    onChangeText={setSearchQuery}
                                 />
                             </View>
                             <TouchableOpacity style={styles.filterButton}>
