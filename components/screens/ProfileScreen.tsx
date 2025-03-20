@@ -13,7 +13,7 @@ export default function ProfileScreen() {
 
   const menuItems = [
     { icon: 'person-outline', label: 'Edit Profile', route: '/edit-profile' },
-    { icon: 'location-outline', label: 'Delivery Address', route: '/addresses' },
+    { icon: 'receipt-outline', label: 'Previous Orders', route: '/orders' },
     { icon: 'card-outline', label: 'Payment Methods', route: '/payments' },
     { icon: 'notifications-outline', label: 'Notifications', route: '/notifications' },
     { icon: 'settings-outline', label: 'Settings', route: '/settings' },
@@ -242,4 +242,4 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
   },
-}); 
+});
