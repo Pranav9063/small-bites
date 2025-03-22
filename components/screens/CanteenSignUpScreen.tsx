@@ -141,7 +141,7 @@ const createStyles = (theme: any) =>
       height: "100%",
       gap: 10,
       padding: 20,
-      backgroundColor: "#f78477",
+      backgroundColor: "#00000000",
     },
     title: {
       fontSize: 24,
@@ -180,3 +180,4 @@ const createStyles = (theme: any) =>
       fontWeight: "bold",
     },
   });
+
