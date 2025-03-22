@@ -33,6 +33,7 @@ const UserHomeScreen = () => {
     const [menuVisible, setMenuVisible] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
     const [appIsReady, setAppIsReady] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [fontsLoaded] = useFonts({
         Poppins_400Regular,
@@ -51,12 +52,25 @@ const UserHomeScreen = () => {
 
     //     let updatedCanteens = [...canteens];
 
+
     //     if (selectedFilter === "⭐Ratings") {
     //         updatedCanteens.sort((a, b) => b.rating - a.rating);
     //     }
 
     //     setSortedCanteens(updatedCanteens);
     // }, [selectedFilter]);
+  
+    useEffect(() => {
+        let updatedCanteens = [...canteens];
+      
+        if (searchQuery) {
+            updatedCanteens = updatedCanteens.filter(canteen =>
+                canteen.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        setSortedCanteens(updatedCanteens);
+    }, [selectedFilter, searchQuery]);
 
     useEffect(() => {   
         const fetchCanteens = async () => {
@@ -81,6 +95,7 @@ const UserHomeScreen = () => {
             params: { id: canteen.id, name: canteen.name},
         });
     }, [router]);
+    }, []);
 
     const renderItem = ({ item }: { item: CanteenData }) => (
         <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item)}>
@@ -126,6 +141,8 @@ const UserHomeScreen = () => {
                                     placeholder="Search canteens..."
                                     style={styles.searchInput}
                                     placeholderTextColor="#999"
+                                    value={searchQuery}
+                                    onChangeText={setSearchQuery}
                                 />
                             </View>
                             <TouchableOpacity style={styles.filterButton}>
@@ -171,8 +188,8 @@ const UserHomeScreen = () => {
                     {/* Bottom Navigation */}
                     <View style={styles.bottomNav}>
                         <TouchableOpacity style={styles.navItem}>
-                            <Ionicons name="home" size={24} color="#FFD337" />
-                            <Text style={[styles.navText, { color: '#FFD337' }]}>Home</Text>
+                            <Ionicons name="home" size={24} color="#007AFF" />
+                            <Text style={[styles.navText, { color: '#007AFF' }]}>Home</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.navItem}>
                             <Ionicons name="heart-outline" size={24} color="#666" />
@@ -181,9 +198,12 @@ const UserHomeScreen = () => {
                         <TouchableOpacity style={[styles.centerButton, styles.centerButtonGradient]}>
                             <Ionicons name="grid" size={24} color="white" />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.navItem}>
-                            <Ionicons name="bookmark-outline" size={24} color="#666" />
-                            <Text style={styles.navText}>Saved</Text>
+                        <TouchableOpacity 
+                            style={styles.navItem}
+                            onPress={() => router.push('/expenses')}
+                        >
+                            <Ionicons name="cash-outline" size={24} color="#666" />
+                            <Text style={styles.navText}>Expenses</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.navItem}
@@ -288,7 +308,7 @@ const createStyles = () =>
             width: 48,
             height: 48,
             borderRadius: 16,
-            backgroundColor: '#FFD337',
+            backgroundColor: '#007AFF',
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -303,7 +323,7 @@ const createStyles = () =>
             marginHorizontal: 8,
         },
         selectedCategory: {
-            backgroundColor: '#FFD337',
+            backgroundColor: '#007AFF',
         },
         categoryText: {
             fontSize: 14,
@@ -395,7 +415,7 @@ const createStyles = () =>
             width: 56,
             height: 56,
             borderRadius: 28,
-            backgroundColor: "#FFD337",
+            backgroundColor: "#007AFF",
             justifyContent: "center",
             alignItems: "center",
             shadowColor: "#000",
@@ -406,7 +426,7 @@ const createStyles = () =>
         },
         overlay: {
             flex: 1,
-            backgroundColor: "rgba(0,0,0,0.5)",
+            backgroundColor: "#007AFF",
             justifyContent: "center",
             alignItems: "center",
         },
@@ -430,7 +450,7 @@ const createStyles = () =>
             textAlign: "center",
         },
         signOutButton: {
-            backgroundColor: '#FF4D4D',
+            backgroundColor: '#007AFF',
             paddingHorizontal: 24,
             paddingVertical: 12,
             borderRadius: 12,
