@@ -32,18 +32,16 @@ function RootContent() {
 
   useEffect(() => {
     if (initializing) return;
-  
+
     const inAuth = segments[0] === 'auth';
     // console.log(user);
     // console.log(inAuth);
-  
+
     if (!user && !inAuth) {
       router.replace('/auth/login');
-    } else if (user && inAuth) {
-      router.replace('/');
     }
   }, [user, initializing]);
-  
+
 
   if (initializing) {
     return (

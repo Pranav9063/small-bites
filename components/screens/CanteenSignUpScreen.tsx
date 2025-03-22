@@ -4,8 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ActivityIndicator, TextInput, useTheme } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { useImageUpload } from "@/lib/hooks/useImageUpload";
-import { addMemberToFirestore, registerCanteen } from "@/lib/services/firestoreService";
-import { Link } from "expo-router";
+import { addCanteenOwnerToFirestore, registerCanteen } from "@/lib/services/firestoreService";
+import { Link, router } from "expo-router";
 
 const CanteenSignUpScreen: React.FC = () => {
   const theme = useTheme();
@@ -47,19 +47,20 @@ const CanteenSignUpScreen: React.FC = () => {
         return;
       }
       setLoading(true)
-      const user = await addMemberToFirestore("canteen");
-      if (!user) {
-        throw new Error('User not found');
-      }
       const imageURL = await uploadImage();
-      const canteenData = { ...formData, image: imageURL || "", owner: user.uid };
+      const canteenData = { ...formData, image: imageURL || ""};
       const result = await registerCanteen(canteenData);
-      if (result.success) {
+      if(!result.id) {
+        throw new Error("Failed to add to firestore");
+      }
+      const res = await addCanteenOwnerToFirestore(result.id);
+      if (res.success) {
         Alert.alert("Success", "Canteen registered successfully!");
         setFormData({ name: "", location: "", timings: { open: "", close: "" } });
       } else {
         throw new Error("Firestore error");
       }
+      router.replace("/canteen/dashboard");
     } catch (error: any) {
       Alert.alert("Error", "Failed to register canteen.");
       setError(error.message || "Failed to register canteen.");
@@ -70,7 +71,7 @@ const CanteenSignUpScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {loading ? <ActivityIndicator size="large" color={theme.colors.primary} /> :
+      {loading ? <View><ActivityIndicator size="large" color={theme.colors.primary} /><Text style={{color: theme.colors.primary , textAlign: "center" }}>Please wait a moment</Text></View> :
         <View>
           <Text style={styles.title}>Register Canteen</Text>
 
