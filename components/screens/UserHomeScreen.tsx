@@ -60,17 +60,17 @@ const UserHomeScreen = () => {
     //     setSortedCanteens(updatedCanteens);
     // }, [selectedFilter]);
   
-    useEffect(() => {
-        let updatedCanteens = [...canteens];
+    // useEffect(() => {
+    //     let updatedCanteens = [...canteens];
       
-        if (searchQuery) {
-            updatedCanteens = updatedCanteens.filter(canteen =>
-                canteen.name.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-        }
+    //     if (searchQuery) {
+    //         updatedCanteens = updatedCanteens.filter(canteen =>
+    //             canteen.name.toLowerCase().includes(searchQuery.toLowerCase())
+    //         );
+    //     }
 
-        setSortedCanteens(updatedCanteens);
-    }, [selectedFilter, searchQuery]);
+    //     setSortedCanteens(updatedCanteens);
+    // }, [selectedFilter, searchQuery]);
 
     useEffect(() => {   
         const fetchCanteens = async () => {
@@ -98,7 +98,7 @@ const UserHomeScreen = () => {
 
     const renderItem = ({ item }: { item: CanteenData }) => (
         <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item)}>
-            <Image source={{ uri: item.image }} style={styles.foodImage} />
+            <Image source={item.image ? { uri: item.image } : require('../../assets/images/canteenImg.png')} style={styles.foodImage} />
             <View style={styles.imageOverlay} />
             <View style={styles.cardContent}>
                 <Text style={styles.foodName}>{item.name}</Text>
