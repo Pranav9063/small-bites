@@ -140,3 +140,21 @@ export const fetchAllCanteens = async () => {
     return [];
   }
 };
+
+export const fetchCanteenById = async (canteenId: string) => {
+  try {
+    const canteenRef = doc(db, "canteens", canteenId);
+    const canteenSnap = await getDoc(canteenRef);
+
+    if (canteenSnap.exists) {
+      const canteenData = { id: canteenSnap.id, ...canteenSnap.data() };
+      console.log(canteenData);
+      return canteenData;
+    } else {
+      throw new Error("Canteen not found");
+    }
+  } catch (error) {
+    console.error("Error fetching canteen:", error);
+    return null;
+  }
+}

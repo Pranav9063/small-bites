@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect, useCallback } from "react";
 import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { fetchAllCanteens } from '@/lib/services/firestoreService';
 
 SplashScreen.preventAutoHideAsync();
@@ -58,11 +58,11 @@ const UserHomeScreen = () => {
     //     setSortedCanteens(updatedCanteens);
     // }, [selectedFilter]);
 
-    useEffect(() => {
+    useEffect(() => {   
         const fetchCanteens = async () => {
             try {
                 const fetchedCanteens = await fetchAllCanteens() as CanteenData[];
-                if (!fetchedCanteens) {
+                if(!fetchedCanteens) {
                     console.error("No canteens found");
                     return;
                 }
@@ -73,22 +73,29 @@ const UserHomeScreen = () => {
         };
 
         fetchCanteens();
-    }, []);
+    },[]);
 
+    const handleCanteenPress = useCallback((canteen: CanteenData) => {
+        router.push({
+            pathname: "/user/canteen/[id]",
+            params: { id: canteen.id, name: canteen.name},
+        });
+    }, [router]);
 
     const renderItem = ({ item }: { item: CanteenData }) => (
-        <Link href={`/user/canteen/${item.id}`} style={styles.card} key={item.id}>
-            <Image source={{ uri: item.image }} style={styles.foodImage} /> 
+        <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item)}>
+            <Image source={{ uri: item.image }} style={styles.foodImage} />
+            <View style={styles.imageOverlay} />
             <View style={styles.cardContent}>
                 <Text style={styles.foodName}>{item.name}</Text>
                 <View style={styles.ratingContainer}>
                     <Ionicons name="star" size={16} color="#FFD700" />
-                    {/* <Text style={styles.rating}>N/A</Text> Handle missing ratings */}
+                    <Text style={styles.rating}>N/A</Text>
                 </View>
             </View>
-        </Link>
+        </TouchableOpacity>
     );
-
+    
 
     if (!appIsReady) {
         return <ActivityIndicator size="large" color="#0000ff" />;
@@ -107,7 +114,7 @@ const UserHomeScreen = () => {
                                 style={styles.profileButton}
                                 onPress={() => setMenuVisible(true)}
                             >
-                                <Image source={user?.photoURL ? { uri: user?.photoURL } : require('../../assets/images/canteenImg.png')} style={styles.profilePic} />
+                                <Image source={user?.photoURL ? {uri: user?.photoURL} : require('../../assets/images/canteenImg.png')} style={styles.profilePic} />
                             </TouchableOpacity>
                         </View>
 
@@ -340,7 +347,7 @@ const createStyles = () =>
             backgroundColor: 'rgba(0,0,0,0.2)',
         },
         cardContent: {
-            paddingHorizontal: 12,
+            padding: 12,
         },
         foodName: {
             fontSize: 16,
