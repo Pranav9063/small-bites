@@ -95,7 +95,6 @@ const UserHomeScreen = () => {
             params: { id: canteen.id, name: canteen.name},
         });
     }, [router]);
-    }, []);
 
     const renderItem = ({ item }: { item: CanteenData }) => (
         <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item)}>
