@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MaterialIcons } from '@expo/vector-icons'; 
 import { 
   StyleSheet, 
   Text, 
@@ -50,8 +51,10 @@ export default function Dashboard() {
         <View style={styles.header}>
           <Text style={styles.logo}>Dashboard</Text>
           <TouchableOpacity onPress={() => router.push("/canteen/Profile")} style={styles.profileButton}>
-            <Image source={require("@/assets/images/food-app.png")} style={styles.profilePic} />
-            
+          <View style={styles.profileIcon}>
+        <MaterialIcons name="account-circle" size={40} color="white   " />
+      </View>
+
           </TouchableOpacity>
         </View>
 
@@ -64,7 +67,7 @@ export default function Dashboard() {
               onPress={() => handleOptionPress(option.title)}
             >
               <View style={styles.iconContainer}>
-                <Ionicons name={option.icon} size={32} color="#333" />
+                <Ionicons name={option.icon} size={32} color="#fff" />
               </View>
               <Text style={styles.optionText}>{option.title}</Text>
             </TouchableOpacity>
@@ -72,7 +75,8 @@ export default function Dashboard() {
         </View>
 
         {/* Bottom Navigation */}
-        {/* <View style={styles.bottomNav}>
+        {
+        /* <View style={styles.bottomNav}>
           <TouchableOpacity style={styles.navItem}>
             <Ionicons name="home" size={24} color="#FFD337" />
             <Text style={[styles.navText, { color: '#FFD337' }]}>Home</Text>
@@ -92,7 +96,8 @@ export default function Dashboard() {
             <Ionicons name="person-outline" size={24} color="#666" />
             <Text style={styles.navText}>Profile</Text>
           </TouchableOpacity>
-        </View> */}
+        </View> */
+        }
       </View>
     </SafeAreaView>
   );
@@ -112,6 +117,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
     backgroundColor: '#fff',
+  },
+  profileIcon: {
+    backgroundColor: 'white',
+    borderRadius: 50,  // Makes it circular
+    padding: 5,        // Adjust spacing inside the circle
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,       // For Android shadow
   },
   logo: {
     fontSize: 24,
@@ -161,7 +178,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#FFD337',
+    backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
