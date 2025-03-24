@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/lib/context/AuthContext';
-import { fetchCanteenByCanteenOwnerId } from '@/lib/services/firestoreService';
+import { deleteMenuItemFromCanteen, fetchCanteenByCanteenOwnerId } from '@/lib/services/firestoreService';
 
 export default function Menu() {
   const router = useRouter();
@@ -59,21 +59,19 @@ export default function Menu() {
   };
 
   // Delete item
-  const deleteItem = (id: string) => {
-    Alert.alert(
-      "Delete Item",
-      "Are you sure you want to delete this item?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Delete", 
-          style: "destructive",
-          onPress: () => {
-            setMenuItems(prevItems => prevItems.filter(item => item.item_id !== id));
-          }
-        }
-      ]
-    );
+  const deleteItem = async (id: string) => {
+    try {
+      const result = await deleteMenuItemFromCanteen(id, user?.uid || '');
+      if (result.success) {
+        setMenuItems(prevItems => prevItems.filter(item => item.item_id !== id));
+        Alert.alert("Success", "Item deleted successfully.");
+      }
+      else {
+        throw new Error("Failed to delete item.");
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
   };
 
   // Edit item

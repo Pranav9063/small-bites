@@ -246,3 +246,28 @@ export const addMenuItemToCanteen = async (userId: string, menuItem: any) => {
     return { success: false, error };
   }
 }
+
+export const deleteMenuItemFromCanteen = async (userId: string, itemId: string) => {
+  try {
+    const canteenId = await getCanteenIdFromUserId(userId);
+    if(!canteenId) {
+      throw new Error("Canteen ID not found for user.");
+    }
+    const canteenRef = doc(db, "canteens", canteenId);
+    const canteenSnap = await getDoc(canteenRef);
+
+    if (canteenSnap.exists) {
+      const canteenData = canteenSnap.data();
+      const menu = canteenData ? canteenData.menu || [] : [];
+      const updatedMenu = menu.filter((item: any) => item.item_id !== itemId);
+      await setDoc(canteenRef, { menu: updatedMenu }, { merge: true });
+      console.log("Menu item deleted successfully!");
+      return { success: true };
+    } else {
+      throw new Error("Canteen not found.");
+    }
+  } catch (error) {
+    console.error("Error deleting menu item:", error);
+    return { success: false, error };
+  }
+}
