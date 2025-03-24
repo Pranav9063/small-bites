@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -14,49 +14,46 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-
-interface MenuItem {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-  image: any;
-  available: boolean;
-  calories?: number;
-}
+import { useAuth } from '@/lib/context/AuthContext';
+import { fetchCanteenByCanteenOwnerId } from '@/lib/services/firestoreService';
 
 export default function Menu() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const {user} = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([
-    {
-      id: '1',
-      name: 'Burger',
-      price: 80,
-      category: 'Snacks',
-      image: require('@/assets/images/food-app.png'),
-      available: true,
-      calories: 250,
-    },
-    {
-      id: '2',
-      name: 'Pizza',
-      price: 120,
-      category: 'Snacks',
-      image: require('@/assets/images/food-app.png'),
-      available: true,
-      calories: 300,
-    },
-  ]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
+  useEffect(()=>{
+    const fetchMenuItems = async () => {
+      try {
+        const canteenData = await fetchCanteenByCanteenOwnerId(user?.uid || '') as CanteenData;
+        if (canteenData) {
+          const menu = canteenData.menu || []; // Adjust based on your data structure
+          console.log("Fetched menu items:", menu);    
+          setMenuItems(menu);
+        } else {
+          console.log("No canteen data found for this user.");
+        }
+      } catch (error) {
+        console.error("Error fetching menu items:", error);
+      }
+    }
+    fetchMenuItems();
+  },[])
   const categories = ['All', 'Breakfast', 'Lunch', 'Snacks', 'Beverages'];
 
+  if(!menuItems) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ fontSize: 20, color: "#333" }}>Loading...</Text>
+      </View>
+    );
+  }
   // Toggle item availability
   const toggleAvailability = (id: string) => {
-    setMenuItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id ? { ...item, available: !item.available } : item
+    setMenuItems(prevItems => prevItems.map(item =>
+        item.item_id === id ? { ...item, availability : !item.availability } : item
       )
     );
   };
@@ -72,7 +69,7 @@ export default function Menu() {
           text: "Delete", 
           style: "destructive",
           onPress: () => {
-            setMenuItems(prevItems => prevItems.filter(item => item.id !== id));
+            setMenuItems(prevItems => prevItems.filter(item => item.item_id !== id));
           }
         }
       ]
@@ -84,7 +81,7 @@ export default function Menu() {
     router.push({
       pathname: "/canteen/editItem",
       params: { 
-        id: item.id,
+        id: item.item_id,
         name: item.name,
         price: item.price.toString(),
         category: item.category,
@@ -164,8 +161,8 @@ export default function Menu() {
           showsVerticalScrollIndicator={false}
         >
           {filteredItems.map((item) => (
-            <View key={item.id} style={styles.menuItem}>
-              <Image source={item.image} style={styles.itemImage} />
+            <View key={item.item_id} style={styles.menuItem}>
+              {item.image && <Image source={{uri : item.image}} style={styles.itemImage} />}
               <View style={styles.itemDetails}>
                 <Text style={styles.itemName}>{item.name}</Text>
                 <Text style={styles.itemPrice}>₹{item.price}</Text>
@@ -177,15 +174,15 @@ export default function Menu() {
                 <TouchableOpacity 
                   style={[
                     styles.availabilityButton,
-                    !item.available && styles.unavailableButton,
+                    !item.availability && styles.unavailableButton,
                   ]}
-                  onPress={() => toggleAvailability(item.id)}
+                  onPress={() => toggleAvailability(item.item_id)}
                 >
                   <Text style={[
                     styles.availabilityText,
-                    !item.available && styles.unavailabilityText,
+                    !item.availability && styles.unavailabilityText,
                   ]}>
-                    {item.available ? 'Available' : 'Unavailable'}
+                    {item.availability ? 'Available' : 'Unavailable'}
                   </Text>
                 </TouchableOpacity>
                 <View style={styles.actionButtons}>
@@ -197,7 +194,7 @@ export default function Menu() {
                   </TouchableOpacity>
                   <TouchableOpacity 
                     style={styles.deleteButton}
-                    onPress={() => deleteItem(item.id)}
+                    onPress={() => deleteItem(item.item_id)}
                   >
                     <Ionicons name="trash-outline" size={20} color="#FF4D4D" />
                   </TouchableOpacity>

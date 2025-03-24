@@ -9,10 +9,14 @@ import {
   Platform,
   StatusBar,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useImageUpload } from '@/lib/hooks/useImageUpload';
+import { addMenuItemToCanteen } from '@/lib/services/firestoreService';
+import { useAuth } from '@/lib/context/AuthContext';
 
 export default function AddItem() {
   const router = useRouter();
@@ -20,31 +24,73 @@ export default function AddItem() {
   const [price, setPrice] = useState('');
   const [calories, setCalories] = useState('');
   const [category, setCategory] = useState('Snacks');
+  const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const { image, pickImage, uploadImage, uploading } = useImageUpload();
 
-  const categories = ['Breakfast', 'Lunch', 'Snacks', 'Beverages'];
+  const categories = ['All', 'Breakfast', 'Lunch', 'Snacks', 'Beverages'];
 
-  const handleSave = () => {
-    if (!name || !price) {
-      Alert.alert('Error', 'Please fill in all required fields');
-      return;
+  const handleSave =async () => {
+    try {
+      if (!name || !price || !calories || !category || !description || !image) {
+        Alert.alert('Error', 'Please fill in all required fields');
+        return;
+      }
+      setLoading(true)
+      const imageURL = await uploadImage();
+      if(!imageURL) {
+        Alert.alert('Error', 'Failed to upload image. Please try again.');
+        setLoading(false)
+        return;
+      }
+  
+      const menuItem : MenuItem= {
+        item_id: Math.random().toString(36).substring(2, 9),
+        name,
+        price: parseFloat(price),
+        calories: parseInt(calories),
+        category,
+        description,
+        image : imageURL,
+        availability: true,
+      };
+
+      if(!user) {
+        Alert.alert('Error', 'User not found. Please log in again.');
+        setLoading(false)
+        return;
+      }
+
+      const res = await addMenuItemToCanteen(user.uid , menuItem);
+
+      if(res.success) {
+        Alert.alert('Success', 'Item added successfully!');
+        router.back();
+      } else {
+        Alert.alert('Error', 'Failed to add item. Please try again.');
+        throw new Error("Failed to add item to canteen.");
+      }
+
+      setLoading(false)
+
+    } catch (error) {
+      console.error("Error saving item:", error);
+      Alert.alert('Error', 'Failed to save item. Please try again.');
     }
 
-    // Here you would typically save to your backend
-    // For now, we'll just go back
-    Alert.alert(
-      'Success',
-      'Item added successfully',
-      [
-        {
-          text: 'OK',
-          onPress: () => router.back()
-        }
-      ]
-    );
   };
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ fontSize: 20, color: "#333" }}>Saving...</Text>
+      </View>
+    );
+  }
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.content}>
         {/* Header */}
@@ -71,6 +117,18 @@ export default function AddItem() {
             />
           </View>
 
+          {/* Description Input */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Description *</Text>
+            <TextInput
+              style={styles.input}
+              value={description}
+              onChangeText={setDescription}
+              placeholder="Enter description"
+              placeholderTextColor="#999"
+            />
+          </View>
+
           {/* Price Input */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Price (₹) *</Text>
@@ -86,7 +144,7 @@ export default function AddItem() {
 
           {/* Calories Input */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Calories</Text>
+            <Text style={styles.label}>Calories *</Text>
             <TextInput
               style={styles.input}
               value={calories}
@@ -120,6 +178,20 @@ export default function AddItem() {
               ))}
             </View>
           </View>
+
+          {/* Image Upload */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Upload Image *</Text>
+            <TouchableOpacity onPress={pickImage} style={StyleSheet.compose(styles.input, { marginBottom: 8 })}>
+              <Text style={styles.saveButtonText}>{image ? "Select a different image" : "Select Canteen Image"}</Text>
+            </TouchableOpacity>
+
+            {/* Display Selected Image */}
+            <View style={{ display: "flex", alignItems: "center" , marginBottom: 16}}>
+              {image && <Image source={{ uri: image }} style={{ width: 100, height: 100, borderRadius: 50 }} />}
+            </View>
+
+          </View>
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -132,8 +204,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   content: {
-    flex: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    flex: 1
   },
   header: {
     flexDirection: 'row',
@@ -160,6 +231,7 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontSize: 16,
     fontWeight: '600',
+    textAlign: 'center',
   },
   form: {
     flex: 1,
