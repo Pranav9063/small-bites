@@ -18,6 +18,21 @@ export type FirestoreUser = {
   createdAt: Date;
 };
 
+export type FirestoreCanteen = {
+  name: string;
+  location: string;
+  menu: any[]; // Adjust this type based on your menu structure
+  createdAt: Date;
+};
+
+export type FirestoreCanteenOwner = {
+  name: string | null;
+  email: string | null;
+  role: "canteen";
+  canteenId: string;
+  createdAt: Date;
+};
+
 export const addMemberToFirestore = async (role: "user" | "admin" | "canteen") => {
   try {
     const userInfo = await googleSignIn();
@@ -152,6 +167,35 @@ export const fetchCanteenById = async (canteenId: string) => {
       return canteenData;
     } else {
       throw new Error("Canteen not found");
+    }
+  } catch (error) {
+    console.error("Error fetching canteen:", error);
+    return null;
+  }
+}
+
+export const fetchCanteenByCanteenOwnerId = async (userId: string) => {
+  try {
+    const userRef = doc(db,"users", userId);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists) {
+      const userData = userSnap.data() as FirestoreCanteenOwner;
+      const canteenId = userData.canteenId;
+      if (canteenId) {
+        const canteenRef = doc(db, "canteens", canteenId);
+        const canteenSnap = await getDoc(canteenRef);
+        if (canteenSnap.exists) {
+          const canteenData = { id: canteenSnap.id, ...canteenSnap.data() };
+          console.log(canteenData);
+          return canteenData;
+        } else {
+          throw new Error("Canteen not found");
+        }
+      } else {
+        throw new Error("User does not have a canteen ID");
+      }
+    } else {
+      throw new Error("User not found");
     }
   } catch (error) {
     console.error("Error fetching canteen:", error);

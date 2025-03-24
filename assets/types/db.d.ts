@@ -12,6 +12,8 @@ type MenuItem = {
     name: string;
     price: number;
     description: string;
+    category: string;
+    calories?: number;
     image?: string;
     availability: boolean;
 }
