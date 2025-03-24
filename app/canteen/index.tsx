@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Link } from '@react-navigation/native';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -31,11 +32,11 @@ export default function Dashboard() {
       case 'Orders':
         router.push('/canteen/orders');
         break;
-      case 'Reviews':
+      case 'Analytics':
         router.push('/canteen/history');
         break;
-      case 'Profile':
-        router.push('/canteen');
+      case 'Reviews':
+        router.push('/canteen/reviews');
         break;
     }
     setActiveSection(title);
@@ -48,8 +49,9 @@ export default function Dashboard() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.logo}>Dashboard</Text>
-          <TouchableOpacity style={styles.profileButton}>
+          <TouchableOpacity onPress={() => router.push("/canteen/Profile")} style={styles.profileButton}>
             <Image source={require("@/assets/images/food-app.png")} style={styles.profilePic} />
+            
           </TouchableOpacity>
         </View>
 

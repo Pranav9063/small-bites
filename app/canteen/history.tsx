@@ -1,4 +1,5 @@
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from "react";
 
 const salesData = [
@@ -14,37 +15,39 @@ const HistoryScreen = () => {
   const totalRevenue = sales.reduce((total, item) => total + parseInt(item.price) * item.sold, 0);
 
   return (
-    <View style={styles.container}>
-      {/* Header Tabs */}
-      <View style={styles.header}>
-        <Text style={[styles.tab, styles.inactiveTab]}>Ongoing</Text>
-        <Text style={[styles.tab, styles.activeTab]}>History</Text>
-        <Text style={[styles.tab, styles.inactiveTab]}>Draft</Text>
-      </View>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.container}>
+        {/* Header Tabs */}
+        <View style={styles.header}>
+          <Text style={[styles.tab, styles.inactiveTab]}>Ongoing</Text>
+          <Text style={[styles.tab, styles.activeTab]}>History</Text>
+          <Text style={[styles.tab, styles.inactiveTab]}>Draft</Text>
+        </View>
 
-      {/* Order List */}
-      <FlatList
-        data={sales}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <Image source={item.image} style={styles.itemImage} />
-            <View style={styles.itemDetails}>
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemPrice}>{item.price}</Text>
+        {/* Order List */}
+        <FlatList
+          data={sales}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.itemContainer}>
+              <Image source={item.image} style={styles.itemImage} />
+              <View style={styles.itemDetails}>
+                <Text style={styles.itemName}>{item.name}</Text>
+                <Text style={styles.itemPrice}>{item.price}</Text>
+              </View>
+              <Text style={styles.itemUnits}>{item.sold} Units</Text>
             </View>
-            <Text style={styles.itemUnits}>{item.sold} Units</Text>
-          </View>
-        )}
-      />
+          )}
+        />
 
-      {/* Total Section */}
-      <View style={styles.totalContainer}>
-        <Text style={styles.totalText}>Total Sold:</Text>
-        <Text style={styles.totalCount}>{totalSold} Units</Text>
-        <Text style={styles.totalRevenue}>Total Revenue: ₹{totalRevenue}</Text>
+        {/* Total Section */}
+        <View style={styles.totalContainer}>
+          <Text style={styles.totalText}>Total Sold:</Text>
+          <Text style={styles.totalCount}>{totalSold} Units</Text>
+          <Text style={styles.totalRevenue}>Total Revenue: ₹{totalRevenue}</Text>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
