@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const orders = [
   { id: '1', name: '#143021', status: 'pending' },
@@ -11,9 +12,9 @@ const orders = [
 const OrdersScreen = () => {
   const router = useRouter();
 
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Orders</Text>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={orders}
         keyExtractor={(item) => item.id}
@@ -26,7 +27,7 @@ const OrdersScreen = () => {
           </TouchableOpacity>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -36,11 +37,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
   orderCard: {
     padding: 15,

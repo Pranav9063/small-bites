@@ -35,7 +35,7 @@ export default function Dashboard() {
         router.push('/canteen/history');
         break;
       case 'Profile':
-        router.push('/canteen/index');
+        router.push('/canteen');
         break;
     }
     setActiveSection(title);
@@ -44,7 +44,7 @@ export default function Dashboard() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle="dark-content" />
-      <View style={styles.content}>
+      <View>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.logo}>Dashboard</Text>
@@ -70,7 +70,7 @@ export default function Dashboard() {
         </View>
 
         {/* Bottom Navigation */}
-        <View style={styles.bottomNav}>
+        {/* <View style={styles.bottomNav}>
           <TouchableOpacity style={styles.navItem}>
             <Ionicons name="home" size={24} color="#FFD337" />
             <Text style={[styles.navText, { color: '#FFD337' }]}>Home</Text>
@@ -90,7 +90,7 @@ export default function Dashboard() {
             <Ionicons name="person-outline" size={24} color="#666" />
             <Text style={styles.navText}>Profile</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     </SafeAreaView>
   );
@@ -100,10 +100,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  content: {
-    flex: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: "row",
