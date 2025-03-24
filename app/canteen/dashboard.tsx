@@ -17,10 +17,10 @@ export default function Dashboard() {
   const [activeSection, setActiveSection] = useState('Menu');
 
   const menuOptions = [
-    { id: 1, title: 'Menu', icon: 'book-outline' },
-    { id: 2, title: 'Orders', icon: 'cart-outline' },
-    { id: 3, title: 'Reviews', icon: 'star-outline' },
-    { id: 4, title: 'Profile', icon: 'person-outline' },
+    { id: 1, title: 'Menu', icon: 'book-outline' as const },
+    { id: 2, title: 'Orders', icon: 'cart-outline' as const },
+    { id: 3, title: 'Analytics', icon: 'stats-chart-outline' as const },
+    { id: 4, title: 'Reviews', icon: 'star-outline' as const },
   ];
 
   const handleOptionPress = (title: string) => {

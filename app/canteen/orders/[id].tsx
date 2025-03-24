@@ -14,9 +14,9 @@ const OrderDetail: React.FC = () => {
   
   // Mock order data - in a real app, you'd fetch this based on the id
   const orderItems: OrderItem[] = [
-    { id: 1, name: "Burger", quantity: 2, price: 10.99 },
-    { id: 2, name: "Fries", quantity: 1, price: 4.99 },
-    { id: 3, name: "Soda", quantity: 2, price: 2.99 },
+    { id: 1, name: "Burger", quantity: 2, price: 80 },
+    { id: 2, name: "Fries", quantity: 1, price: 100 },
+    { id: 3, name: "Soda", quantity: 2, price: 40 },
   ];
 
   const calculateTotal = () => {
@@ -38,7 +38,7 @@ const OrderDetail: React.FC = () => {
               <Text style={styles.itemName}>{item.name}</Text>
               <Text style={styles.itemQuantity}>x{item.quantity}</Text>
             </View>
-            <Text style={styles.itemPrice}>${(item.quantity * item.price).toFixed(2)}</Text>
+            <Text style={styles.itemPrice}>{(item.quantity * item.price).toFixed(2)}Rs</Text>
           </View>
         ))}
       </View>
@@ -49,9 +49,9 @@ const OrderDetail: React.FC = () => {
       </View>
 
       <View style={styles.deliveryInfo}>
-        <Text style={styles.sectionTitle}>Delivery Information</Text>
+       
         <Text style={styles.deliveryText}>Estimated Time: 30-45 minutes</Text>
-        <Text style={styles.deliveryText}>Delivery Location: Campus Center</Text>
+      
       </View>
     </ScrollView>
   );

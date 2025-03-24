@@ -2,10 +2,9 @@ import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from "react
 import { useState } from "react";
 
 const salesData = [
-  { id: "1", name: "Chicken Burger", price: "30Rs", sold: 35, image: require("@/assets/images/canteenImg.png") },
-  { id: "2", name: "Royal Foods", price: "50Rs", sold: 25, image: require("@/assets/images/canteenImg.png") },
-  { id: "3", name: "Asia Foods Restaurant", price: "40Rs", sold: 40, image: require("@/assets/images/canteenImg.png") },
-  { id: "4", name: "Hirosima Restaurant", price: "60Rs", sold: 20, image: require("@/assets/images/canteenImg.png") },
+  { id: "1", name: "Burger", price: "80Rs", sold: 35, image: require("@/assets/images/canteenImg.png") },
+  { id: "2", name: "Fries", price: "100Rs", sold: 25, image: require("@/assets/images/canteenImg.png") },
+  { id: "3", name: "Soda", price: "40Rs", sold: 40, image: require("@/assets/images/canteenImg.png") },
 ];
 
 const HistoryScreen = () => {
@@ -113,7 +112,7 @@ const styles = StyleSheet.create({
   totalContainer: {
     marginTop: 10,
     padding: 15,
-    backgroundColor: "#ff6600",
+    backgroundColor: "#1C39BB",
     borderRadius: 8,
     alignItems: "center",
     marginHorizontal: 15,

@@ -3,9 +3,9 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import { useRouter } from 'expo-router';
 
 const orders = [
-  { id: '1', name: 'Chicken Burger', status: 'pending' },
-  { id: '2', name: 'Pizza Margherita', status: 'preparing' },
-  { id: '3', name: 'Pasta Alfredo', status: 'ready' },
+  { id: '1', name: '#143021', status: 'pending' },
+  { id: '2', name: '#142501', status: 'preparing' },
+  { id: '3', name: '#142009', status: 'ready' },
 ];
 
 const OrdersScreen = () => {

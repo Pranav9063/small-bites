@@ -97,7 +97,7 @@ const UpdateMenu: React.FC = () => {
       <View style={styles.tabBar}>
         <TouchableOpacity 
           style={styles.tabItem}
-          onPress={() => router.push('/dashboard')}
+          onPress={() => router.push('/canteen/dashboard')}
         >
           <Text style={styles.tabText}>Menu</Text>
         </TouchableOpacity>
