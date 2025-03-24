@@ -55,7 +55,8 @@ function RootContent() {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="auth" options={{ headerShown: false }} />
-      
+      <Stack.Screen name="user/canteen/[id]" options={{ headerShown: false }} />
+      <Stack.Screen name="canteen/(tabs)" options={{ headerShown: false }} />
     </Stack>
   );
 }
