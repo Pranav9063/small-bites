@@ -10,7 +10,7 @@ import { AuthProvider, useAuth } from "@/lib/context/AuthContext";
 import { useTheme } from "react-native-paper";
 import { PaperProvider } from "react-native-paper";
 import mytheme from "@/constants/Theme";
-import { CartProvider } from './context/CartContext';
+import { CartProvider } from '../lib/context/CartContext';
 
 function RootContent() {
   const [initializing, setInitializing] = useState(true);
@@ -32,18 +32,16 @@ function RootContent() {
 
   useEffect(() => {
     if (initializing) return;
-  
+
     const inAuth = segments[0] === 'auth';
     // console.log(user);
     // console.log(inAuth);
-  
+
     if (!user && !inAuth) {
       router.replace('/auth/login');
-    } else if (user && inAuth) {
-      router.replace('/');
     }
   }, [user, initializing]);
-  
+
 
   if (initializing) {
     return (
@@ -57,6 +55,8 @@ function RootContent() {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="auth" options={{ headerShown: false }} />
+      <Stack.Screen name="user/canteen/[id]" options={{ headerShown: false }} />
+      <Stack.Screen name="canteen/(tabs)" options={{ headerShown: false }} />
     </Stack>
   );
 }

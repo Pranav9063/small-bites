@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { fetchRole } from "@/lib/services/firestoreService";
 import { ActivityIndicator, View } from "react-native";
 import CanteenHomeScreen from "@/components/screens/CanteenHomeScreen";
-import Dashboard from "./canteen/dashboard";
+import Dashboard from "./canteen/(tabs)";
 
 const HomePage = () => {
   const { user } = useAuth();

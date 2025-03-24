@@ -6,6 +6,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
 import { useRouter } from 'expo-router';
+import { fetchAllCanteens } from '@/lib/services/firestoreService';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,7 +21,7 @@ const canteens = [
     { id: "1", name: "MiniCampus", rating: 4.9, image: require("@/assets/images/icon.jpg") },
     { id: "2", name: "Nescafe", rating: 4.8, image: require("@/assets/images/icon.jpg") },
     { id: "3", name: "HK-Cafe", rating: 4.6, image: require("@/assets/images/icon.jpg") },
-    { id: "4", name: "Bittu", rating: 4.5, image: require("@/assets/images/icon.jpg") },
+    { id: "4", name: "Bittu", rating: 4.7, image: require("@/assets/images/icon.jpg") },
 ];
 
 const UserHomeScreen = () => {
@@ -29,9 +30,10 @@ const UserHomeScreen = () => {
     const router = useRouter();
 
     const [sortedCanteens, setSortedCanteens] = useState([...canteens]);
-        const [menuVisible, setMenuVisible] = useState(false);
-        const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+    const [menuVisible, setMenuVisible] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
     const [appIsReady, setAppIsReady] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [fontsLoaded] = useFonts({
         Poppins_400Regular,
@@ -45,38 +47,69 @@ const UserHomeScreen = () => {
         }
     }, [fontsLoaded]);
 
-    useEffect(() => {
-        if (!selectedFilter) return;
+    // useEffect(() => {
+    //     if (!selectedFilter) return;
 
-        let updatedCanteens = [...canteens];
+    //     let updatedCanteens = [...canteens];
 
-        if (selectedFilter === "⭐Ratings") {
-            updatedCanteens.sort((a, b) => b.rating - a.rating);
-        }
 
-        setSortedCanteens(updatedCanteens);
-    }, [selectedFilter]);
+    //     if (selectedFilter === "⭐Ratings") {
+    //         updatedCanteens.sort((a, b) => b.rating - a.rating);
+    //     }
 
-    const handleCanteenPress = useCallback((canteen: ItemType) => {
+    //     setSortedCanteens(updatedCanteens);
+    // }, [selectedFilter]);
+  
+    // useEffect(() => {
+    //     let updatedCanteens = [...canteens];
+      
+    //     if (searchQuery) {
+    //         updatedCanteens = updatedCanteens.filter(canteen =>
+    //             canteen.name.toLowerCase().includes(searchQuery.toLowerCase())
+    //         );
+    //     }
+
+    //     setSortedCanteens(updatedCanteens);
+    // }, [selectedFilter, searchQuery]);
+
+    useEffect(() => {   
+        const fetchCanteens = async () => {
+            try {
+                const fetchedCanteens = await fetchAllCanteens() as CanteenData[];
+                if(!fetchedCanteens) {
+                    console.error("No canteens found");
+                    return;
+                }
+                setSortedCanteens(fetchedCanteens);
+            } catch (error) {
+                console.error("Error fetching canteens:", error);
+            }
+        };
+
+        fetchCanteens();
+    },[]);
+
+    const handleCanteenPress = useCallback((canteen: CanteenData) => {
         router.push({
-            pathname: "/canteen/[id]",
-            params: { id: canteen.id, name: canteen.name }
+            pathname: "/user/canteen/[id]",
+            params: { id: canteen.id, name: canteen.name},
         });
     }, [router]);
 
-    const renderItem = ({ item }: { item: ItemType }) => (
+    const renderItem = ({ item }: { item: CanteenData }) => (
         <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item)}>
-            <Image source={item.image} style={styles.foodImage} />
+            <Image source={item.image ? { uri: item.image } : require('../../assets/images/canteenImg.png')} style={styles.foodImage} />
             <View style={styles.imageOverlay} />
             <View style={styles.cardContent}>
                 <Text style={styles.foodName}>{item.name}</Text>
                 <View style={styles.ratingContainer}>
                     <Ionicons name="star" size={16} color="#FFD700" />
-                    <Text style={styles.rating}>{item.rating}</Text>
+                    <Text style={styles.rating}>N/A</Text>
                 </View>
             </View>
         </TouchableOpacity>
     );
+    
 
     if (!appIsReady) {
         return <ActivityIndicator size="large" color="#0000ff" />;
@@ -91,11 +124,11 @@ const UserHomeScreen = () => {
                         {/* Header */}
                         <View style={styles.header}>
                             <Text style={styles.logo}>Small Bites</Text>
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={styles.profileButton}
                                 onPress={() => setMenuVisible(true)}
                             >
-                                <Image source={require("@/assets/images/food-app.png")} style={styles.profilePic} />
+                                <Image source={user?.photoURL ? {uri: user?.photoURL} : require('../../assets/images/canteenImg.png')} style={styles.profilePic} />
                             </TouchableOpacity>
                         </View>
 
@@ -103,10 +136,12 @@ const UserHomeScreen = () => {
                         <View style={styles.searchContainer}>
                             <View style={styles.searchInputContainer}>
                                 <Ionicons name="search" size={20} color="#666" />
-                                <TextInput 
-                                    placeholder="Search canteens..." 
+                                <TextInput
+                                    placeholder="Search canteens..."
                                     style={styles.searchInput}
                                     placeholderTextColor="#999"
+                                    value={searchQuery}
+                                    onChangeText={setSearchQuery}
                                 />
                             </View>
                             <TouchableOpacity style={styles.filterButton}>
@@ -152,8 +187,8 @@ const UserHomeScreen = () => {
                     {/* Bottom Navigation */}
                     <View style={styles.bottomNav}>
                         <TouchableOpacity style={styles.navItem}>
-                            <Ionicons name="home" size={24} color="#FFD337" />
-                            <Text style={[styles.navText, { color: '#FFD337' }]}>Home</Text>
+                            <Ionicons name="home" size={24} color="#007AFF" />
+                            <Text style={[styles.navText, { color: '#007AFF' }]}>Home</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.navItem}>
                             <Ionicons name="heart-outline" size={24} color="#666" />
@@ -162,11 +197,14 @@ const UserHomeScreen = () => {
                         <TouchableOpacity style={[styles.centerButton, styles.centerButtonGradient]}>
                             <Ionicons name="grid" size={24} color="white" />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.navItem}>
-                            <Ionicons name="bookmark-outline" size={24} color="#666" />
-                            <Text style={styles.navText}>Saved</Text>
-                        </TouchableOpacity>
                         <TouchableOpacity 
+                            style={styles.navItem}
+                            onPress={() => router.push('/expenses')}
+                        >
+                            <Ionicons name="cash-outline" size={24} color="#666" />
+                            <Text style={styles.navText}>Expenses</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
                             style={styles.navItem}
                             onPress={() => router.push('/profile')}
                         >
@@ -181,13 +219,13 @@ const UserHomeScreen = () => {
                             <View style={styles.menu}>
                                 <Text style={styles.menuText}>Hey, {user.displayName}</Text>
                                 <Text style={styles.menuText}>{user.email}</Text>
-                                <TouchableOpacity 
+                                <TouchableOpacity
                                     style={styles.signOutButton}
                                     onPress={signOut}
                                 >
                                     <Text style={styles.signOutText}>Sign Out</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity 
+                                <TouchableOpacity
                                     style={styles.closeButton}
                                     onPress={() => setMenuVisible(false)}
                                 >
@@ -269,7 +307,7 @@ const createStyles = () =>
             width: 48,
             height: 48,
             borderRadius: 16,
-            backgroundColor: '#FFD337',
+            backgroundColor: '#007AFF',
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -284,7 +322,7 @@ const createStyles = () =>
             marginHorizontal: 8,
         },
         selectedCategory: {
-            backgroundColor: '#FFD337',
+            backgroundColor: '#007AFF',
         },
         categoryText: {
             fontSize: 14,
@@ -376,7 +414,7 @@ const createStyles = () =>
             width: 56,
             height: 56,
             borderRadius: 28,
-            backgroundColor: "#FFD337",
+            backgroundColor: "#007AFF",
             justifyContent: "center",
             alignItems: "center",
             shadowColor: "#000",
@@ -387,7 +425,7 @@ const createStyles = () =>
         },
         overlay: {
             flex: 1,
-            backgroundColor: "rgba(0,0,0,0.5)",
+            backgroundColor: "#007AFF",
             justifyContent: "center",
             alignItems: "center",
         },
@@ -411,7 +449,7 @@ const createStyles = () =>
             textAlign: "center",
         },
         signOutButton: {
-            backgroundColor: '#FF4D4D',
+            backgroundColor: '#007AFF',
             paddingHorizontal: 24,
             paddingVertical: 12,
             borderRadius: 12,

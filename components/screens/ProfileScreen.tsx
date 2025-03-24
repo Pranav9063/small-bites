@@ -7,12 +7,13 @@ import { useAuth } from '@/lib/context/AuthContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const {user} = useAuth()
+  const {user, signOut} = useAuth()
+  // const { useR, signOut } = useAuth();
 
 
   const menuItems = [
     { icon: 'person-outline', label: 'Edit Profile', route: '/edit-profile' },
-    { icon: 'location-outline', label: 'Delivery Address', route: '/addresses' },
+    { icon: 'receipt-outline', label: 'Previous Orders', route: '/orders' },
     { icon: 'card-outline', label: 'Payment Methods', route: '/payments' },
     { icon: 'notifications-outline', label: 'Notifications', route: '/notifications' },
     { icon: 'settings-outline', label: 'Settings', route: '/settings' },
@@ -23,7 +24,7 @@ export default function ProfileScreen() {
     <TouchableOpacity
       key={item.label}
       style={styles.menuItem}
-      onPress={() => router.push(item.route)}
+      // onPress={() => router.push(item.route)}
     >
       <View style={styles.menuItemLeft}>
         <View style={styles.menuItemIcon}>
@@ -61,9 +62,10 @@ export default function ProfileScreen() {
         </View>
 
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
           <Ionicons name="log-out-outline" size={22} color="#FF4D4D" />
-          <Text style={styles.logoutText}>Logout</Text>
+          <Text style={styles.logoutText}>
+            Logout</Text>
         </TouchableOpacity>
       </ScrollView>
 
@@ -73,17 +75,21 @@ export default function ProfileScreen() {
           <Ionicons name="home-outline" size={24} color="#666" />
           <Text style={styles.navText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/favorites')}>
+        <TouchableOpacity style={styles.navItem}
+        //  onPress={() => router.push('/favorites')}
+        >
           <Ionicons name="heart-outline" size={24} color="#666" />
           <Text style={styles.navText}>Favorites</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={[styles.centerButton, styles.centerButtonGradient]}
-          onPress={() => router.push('/menu')}
+          // onPress={() => router.push('/menu')}
         >
           <Ionicons name="grid" size={24} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/saved')}>
+        <TouchableOpacity style={styles.navItem}
+        //  onPress={() => router.push('/saved')}
+         >
           <Ionicons name="bookmark-outline" size={24} color="#666" />
           <Text style={styles.navText}>Saved</Text>
         </TouchableOpacity>
@@ -236,4 +242,4 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
   },
-}); 
+});

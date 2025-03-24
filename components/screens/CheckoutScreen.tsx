@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Platform, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useCart } from '../../app/context/CartContext';
+import { useCart } from '../../lib/context/CartContext';
 
 type PaymentMethod = {
   id: string;

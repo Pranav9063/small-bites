@@ -3,7 +3,7 @@ import GoogleSignInButton from "@/components/GoogleSignInButton";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { FC, useEffect, useRef } from "react";
 import { Theme } from "@/constants/Theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,6 +14,7 @@ const LoginPage: FC = () => {
   const { signIn } = useAuth();
   const theme = useTheme();
   const styles = createStyles(theme);
+  const router = useRouter();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
@@ -36,10 +37,10 @@ const LoginPage: FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Animated.View 
+      <Animated.View
         style={[
-          styles.innerContainer, 
-          { 
+          styles.innerContainer,
+          {
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
           }
@@ -63,7 +64,7 @@ const LoginPage: FC = () => {
 
         {/* Sign In Button */}
         <View style={styles.buttonContainer}>
-          <GoogleSignInButton onPress={() => signIn("user")} />
+          <GoogleSignInButton onPress={() => { signIn("user"); router.replace("/") }} />
         </View>
 
         {/* Register Link */}
