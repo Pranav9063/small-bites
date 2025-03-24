@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MaterialIcons } from '@expo/vector-icons'; 
+import { MaterialIcons } from '@expo/vector-icons';
 import {
   StyleSheet,
   Text,
@@ -104,7 +104,7 @@ import { Link } from '@react-navigation/native';
 
 export default function Dashboard() {
   const router = useRouter();
-  const { user , signOut} = useAuth();
+  const { user, signOut } = useAuth();
   const [activeSection, setActiveSection] = useState('Menu');
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -115,7 +115,7 @@ export default function Dashboard() {
     { id: 4, title: 'Reviews', icon: 'star-outline' as const },
   ];
 
-  if(!user) return null;
+  if (!user) return null;
 
   const handleOptionPress = (title: string) => {
     switch (title) {
@@ -142,16 +142,8 @@ export default function Dashboard() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.logo}>Dashboard</Text>
-          <TouchableOpacity
-            style={styles.profileButton}
-            onPress={() => setMenuVisible(true)}
-          >
-            <Image source={user?.photoURL ? { uri: user?.photoURL } : require('../../assets/images/canteenImg.png')} style={styles.profilePic} />
           <TouchableOpacity onPress={() => router.push("/canteen/Profile")} style={styles.profileButton}>
-          <View style={styles.profileIcon}>
-        <MaterialIcons name="account-circle" size={40} color="white   " />
-      </View>
-
+            <Image source={user?.photoURL ? { uri: user?.photoURL } : require('../../assets/images/canteenImg.png')} style={styles.profilePic} />
           </TouchableOpacity>
         </View>
 
@@ -217,10 +209,8 @@ export default function Dashboard() {
             </View>
           </View>
         </Modal>
-        </View> */
-        }
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 
@@ -257,8 +247,8 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   profileButton: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     borderRadius: 20,
     backgroundColor: '#f5f5f5',
     justifyContent: 'center',
@@ -266,8 +256,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   profilePic: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     borderRadius: 20,
   },
   optionsGrid: {
@@ -345,51 +335,51 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   overlay: {
-      flex: 1,
-      backgroundColor: "#007AFF",
-      justifyContent: "center",
-      alignItems: "center",
+    flex: 1,
+    backgroundColor: "#007AFF",
+    justifyContent: "center",
+    alignItems: "center",
   },
   menu: {
-      backgroundColor: "white",
-      padding: 24,
-      borderRadius: 20,
-      width: "80%",
-      alignItems: "center",
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.1,
-      shadowRadius: 8,
-      elevation: 5,
+    backgroundColor: "white",
+    padding: 24,
+    borderRadius: 20,
+    width: "80%",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   menuText: {
-      fontSize: 16,
-      fontWeight: "bold",
-      color: "#333",
-      marginBottom: 8,
-      textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 8,
+    textAlign: "center",
   },
   signOutButton: {
-      backgroundColor: '#007AFF',
-      paddingHorizontal: 24,
-      paddingVertical: 12,
-      borderRadius: 12,
-      marginTop: 16,
-      width: '100%',
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 16,
+    width: '100%',
   },
   signOutText: {
-      color: '#fff',
-      fontSize: 16,
-      fontWeight: 'bold',
-      textAlign: 'center',
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   closeButton: {
-      marginTop: 16,
-      paddingVertical: 8,
+    marginTop: 16,
+    paddingVertical: 8,
   },
   closeButtonText: {
-      color: '#666',
-      fontSize: 16,
-      fontWeight: '600',
+    color: '#666',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

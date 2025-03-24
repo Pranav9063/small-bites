@@ -61,7 +61,7 @@ export default function Menu() {
   // Delete item
   const deleteItem = async (id: string) => {
     try {
-      const result = await deleteMenuItemFromCanteen(id, user?.uid || '');
+      const result = await deleteMenuItemFromCanteen(user?.uid || '', id);
       if (result.success) {
         setMenuItems(prevItems => prevItems.filter(item => item.item_id !== id));
         Alert.alert("Success", "Item deleted successfully.");

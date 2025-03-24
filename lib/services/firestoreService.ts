@@ -145,7 +145,7 @@ export const fetchAllCanteens = async () => {
 
     if (!canteensSnap.empty) {
       const canteensData = canteensSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      console.log(canteensData);
+      // console.log(canteensData);
       return canteensData;
     } else {
       throw new Error("No canteens found");
@@ -163,7 +163,7 @@ export const fetchCanteenById = async (canteenId: string) => {
 
     if (canteenSnap.exists) {
       const canteenData = { id: canteenSnap.id, ...canteenSnap.data() };
-      console.log(canteenData);
+      // console.log(canteenData);
       return canteenData;
     } else {
       throw new Error("Canteen not found");
@@ -249,6 +249,7 @@ export const addMenuItemToCanteen = async (userId: string, menuItem: any) => {
 
 export const deleteMenuItemFromCanteen = async (userId: string, itemId: string) => {
   try {
+    console.log(userId, itemId)
     const canteenId = await getCanteenIdFromUserId(userId);
     if(!canteenId) {
       throw new Error("Canteen ID not found for user.");
