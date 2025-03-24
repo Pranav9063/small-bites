@@ -11,6 +11,9 @@ export default function Layout() {
       <Stack.Screen name="addItem" options={{headerShown: false}}/>
       <Stack.Screen name="orders" options={{headerShown: true, title: "Orders" }}/>
       <Stack.Screen name="orders/index" options={{headerShown: true, title: "Orders" }}/>
+      <Stack.Screen name="reviews" options={{headerShown: true, title: "Reviews" }}/>
+      <Stack.Screen name="Profile" options={{headerShown: true, title: "Profile" }}/>
+      
     </Stack>
   );
 }

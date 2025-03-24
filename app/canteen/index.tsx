@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MaterialIcons } from '@expo/vector-icons'; 
 import {
   StyleSheet,
   Text,
@@ -99,6 +100,7 @@ const vegMenu: MenuItem[] = [
     category: "Snacks",
   },
 ];
+import { Link } from '@react-navigation/native';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -123,11 +125,11 @@ export default function Dashboard() {
       case 'Orders':
         router.push('/canteen/orders');
         break;
-      case 'Reviews':
+      case 'Analytics':
         router.push('/canteen/history');
         break;
-      case 'Profile':
-        router.push('/canteen');
+      case 'Reviews':
+        router.push('/canteen/reviews');
         break;
     }
     setActiveSection(title);
@@ -145,6 +147,11 @@ export default function Dashboard() {
             onPress={() => setMenuVisible(true)}
           >
             <Image source={user?.photoURL ? { uri: user?.photoURL } : require('../../assets/images/canteenImg.png')} style={styles.profilePic} />
+          <TouchableOpacity onPress={() => router.push("/canteen/Profile")} style={styles.profileButton}>
+          <View style={styles.profileIcon}>
+        <MaterialIcons name="account-circle" size={40} color="white   " />
+      </View>
+
           </TouchableOpacity>
         </View>
 
@@ -157,7 +164,7 @@ export default function Dashboard() {
               onPress={() => handleOptionPress(option.title)}
             >
               <View style={styles.iconContainer}>
-                <Ionicons name={option.icon} size={32} color="#333" />
+                <Ionicons name={option.icon} size={32} color="#fff" />
               </View>
               <Text style={styles.optionText}>{option.title}</Text>
             </TouchableOpacity>
@@ -167,7 +174,8 @@ export default function Dashboard() {
         {/* <Button onPress={async () => addSampleMenusToCanteen('JgdYxWcnEGxCTJJBfS9X', vegMenu)} title='Add menu'/> */}
 
         {/* Bottom Navigation */}
-        {/* <View style={styles.bottomNav}>
+        {
+        /* <View style={styles.bottomNav}>
           <TouchableOpacity style={styles.navItem}>
             <Ionicons name="home" size={24} color="#FFD337" />
             <Text style={[styles.navText, { color: '#FFD337' }]}>Home</Text>
@@ -209,6 +217,8 @@ export default function Dashboard() {
             </View>
           </View>
         </Modal>
+        </View> */
+        }
       </View>
     </SafeAreaView>
   );
@@ -228,6 +238,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
     backgroundColor: '#fff',
+  },
+  profileIcon: {
+    backgroundColor: 'white',
+    borderRadius: 50,  // Makes it circular
+    padding: 5,        // Adjust spacing inside the circle
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,       // For Android shadow
   },
   logo: {
     fontSize: 24,
@@ -277,7 +299,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#FFD337',
+    backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
