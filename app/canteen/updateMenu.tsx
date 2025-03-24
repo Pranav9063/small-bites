@@ -12,7 +12,7 @@ import {
   ImageSourcePropType
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import {useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 type OrderStatus = 'pending' | 'preparing' | 'ready';
 
@@ -28,35 +28,41 @@ interface OrderItem {
 const orderItems: OrderItem[] = [
   {
     id: '1',
-    name: 'Chicken Burger',image: require('@/assets/images/menuItems/burger.jpg'),    due: '1:30pm',
+    name: 'Chicken Burger',
+    image: require('@/assets/images/menuItems/burger.jpg'),
+    due: '1:30pm',
     notes: 'Note: Less spicy, No mayo',
     status: 'pending',
   },
   {
     id: '2',
-    name: 'Chicken Burger',
-    image: require('@/assets/images/menuItems/burger.jpg'),
-    due: '1:30pm',
-    notes: 'Note: Less spicy, No mayo',
+    name: 'Pizza Margherita',
+    image: require('@/assets/images/menuItems/Pizza.jpeg'),
+    due: '2:00pm',
+    notes: 'Extra cheese, No olives',
     status: 'preparing',
   },
   {
     id: '3',
-    name: 'Chicken Burger',
-    image: require('@/assets/images/menuItems/burger.jpg'),
-    due: '1:30pm',
-    notes: 'Note: Less spicy, No mayo',
+    name: 'Pasta Alfredo',
+    image: require('@/assets/images/menuItems/pasta.jpg'),
+    due: '2:30pm',
+    notes: 'Add mushrooms, No garlic',
     status: 'ready',
   },
 ];
 
-const UpdateMenu: React.FC = ({ }) => {
+const UpdateMenu: React.FC = () => {
   const router = useRouter();
+
   const renderOrderItem = ({ item }: { item: OrderItem }) => {
     return (
-      <View style={styles.orderCard}>
+      <TouchableOpacity 
+        style={styles.orderCard} 
+        onPress={() => router.push(`/canteen/order/${item.id}`)}
+      >
         <View style={styles.orderHeader}>
-          <View style={styles.orderDot} />
+          <View style={[styles.orderDot, { backgroundColor: getStatusColor(item.status) }]} />
           <Text style={styles.orderName}>{item.name}</Text>
         </View>
         <View style={styles.orderDetails}>
@@ -66,29 +72,7 @@ const UpdateMenu: React.FC = ({ }) => {
           </View>
           <Image source={item.image} style={styles.orderImage} />
         </View>
-        <View style={styles.orderActions}>
-          <Text style={styles.actionLabel}>
-            {item.status === 'pending' ? 'Accept Order?' : 
-             item.status === 'preparing' ? 'Preparing Order?' : 'Order Ready?'}
-          </Text>
-          <View style={styles.actionButtons}>
-            {item.status === 'pending' ? (
-              <>
-                <TouchableOpacity style={styles.actionButtonYes}>
-                  <Text style={styles.actionButtonText}>Yes</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.actionButtonNo}>
-                  <Text style={styles.actionButtonText}>No</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <TouchableOpacity style={styles.actionButtonYes}>
-                <Text style={styles.actionButtonText}>Yes</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -113,7 +97,7 @@ const UpdateMenu: React.FC = ({ }) => {
       <View style={styles.tabBar}>
         <TouchableOpacity 
           style={styles.tabItem}
-          onPress={() => router.push('./dashboard')}
+          onPress={() => router.push('/dashboard')}
         >
           <Text style={styles.tabText}>Menu</Text>
         </TouchableOpacity>
@@ -123,6 +107,16 @@ const UpdateMenu: React.FC = ({ }) => {
       </View>
     </SafeAreaView>
   );
+};
+
+// Function to get color based on status
+const getStatusColor = (status: OrderStatus) => {
+  switch (status) {
+    case 'pending': return 'red';
+    case 'preparing': return 'orange';
+    case 'ready': return 'green';
+    default: return 'gray';
+  }
 };
 
 const styles = StyleSheet.create({
@@ -173,7 +167,6 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: 'red',
     marginRight: 8,
   },
   orderName: {
@@ -201,35 +194,6 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 8,
-  },
-  orderActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  actionLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  actionButtons: {
-    flexDirection: 'row',
-  },
-  actionButtonYes: {
-    backgroundColor: '#e8f5e9',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 16,
-    marginLeft: 8,
-  },
-  actionButtonNo: {
-    backgroundColor: '#ffebee',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 16,
-    marginLeft: 8,
-  },
-  actionButtonText: {
-    fontWeight: '500',
   },
   tabBar: {
     flexDirection: 'row',
