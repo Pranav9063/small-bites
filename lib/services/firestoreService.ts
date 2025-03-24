@@ -66,7 +66,7 @@ export const registerCanteen = async (canteenData: any) => {
   try {
     const res = await addDoc(collection(db, "canteens"), canteenData);
     console.log("Canteen registered with ID:", res.id);
-    return { success: true , id : res.id};
+    return { success: true, id: res.id };
   } catch (error) {
     console.error("Firestore Error:", error);
     return { success: false, error };
@@ -112,10 +112,10 @@ export const addCanteenOwnerToFirestore = async (canteenId: string) => {
     } else {
       console.log("User already exists.");
     }
-    return {success: true , user};
+    return { success: true, user };
   } catch (error) {
     console.error("Error adding user:", error);
-    return {success: false, error};
+    return { success: false, error };
   }
 }
 
@@ -176,7 +176,7 @@ export const fetchCanteenById = async (canteenId: string) => {
 
 export const fetchCanteenByCanteenOwnerId = async (userId: string) => {
   try {
-    const userRef = doc(db,"users", userId);
+    const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
     if (userSnap.exists) {
       const userData = userSnap.data() as FirestoreCanteenOwner;
@@ -200,5 +200,49 @@ export const fetchCanteenByCanteenOwnerId = async (userId: string) => {
   } catch (error) {
     console.error("Error fetching canteen:", error);
     return null;
+  }
+}
+
+const getCanteenIdFromUserId = async (userId: string) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists) {
+      const userData = userSnap.data() as FirestoreCanteenOwner;
+      return userData.canteenId;
+    } else {
+      console.log("User not found.");
+      return null;
+    }
+  }
+  catch (error) {
+    console.error("Error fetching canteen ID:", error);
+    return null;
+  }
+}
+
+export const addMenuItemToCanteen = async (userId: string, menuItem: any) => {
+  try {
+    const canteenId = await getCanteenIdFromUserId(userId);
+    if(!canteenId) {
+      throw new Error("Canteen ID not found for user.");
+    }
+    const canteenRef = doc(db, "canteens", canteenId);
+    const canteenSnap = await getDoc(canteenRef);
+
+    if (canteenSnap.exists) {
+      const canteenData = canteenSnap.data();
+      const menu = canteenData ? canteenData.menu || [] : [];
+      menu.push(menuItem);
+      await setDoc(canteenRef, { menu }, { merge: true });
+      console.log("Menu item added successfully!");
+      return { success: true };
+    } else {
+      throw new Error("Canteen not found.");
+    }
+  } catch (error) {
+    console.error("Error adding menu item:", error);
+    return { success: false, error };
   }
 }
