@@ -105,7 +105,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
               <Text style={styles.itemName}>{item.name}</Text>
               <View style={styles.ratingContainer}>
                 <Ionicons name="star" size={16} color="#FFD700" />
-                {item.rating ? <Text style={styles.ratingText}>{item.rating}</Text> : <Text style={styles.ratingText}>N/A</Text>}
+                {/* {item.rating ? <Text style={styles.ratingText}>{item.rating}</Text> : <Text style={styles.ratingText}>N/A</Text>} */}
               </View>
             </View>
             <Text style={styles.itemDescription}>{item.description}</Text>
@@ -163,7 +163,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
           <Ionicons name="chevron-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{canteenName}</Text>
-        <TouchableOpacity style={styles.cartButton} onPress={() => router.push("/cart")}>
+        <TouchableOpacity style={styles.cartButton} onPress={() => router.push("/user/cart")}>
           <Ionicons name="cart-outline" size={24} color="#333" />
           <View style={styles.cartBadge}>
             <Text style={styles.cartBadgeText}>{cartItemsCount}</Text>

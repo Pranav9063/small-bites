@@ -167,27 +167,28 @@ export default function Dashboard() {
 
         {/* Bottom Navigation */}
         {
-        /* <View style={styles.bottomNav}>
-          <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="home" size={24} color="#FFD337" />
-            <Text style={[styles.navText, { color: '#FFD337' }]}>Home</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="stats-chart-outline" size={24} color="#666" />
-            <Text style={styles.navText}>Analytics</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.centerButton, styles.centerButtonGradient]}>
-            <Ionicons name="grid" size={24} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="settings-outline" size={24} color="#666" />
-            <Text style={styles.navText}>Settings</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="person-outline" size={24} color="#666" />
-            <Text style={styles.navText}>Profile</Text>
-          </TouchableOpacity>
-        </View> */}
+        //  <View style={styles.bottomNav}>
+        //   <TouchableOpacity style={styles.navItem}>
+        //     <Ionicons name="home" size={24} color="#FFD337" />
+        //     <Text style={[styles.navText, { color: '#FFD337' }]}>Home</Text>
+        //   </TouchableOpacity>
+        //   <TouchableOpacity style={styles.navItem}>
+        //     <Ionicons name="stats-chart-outline" size={24} color="#666" />
+        //     <Text style={styles.navText}>Analytics</Text>
+        //   </TouchableOpacity>
+        //   <TouchableOpacity style={[styles.centerButton, styles.centerButtonGradient]}>
+        //     <Ionicons name="grid" size={24} color="white" />
+        //   </TouchableOpacity>
+        //   <TouchableOpacity style={styles.navItem}>
+        //     <Ionicons name="settings-outline" size={24} color="#666" />
+        //     <Text style={styles.navText}>Settings</Text>
+        //   </TouchableOpacity>
+        //   <TouchableOpacity style={styles.navItem}>
+        //     <Ionicons name="person-outline" size={24} color="#666" />
+        //     <Text style={styles.navText}>Profile</Text>
+        //   </TouchableOpacity>
+        // </View> 
+        }
 
         <Modal transparent={true} visible={menuVisible} animationType="fade">
           <View style={styles.overlay}>
