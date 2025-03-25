@@ -1,141 +1,201 @@
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState } from "react";
+import { Ionicons } from '@expo/vector-icons';
 
 const salesData = [
-  { id: "1", name: "Burger", price: "80Rs", sold: 35, image: require("@/assets/images/canteenImg.png") },
-  { id: "2", name: "Fries", price: "100Rs", sold: 25, image: require("@/assets/images/canteenImg.png") },
-  { id: "3", name: "Soda", price: "40Rs", sold: 40, image: require("@/assets/images/canteenImg.png") },
+  { id: "1", name: "Burger", price: 80, sold: 35, revenue: 2800, image: require("@/assets/images/canteenImg.png") },
+  { id: "2", name: "Fries", price: 100, sold: 25, revenue: 2500, image: require("@/assets/images/canteenImg.png") },
+  { id: "3", name: "Pizza", price: 200, sold: 20, revenue: 4000, image: require("@/assets/images/canteenImg.png") },
+  { id: "4", name: "Soda", price: 40, sold: 40, revenue: 1600, image: require("@/assets/images/canteenImg.png") },
 ];
 
 const HistoryScreen = () => {
-  const [sales, setSales] = useState(salesData);
-
-  const totalSold = sales.reduce((total, item) => total + item.sold, 0);
-  const totalRevenue = sales.reduce((total, item) => total + parseInt(item.price) * item.sold, 0);
+  const totalRevenue = salesData.reduce((sum, item) => sum + item.revenue, 0);
+  const totalSold = salesData.reduce((sum, item) => sum + item.sold, 0);
+  const bestSeller = salesData.reduce((prev, current) => 
+    prev.sold > current.sold ? prev : current
+  );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.container}>
-        {/* Header Tabs */}
-        <View style={styles.header}>
-          <Text style={[styles.tab, styles.inactiveTab]}>Ongoing</Text>
-          <Text style={[styles.tab, styles.activeTab]}>History</Text>
-          <Text style={[styles.tab, styles.inactiveTab]}>Draft</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        {/* Summary Cards */}
+        <View style={styles.summaryContainer}>
+          <View style={[styles.summaryCard, { backgroundColor: '#4CAF50' }]}>
+            <Ionicons name="cash-outline" size={24} color="white" />
+            <Text style={styles.summaryTitle}>Total Revenue</Text>
+            <Text style={styles.summaryValue}>₹{totalRevenue}</Text>
+          </View>
+          <View style={[styles.summaryCard, { backgroundColor: '#2196F3' }]}>
+            <Ionicons name="cart-outline" size={24} color="white" />
+            <Text style={styles.summaryTitle}>Items Sold</Text>
+            <Text style={styles.summaryValue}>{totalSold}</Text>
+          </View>
         </View>
 
-        {/* Order List */}
-        <FlatList
-          data={sales}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.itemContainer}>
-              <Image source={item.image} style={styles.itemImage} />
-              <View style={styles.itemDetails}>
+        {/* Best Seller Card */}
+        <View style={styles.bestSellerCard}>
+          <View style={styles.bestSellerHeader}>
+            <Ionicons name="trophy" size={24} color="#FFD700" />
+            <Text style={styles.bestSellerTitle}>Best Seller</Text>
+          </View>
+          <Text style={styles.bestSellerName}>{bestSeller.name}</Text>
+          <Text style={styles.bestSellerSold}>{bestSeller.sold} units sold</Text>
+        </View>
+
+        {/* Sales Breakdown */}
+        <View style={styles.salesContainer}>
+          <Text style={styles.sectionTitle}>Sales Breakdown</Text>
+          {salesData.map((item) => (
+            <View key={item.id} style={styles.salesItem}>
+              <View style={styles.salesInfo}>
                 <Text style={styles.itemName}>{item.name}</Text>
-                <Text style={styles.itemPrice}>{item.price}</Text>
+                <Text style={styles.itemSold}>{item.sold} sold</Text>
               </View>
-              <Text style={styles.itemUnits}>{item.sold} Units</Text>
+              <View style={styles.progressBarContainer}>
+                <View 
+                  style={[
+                    styles.progressBar, 
+                    { 
+                      width: `${(item.sold / bestSeller.sold) * 100}%`,
+                      backgroundColor: getProgressColor(item.sold / bestSeller.sold)
+                    }
+                  ]} 
+                />
+              </View>
+              <Text style={styles.itemRevenue}>₹{item.revenue}</Text>
             </View>
-          )}
-        />
-
-        {/* Total Section */}
-        <View style={styles.totalContainer}>
-          <Text style={styles.totalText}>Total Sold:</Text>
-          <Text style={styles.totalCount}>{totalSold} Units</Text>
-          <Text style={styles.totalRevenue}>Total Revenue: ₹{totalRevenue}</Text>
+          ))}
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
+};
+
+const getProgressColor = (ratio: number) => {
+  if (ratio > 0.8) return '#4CAF50';
+  if (ratio > 0.5) return '#2196F3';
+  if (ratio > 0.3) return '#FFC107';
+  return '#FF5722';
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: '#f5f5f5',
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+  scrollView: {
+    padding: 16,
   },
-  tab: {
-    fontSize: 16,
-    fontWeight: "bold",
+  summaryContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
-  activeTab: {
-    color: "#ff6600",
-    borderBottomWidth: 2,
-    borderBottomColor: "#ff6600",
-    paddingBottom: 5,
-  },
-  inactiveTab: {
-    color: "#888",
-  },
-  itemContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    marginHorizontal: 15,
-    marginVertical: 5,
-    padding: 15,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
-  },
-  itemImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-  },
-  itemDetails: {
+  summaryCard: {
     flex: 1,
-    marginLeft: 15,
+    margin: 8,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  summaryTitle: {
+    color: 'white',
+    fontSize: 14,
+    marginTop: 8,
+  },
+  summaryValue: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 4,
+  },
+  bestSellerCard: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  bestSellerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  bestSellerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 8,
+    color: '#333',
+  },
+  bestSellerName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  bestSellerSold: {
+    fontSize: 16,
+    color: '#666',
+  },
+  salesContainer: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#333',
+  },
+  salesItem: {
+    marginBottom: 16,
+  },
+  salesInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
   },
   itemName: {
     fontSize: 16,
-    fontWeight: "bold",
+    color: '#333',
+    fontWeight: '500',
   },
-  itemPrice: {
+  itemSold: {
     fontSize: 14,
-    color: "#888",
+    color: '#666',
   },
-  itemUnits: {
-    fontSize: 16,
-    fontWeight: "bold",
+  progressBarContainer: {
+    height: 8,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 4,
+    marginBottom: 4,
   },
-  totalContainer: {
-    marginTop: 10,
-    padding: 15,
-    backgroundColor: "#1C39BB",
-    borderRadius: 8,
-    alignItems: "center",
-    marginHorizontal: 15,
+  progressBar: {
+    height: '100%',
+    borderRadius: 4,
   },
-  totalText: {
-    fontSize: 18,
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  totalCount: {
-    fontSize: 20,
-    color: "#fff",
-    fontWeight: "bold",
-    marginTop: 5,
-  },
-  totalRevenue: {
-    fontSize: 16,
-    color: "#fff",
-    fontWeight: "bold",
-    marginTop: 5,
+  itemRevenue: {
+    fontSize: 14,
+    color: '#4CAF50',
+    fontWeight: '500',
+    textAlign: 'right',
   },
 });
 
