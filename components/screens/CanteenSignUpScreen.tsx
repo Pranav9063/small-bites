@@ -60,7 +60,7 @@ const CanteenSignUpScreen: React.FC = () => {
       } else {
         throw new Error("Firestore error");
       }
-      router.replace("/canteen");
+      router.replace("/");
     } catch (error: any) {
       Alert.alert("Error", "Failed to register canteen.");
       setError(error.message || "Failed to register canteen.");
