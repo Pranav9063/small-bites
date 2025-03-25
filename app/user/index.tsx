@@ -145,7 +145,7 @@ const UserHomeScreen = () => {
                                 />
                             </View>
                             <TouchableOpacity style={styles.filterButton}>
-                                <Ionicons name="options" size={20} color="#333" />
+                                <Ionicons name="options" size={20} color="#fff" />
                             </TouchableOpacity>
                         </View>
 
