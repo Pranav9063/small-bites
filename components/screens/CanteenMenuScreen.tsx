@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCart } from '../../lib/context/CartContext';
 import { fetchCanteenById } from '@/lib/services/firestoreService';
+import { Snackbar } from 'react-native-paper';
 
 type CartItem = MenuItem & {
   quantity: number;
@@ -25,6 +26,8 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>([]);
   const { cart, dispatch } = useCart();
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [visible, setVisible] = useState(false);
+  const [lastAddedItem, setLastAddedItem] = useState<string>('');
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -61,6 +64,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
 
   const addToCart = (item: MenuItem) => {
     const quantity = itemQuantities[item.item_id] || 1;
+    
     dispatch({
       type: 'ADD_ITEM',
       payload: {
@@ -68,9 +72,20 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
         name: item.name,
         price: item.price,
         quantity: quantity
-      }
+      },
     });
+
+    // Set the last added item and show Snackbar
+    setLastAddedItem(item.name);
+    setVisible(true);
+
+    // Reset quantity for the specific item
     setItemQuantities(prev => ({ ...prev, [item.item_id]: 1 }));
+
+    // Automatically dismiss Snackbar after 2 seconds
+    setTimeout(() => {
+      setVisible(false);
+    }, 2000);
   };
 
   const toggleFavorite = (itemId: string) => {
@@ -105,7 +120,6 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
               <Text style={styles.itemName}>{item.name}</Text>
               <View style={styles.ratingContainer}>
                 <Ionicons name="star" size={16} color="#FFD700" />
-                {/* {item.rating ? <Text style={styles.ratingText}>{item.rating}</Text> : <Text style={styles.ratingText}>N/A</Text>} */}
               </View>
             </View>
             <Text style={styles.itemDescription}>{item.description}</Text>
@@ -195,6 +209,16 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({ canteenId, cantee
           />
         }
       />
+
+      {/* Global Snackbar Notification */}
+      <Snackbar
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        duration={2000}
+        style={styles.snackbar}
+      >
+        {`${lastAddedItem} added to Cart`}
+      </Snackbar>
     </SafeAreaView>
   );
 };
@@ -518,6 +542,13 @@ const createStyles = (theme: any) =>
       fontSize: 14,
       fontWeight: 'bold',
     },
+    snackbar: {
+      backgroundColor: '#4CAF50', // Green background for success
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+    }
   });
 
 export default CanteenMenuScreen; 
