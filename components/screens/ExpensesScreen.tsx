@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, D
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Button } from 'react-native-paper';
+import { useRouter } from 'expo-router';
 
 const initialExpenses = [
   { id: '1', name: 'Burger', amount: 10, date: '2025-03-01', canteen: 'Amul', category: 'Fast Food' },
@@ -20,6 +21,8 @@ const ExpensesScreen = () => {
     category: '', 
     canteen: '' 
   });
+
+  const router = useRouter();
 
   // Calculate total expenses and expenses by canteen
   const totalExpenses = useMemo(() => 
@@ -53,7 +56,7 @@ const ExpensesScreen = () => {
       <Card.Content>
         <View style={styles.expenseRow}>
           <Text style={styles.expenseName}>{item.name}</Text>
-          <Text style={styles.expenseAmount}>${item.amount.toFixed(2)}</Text>
+          <Text style={styles.expenseAmount}>Rs {item.amount.toFixed(2)}</Text>
         </View>
         <View style={styles.expenseDetailsRow}>
           <Text style={styles.expenseDetails}>
@@ -83,7 +86,7 @@ const ExpensesScreen = () => {
       {/* Total Expenses Summary */}
       <View style={styles.summaryContainer}>
         <Text style={styles.summaryTitle}>Total Expenses</Text>
-        <Text style={styles.summaryAmount}>${totalExpenses.toFixed(2)}</Text>
+        <Text style={styles.summaryAmount}>Rs {totalExpenses.toFixed(2)}</Text>
       </View>
 
       {/* Canteen Expenses Summary */}
@@ -92,7 +95,7 @@ const ExpensesScreen = () => {
         {canteenExpenses.map((item, index) => (
           <View key={index} style={styles.canteenExpenseRow}>
             <Text style={styles.canteenName}>{item.canteen}</Text>
-            <Text style={styles.canteenAmount}>${item.amount.toFixed(2)}</Text>
+            <Text style={styles.canteenAmount}>Rs {item.amount.toFixed(2)}</Text>
           </View>
         ))}
       </View>
@@ -109,6 +112,35 @@ const ExpensesScreen = () => {
           </View>
         }
       />
+
+      {/* Bottom Navigation */}
+                          <View style={styles.bottomNav}>
+                              <TouchableOpacity style={styles.navItem}>
+                                  <Ionicons name="home" size={24} color="#007AFF" />
+                                  <Text style={[styles.navText, { color: '#007AFF' }]}>Home</Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity style={styles.navItem}>
+                                  <Ionicons name="heart-outline" size={24} color="#666" />
+                                  <Text style={styles.navText}>Favorites</Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity style={[styles.centerButton, styles.centerButtonGradient]}>
+                                  <Ionicons name="grid" size={24} color="white" />
+                              </TouchableOpacity>
+                              <TouchableOpacity 
+                                  style={styles.navItem}
+                                  onPress={() => router.push('/user/expenses')}
+                              >
+                                  <Ionicons name="cash-outline" size={24} color="#666" />
+                                  <Text style={styles.navText}>Expenses</Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity
+                                  style={styles.navItem}
+                                  onPress={() => router.push('/user/profile')}
+                              >
+                                  <Ionicons name="person-outline" size={24} color="#666" />
+                                  <Text style={styles.navText}>Profile</Text>
+                              </TouchableOpacity>
+                          </View>
 
       {/* Add Expense Modal */}
       <Modal visible={modalVisible} animationType="slide" transparent>
@@ -302,6 +334,43 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#888',
   },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  navItem: {
+    alignItems: 'center',
+  },
+  navText: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+  },
+  activeNavText: {
+    color: '#FFD337',
+  },
+  centerButton: {
+    marginTop: -30,
+  },
+  centerButtonGradient: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  }
 });
 
 export default ExpensesScreen;
