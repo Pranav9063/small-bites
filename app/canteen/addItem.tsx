@@ -10,6 +10,7 @@ import {
   StatusBar,
   Alert,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -41,7 +42,6 @@ export default function AddItem() {
       const imageURL = await uploadImage();
       if(!imageURL) {
         Alert.alert('Error', 'Failed to upload image. Please try again.');
-        setLoading(false)
         return;
       }
   
@@ -58,7 +58,6 @@ export default function AddItem() {
 
       if(!user) {
         Alert.alert('Error', 'User not found. Please log in again.');
-        setLoading(false)
         return;
       }
 
@@ -77,15 +76,18 @@ export default function AddItem() {
     } catch (error) {
       console.error("Error saving item:", error);
       Alert.alert('Error', 'Failed to save item. Please try again.');
+    } finally{
+      setLoading(false)
     }
 
   };
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size={'large'} color="#007AFF"/>
         <Text style={{ fontSize: 20, color: "#333" }}>Saving...</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
