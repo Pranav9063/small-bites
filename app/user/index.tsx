@@ -474,3 +474,4 @@ const createStyles = () =>
     });
 
 export default UserHomeScreen;
+

@@ -52,7 +52,7 @@ export default function ProfileScreen() {
             <Text style={styles.email}>{user?.email}</Text>
           </View>
           <TouchableOpacity style={styles.editButton}>
-            <Ionicons name="pencil" size={20} color="#FFD337" />
+            <Ionicons name="pencil" size={20} color="#007AFF" />
           </TouchableOpacity>
         </View>
 
@@ -71,33 +71,32 @@ export default function ProfileScreen() {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/')}>
-          <Ionicons name="home-outline" size={24} color="#666" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}
-        //  onPress={() => router.push('/favorites')}
-        >
-          <Ionicons name="heart-outline" size={24} color="#666" />
-          <Text style={styles.navText}>Favorites</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.centerButton, styles.centerButtonGradient]}
-          // onPress={() => router.push('/menu')}
-        >
-          <Ionicons name="grid" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}
-        //  onPress={() => router.push('/saved')}
-         >
-          <Ionicons name="bookmark-outline" size={24} color="#666" />
-          <Text style={styles.navText}>Saved</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="person" size={24} color="#FFD337" />
-          <Text style={[styles.navText, styles.activeNavText]}>Profile</Text>
-        </TouchableOpacity>
-      </View>
+                              <TouchableOpacity style={styles.navItem}>
+                                  <Ionicons name="home" size={24} color="#007AFF" />
+                                  <Text style={[styles.navText, { color: '#007AFF' }]}>Home</Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity style={styles.navItem}>
+                                  <Ionicons name="heart-outline" size={24} color="#666" />
+                                  <Text style={styles.navText}>Favorites</Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity style={[styles.centerButton, styles.centerButtonGradient]}>
+                                  <Ionicons name="grid" size={24} color="white" />
+                              </TouchableOpacity>
+                              <TouchableOpacity 
+                                  style={styles.navItem}
+                                  onPress={() => router.push('/user/expenses')}
+                              >
+                                  <Ionicons name="cash-outline" size={24} color="#666" />
+                                  <Text style={styles.navText}>Expenses</Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity
+                                  style={styles.navItem}
+                                  onPress={() => router.push('/user/profile')}
+                              >
+                                  <Ionicons name="person-outline" size={24} color="#666" />
+                                  <Text style={styles.navText}>Profile</Text>
+                              </TouchableOpacity>
+                          </View>
     </SafeAreaView>
   );
 }
@@ -233,7 +232,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#FFD337',
+    backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
