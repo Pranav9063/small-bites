@@ -1,8 +1,8 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import CartScreen from '../components/screens/CartScreen';
+import ProfileScreen from '../../components/screens/ProfileScreen';
 
-export default function CartPage() {
+export default function ProfilePage() {
   return (
     <>
       <Stack.Screen 
@@ -10,7 +10,7 @@ export default function CartPage() {
           headerShown: false,
         }} 
       />
-      <CartScreen />
+      <ProfileScreen />
     </>
   );
 } 
