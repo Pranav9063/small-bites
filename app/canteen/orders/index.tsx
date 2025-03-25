@@ -3,11 +3,20 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useOrders } from '../../../context/OrderContext';
 
 // Add interface for order items
 interface OrderItem {
   name: string;
   quantity: number;
+}
+
+// Add interface for Order type
+interface Order {
+  id: string;
+  name: string;
+  status: 'pending' | 'preparing' | 'ready';
+  items: OrderItem[];
 }
 
 // Update orders array with items
@@ -43,6 +52,7 @@ const orders = [
 
 const OrdersScreen = () => {
   const router = useRouter();
+  const { orders } = useOrders();  // Get orders from context
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -53,7 +63,7 @@ const OrdersScreen = () => {
     }
   };
 
-  const renderOrderCard = ({ item }) => (
+  const renderOrderCard = ({ item }: { item: Order }) => (
     <TouchableOpacity
       style={styles.orderCard}
       onPress={() => router.push(`/canteen/orders/${item.id}`)}
@@ -86,7 +96,7 @@ const OrdersScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={orders}
+        data={orders}  // Use orders from context
         keyExtractor={(item) => item.id}
         renderItem={renderOrderCard}
         contentContainerStyle={styles.listContainer}

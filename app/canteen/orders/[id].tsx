@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useOrders } from '../../../context/OrderContext';
 
 interface OrderItem {
   id: number;
@@ -9,49 +11,82 @@ interface OrderItem {
   price: number;
 }
 
+type OrderStatus = 'pending' | 'preparing' | 'ready';
+
 const OrderDetail: React.FC = () => {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
+  const { orders, updateOrderStatus } = useOrders();
   
-  // Mock order data - in a real app, you'd fetch this based on the id
-  const orderItems: OrderItem[] = [
-    { id: 1, name: "Burger", quantity: 2, price: 80 },
-    { id: 2, name: "Fries", quantity: 1, price: 100 },
-    { id: 3, name: "Soda", quantity: 2, price: 40 },
-  ];
+  const currentOrder = orders.find(order => order.id === id);
+  const statusSteps: OrderStatus[] = ['pending', 'preparing', 'ready'];
 
-  const calculateTotal = () => {
-    return orderItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+  const getStatusColor = (status: OrderStatus) => {
+    switch (status) {
+      case 'pending': return '#FF9800';
+      case 'preparing': return '#2196F3';
+      case 'ready': return '#4CAF50';
+      default: return '#999';
+    }
   };
+
+  if (!currentOrder) {
+    return <Text>Order not found</Text>;
+  }
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Order #{id}</Text>
-        <Text style={styles.statusText}>Status: Processing</Text>
+      </View>
+
+      {/* Status Slider */}
+      <View style={styles.statusContainer}>
+        <View style={styles.statusTrack}>
+          {statusSteps.map((status, index) => (
+            <React.Fragment key={status}>
+              {index > 0 && <View style={[
+                styles.statusLine,
+                { backgroundColor: currentOrder.status === 'pending' ? '#eee' : getStatusColor(currentOrder.status) }
+              ]} />}
+              <TouchableOpacity
+                onPress={() => updateOrderStatus(id as string, status)}
+                style={[
+                  styles.statusDot,
+                  { 
+                    backgroundColor: statusSteps.indexOf(currentOrder.status) >= index 
+                      ? getStatusColor(status)
+                      : '#eee'
+                  }
+                ]}
+              >
+                <Text style={styles.statusLabel}>{status.charAt(0).toUpperCase() + status.slice(1)}</Text>
+              </TouchableOpacity>
+            </React.Fragment>
+          ))}
+        </View>
       </View>
 
       <View style={styles.itemsContainer}>
         <Text style={styles.sectionTitle}>Order Items</Text>
-        {orderItems.map((item) => (
-          <View key={item.id} style={styles.itemRow}>
+        {currentOrder.items.map((item, index) => (
+          <View key={index} style={styles.itemRow}>
             <View style={styles.itemInfo}>
               <Text style={styles.itemName}>{item.name}</Text>
               <Text style={styles.itemQuantity}>x{item.quantity}</Text>
             </View>
-            <Text style={styles.itemPrice}>{(item.quantity * item.price).toFixed(2)}Rs</Text>
+            <Text style={styles.itemPrice}>₹{item.quantity * 100}</Text>
           </View>
         ))}
       </View>
 
       <View style={styles.totalContainer}>
         <Text style={styles.totalLabel}>Total Amount:</Text>
-        <Text style={styles.totalAmount}>${calculateTotal().toFixed(2)}</Text>
+        <Text style={styles.totalAmount}>₹{currentOrder.items.reduce((sum, item) => sum + item.quantity * 100, 0)}</Text>
       </View>
 
       <View style={styles.deliveryInfo}>
-       
         <Text style={styles.deliveryText}>Estimated Time: 30-45 minutes</Text>
-      
       </View>
     </ScrollView>
   );
@@ -71,9 +106,38 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
   },
-  statusText: {
-    fontSize: 16,
+  statusContainer: {
+    marginBottom: 32,
+    paddingHorizontal: 20,
+  },
+  statusTrack: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  statusLine: {
+    height: 3,
+    flex: 1,
+    backgroundColor: '#eee',
+    marginHorizontal: -10,
+  },
+  statusDot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#eee',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  statusLabel: {
+    position: 'absolute',
+    top: 30,
+    fontSize: 12,
     color: '#666',
+    width: 80,
+    textAlign: 'center',
   },
   itemsContainer: {
     marginBottom: 24,
