@@ -199,14 +199,14 @@ const UserHomeScreen = () => {
                         </TouchableOpacity>
                         <TouchableOpacity 
                             style={styles.navItem}
-                            onPress={() => router.push('/expenses')}
+                            onPress={() => router.push('/user/expenses')}
                         >
                             <Ionicons name="cash-outline" size={24} color="#666" />
                             <Text style={styles.navText}>Expenses</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.navItem}
-                            onPress={() => router.push('/profile')}
+                            onPress={() => router.push('/user/profile')}
                         >
                             <Ionicons name="person-outline" size={24} color="#666" />
                             <Text style={styles.navText}>Profile</Text>

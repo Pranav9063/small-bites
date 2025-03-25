@@ -1,9 +1,8 @@
 import React from 'react';
 import { Stack } from 'expo-router';
+import CartScreen from '../../components/screens/CartScreen';
 
-import ExpensesScreen from '@/components/screens/ExpensesScreen';
-
-export default function ExpensePage() {
+export default function CartPage() {
   return (
     <>
       <Stack.Screen 
@@ -11,7 +10,7 @@ export default function ExpensePage() {
           headerShown: false,
         }} 
       />
-      <ExpensesScreen />
+      <CartScreen />
     </>
   );
 } 

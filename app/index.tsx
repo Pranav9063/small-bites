@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import UserHomeScreen from "@/components/screens/UserHomeScreen";
+import UserHomeScreen from "@/app/user";
 import { useAuth } from "@/lib/context/AuthContext";
 import { fetchRole } from "@/lib/services/firestoreService";
 import { ActivityIndicator, View } from "react-native";
