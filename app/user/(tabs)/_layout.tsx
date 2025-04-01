@@ -4,35 +4,35 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   return (
-    // tabBar={props => <UserTabBar {...props} />}
-    <Tabs  screenOptions={{ tabBarActiveTintColor: 'blue' , headerShown: false, }}>
+    <Tabs tabBar={props => <UserTabBar {...props} />} screenOptions={{ tabBarActiveTintColor: 'blue', headerShown: false, }}>
       <Tabs.Screen
-        name="index"
+        name="orders"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <Ionicons size={28} name="home" color={color} />,
-          headerShown: false
+          title: 'Orders',
         }}
       />
       <Tabs.Screen
         name="favourites"
         options={{
           title: 'Favourites',
-          tabBarIcon: ({ color }) => <Ionicons size={28} name="heart-outline" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
         }}
       />
       <Tabs.Screen
         name="expenses"
         options={{
           title: 'Expenses',
-          tabBarIcon: ({ color }) => <Ionicons size={28} name="cash-outline" color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <Ionicons size={28} name="person-outline" color={color} />,
         }}
       />
     </Tabs>

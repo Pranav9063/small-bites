@@ -59,10 +59,10 @@ const UserHomeScreen = () => {
 
     //     setSortedCanteens(updatedCanteens);
     // }, [selectedFilter]);
-  
+
     // useEffect(() => {
     //     let updatedCanteens = [...canteens];
-      
+
     //     if (searchQuery) {
     //         updatedCanteens = updatedCanteens.filter(canteen =>
     //             canteen.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -72,11 +72,11 @@ const UserHomeScreen = () => {
     //     setSortedCanteens(updatedCanteens);
     // }, [selectedFilter, searchQuery]);
 
-    useEffect(() => {   
+    useEffect(() => {
         const fetchCanteens = async () => {
             try {
                 const fetchedCanteens = await fetchAllCanteens() as CanteenData[];
-                if(!fetchedCanteens) {
+                if (!fetchedCanteens) {
                     console.error("No canteens found");
                     return;
                 }
@@ -87,12 +87,12 @@ const UserHomeScreen = () => {
         };
 
         fetchCanteens();
-    },[]);
+    }, []);
 
     const handleCanteenPress = useCallback((canteen: CanteenData) => {
         router.push({
             pathname: "/user/canteen/[id]",
-            params: { id: canteen.id, name: canteen.name},
+            params: { id: canteen.id, name: canteen.name },
         });
     }, [router]);
 
@@ -109,7 +109,7 @@ const UserHomeScreen = () => {
             </View>
         </TouchableOpacity>
     );
-    
+
 
     if (!appIsReady) {
         return <ActivityIndicator size="large" color="#0000ff" />;
@@ -129,7 +129,7 @@ const UserHomeScreen = () => {
                                 style={styles.profileButton}
                                 onPress={() => setMenuVisible(true)}
                             >
-                                <Image source={user?.photoURL ? {uri: user?.photoURL} : require('@/assets/images/canteenImg.png')} style={styles.profilePic} />
+                                <Image source={user?.photoURL ? { uri: user?.photoURL } : require('@/assets/images/canteenImg.png')} style={styles.profilePic} />
                             </TouchableOpacity>
                         </View>
 
@@ -146,7 +146,7 @@ const UserHomeScreen = () => {
                                 />
                             </View>
                             <TouchableOpacity style={styles.filterButton}>
-                                <Ionicons name="options" size={20} color="#333" />
+                                <Ionicons name="options" size={20} color="white" />
                             </TouchableOpacity>
                         </View>
 
