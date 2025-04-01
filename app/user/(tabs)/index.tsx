@@ -117,7 +117,7 @@ const UserHomeScreen = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Link href="/user">Click me!</Link>
+            {/* <Link href="/user">Click me!</Link> */}
             {user ? (
                 <>
                     {/* Fixed Header */}
