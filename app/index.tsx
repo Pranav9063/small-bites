@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import UserHomeScreen from "@/app/user";
+import UserHomeScreen from "@/app/user/(tabs)";
 import { useAuth } from "@/lib/context/AuthContext";
 import { fetchRole } from "@/lib/services/firestoreService";
 import { ActivityIndicator, View } from "react-native";
-import CanteenHomeScreen from "@/components/screens/CanteenHomeScreen";
 import Dashboard from "./canteen";
 
 const HomePage = () => {

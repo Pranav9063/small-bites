@@ -1,7 +1,6 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-
-import ExpensesScreen from '../../components/screens/ExpensesScreen';
+import ExpensesScreen from '@/components/screens/ExpensesScreen';
 
 export default function ExpensePage() {
   return (

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import ProfileScreen from '../../components/screens/ProfileScreen';
+import CheckoutScreen from '@/components/screens/CheckoutScreen';
 
-export default function ProfilePage() {
+export default function CheckoutPage() {
   return (
     <>
       <Stack.Screen 
@@ -10,7 +10,7 @@ export default function ProfilePage() {
           headerShown: false,
         }} 
       />
-      <ProfileScreen />
+      <CheckoutScreen />
     </>
   );
 } 
