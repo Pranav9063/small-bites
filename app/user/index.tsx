@@ -17,6 +17,14 @@ type ItemType = {
     id: string
 }
 
+type Review = {
+    userId: string;
+    userName: string;
+    text: string;
+    rating: number;
+    timestamp: number;
+}
+
 const canteens = [
     { id: "1", name: "MiniCampus", rating: 4.9, image: require("@/assets/images/icon.jpg") },
     { id: "2", name: "Nescafe", rating: 4.8, image: require("@/assets/images/icon.jpg") },
@@ -34,6 +42,10 @@ const UserHomeScreen = () => {
     const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
     const [appIsReady, setAppIsReady] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [reviewModalVisible, setReviewModalVisible] = useState(false);
+    const [selectedCanteen, setSelectedCanteen] = useState<CanteenData | null>(null);
+    const [reviewText, setReviewText] = useState('');
+    const [userRating, setUserRating] = useState(5);
 
     const [fontsLoaded] = useFonts({
         Poppins_400Regular,
@@ -96,6 +108,33 @@ const UserHomeScreen = () => {
         });
     }, [router]);
 
+    const handleReviewPress = (canteen: CanteenData) => {
+        setSelectedCanteen(canteen);
+        setReviewModalVisible(true);
+    };
+
+    const handleSubmitReview = async () => {
+        if (!selectedCanteen || !user) return;
+
+        const review: Review = {
+            userId: user.uid,
+            userName: user.displayName || 'Anonymous',
+            text: reviewText,
+            rating: userRating,
+            timestamp: Date.now()
+        };
+
+        try {
+            // Add review to Firestore (implement this in firestoreService)
+            // await addReviewToCanteen(selectedCanteen.id, review);
+            setReviewModalVisible(false);
+            setReviewText('');
+            setUserRating(5);
+        } catch (error) {
+            console.error('Error submitting review:', error);
+        }
+    };
+
     const renderItem = ({ item }: { item: CanteenData }) => (
         <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item)}>
             <Image source={item.image ? { uri: item.image } : require('../../assets/images/canteenImg.png')} style={styles.foodImage} />
@@ -107,6 +146,12 @@ const UserHomeScreen = () => {
                     <Text style={styles.rating}>N/A</Text>
                 </View>
             </View>
+            <TouchableOpacity 
+                style={styles.reviewButton}
+                onPress={() => handleReviewPress(item)}
+            >
+                <Ionicons name="add" size={14} color="#333" style={{ opacity: 0.6 }} />
+            </TouchableOpacity>
         </TouchableOpacity>
     );
     
@@ -234,6 +279,57 @@ const UserHomeScreen = () => {
                             </View>
                         </View>
                     </Modal>
+
+                    {/* Review Modal */}
+                    <Modal
+                        transparent={true}
+                        visible={reviewModalVisible}
+                        animationType="slide"
+                        onRequestClose={() => setReviewModalVisible(false)}
+                    >
+                        <View style={styles.reviewOverlay}>
+                            <View style={styles.reviewModal}>
+                                <Text style={styles.reviewTitle}>
+                                    Review {selectedCanteen?.name}
+                                </Text>
+                                <View style={styles.ratingInput}>
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <TouchableOpacity
+                                            key={star}
+                                            onPress={() => setUserRating(star)}
+                                        >
+                                            <Ionicons
+                                                name={star <= userRating ? "star" : "star-outline"}
+                                                size={32}
+                                                color="#FFD700"
+                                            />
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                                <TextInput
+                                    style={styles.reviewInput}
+                                    placeholder="Write your review..."
+                                    multiline
+                                    value={reviewText}
+                                    onChangeText={setReviewText}
+                                />
+                                <View style={styles.reviewActions}>
+                                    <TouchableOpacity
+                                        style={styles.cancelButton}
+                                        onPress={() => setReviewModalVisible(false)}
+                                    >
+                                        <Text style={styles.cancelButtonText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={styles.submitButton}
+                                        onPress={handleSubmitReview}
+                                    >
+                                        <Text style={styles.submitButtonText}>Submit</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
                 </>
             ) : (
                 <ActivityIndicator size="large" color="#0000ff" />
@@ -350,6 +446,7 @@ const createStyles = () =>
             shadowOpacity: 0.1,
             shadowRadius: 8,
             elevation: 5,
+            position: 'relative',
         },
         foodImage: {
             width: '100%',
@@ -388,6 +485,22 @@ const createStyles = () =>
             fontSize: 14,
             fontWeight: "600",
             color: "#333",
+        },
+        reviewButton: {
+            position: 'absolute',
+            bottom: 8,
+            right: 8,
+            backgroundColor: '#fff',
+            width: 24,
+            height: 24,
+            borderRadius: 12,
+            justifyContent: 'center',
+            alignItems: 'center',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 4,
+            elevation: 5,
         },
         bottomNav: {
             flexDirection: "row",
@@ -469,6 +582,67 @@ const createStyles = () =>
         closeButtonText: {
             color: '#666',
             fontSize: 16,
+            fontWeight: '600',
+        },
+        reviewOverlay: {
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        reviewModal: {
+            backgroundColor: 'white',
+            padding: 20,
+            borderRadius: 20,
+            width: '90%',
+        },
+        reviewTitle: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 16,
+            textAlign: 'center',
+        },
+        ratingInput: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginBottom: 16,
+        },
+        reviewInput: {
+            borderWidth: 1,
+            borderColor: '#ddd',
+            borderRadius: 8,
+            padding: 12,
+            height: 100,
+            textAlignVertical: 'top',
+        },
+        reviewActions: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 16,
+        },
+        cancelButton: {
+            padding: 12,
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: '#007AFF',
+            flex: 1,
+            marginRight: 8,
+        },
+        cancelButtonText: {
+            color: '#007AFF',
+            textAlign: 'center',
+            fontWeight: '600',
+        },
+        submitButton: {
+            padding: 12,
+            borderRadius: 8,
+            backgroundColor: '#007AFF',
+            flex: 1,
+            marginLeft: 8,
+        },
+        submitButtonText: {
+            color: '#fff',
+            textAlign: 'center',
             fontWeight: '600',
         },
     });

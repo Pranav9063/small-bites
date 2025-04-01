@@ -71,11 +71,14 @@ export default function ProfileScreen() {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-                              <TouchableOpacity style={styles.navItem}>
+                              <TouchableOpacity style={styles.navItem}
+                                   onPress={() => router.push('/')}>
                                   <Ionicons name="home" size={24} color="#007AFF" />
-                                  <Text style={[styles.navText, { color: '#007AFF' }]}>Home</Text>
+                                  <Text style={[styles.navText, { color: '#007AFF' }]}
+                                  >Home</Text>
                               </TouchableOpacity>
-                              <TouchableOpacity style={styles.navItem}>
+                              <TouchableOpacity style={styles.navItem}
+                                onPress={() => router.push('/user/expenses')}>
                                   <Ionicons name="heart-outline" size={24} color="#666" />
                                   <Text style={styles.navText}>Favorites</Text>
                               </TouchableOpacity>

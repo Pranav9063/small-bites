@@ -86,16 +86,33 @@ export default function CheckoutScreen() {
 
   const handlePlaceOrder = () => {
     if (!selectedPayment || !selectedTiming) {
-      // Show error message
       return;
     }
     if (selectedTiming === 'schedule' && !selectedTimeSlot) {
-      // Show error message for missing scheduled time
       return;
     }
-    // Handle order placement
+
+    const orderTime = selectedTiming === 'now' 
+      ? 'Ready in 15-20 minutes'
+      : selectedTimeSlot?.label;
+
+    const paymentMethodName = paymentMethods.find(m => m.id === selectedPayment)?.name;
+
+    // Prepare cart items for passing to next screen
+    const cartItems = cart.map(item => ({
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price
+    }));
+
     router.push({
-      pathname: '/order-confirmation'
+      pathname: '/order-confirmation',
+      params: {
+        total: total.toFixed(2),
+        orderTime,
+        paymentMethod: paymentMethodName,
+        items: JSON.stringify(cartItems)
+      }
     } as any);
   };
 
@@ -486,4 +503,4 @@ const styles = StyleSheet.create({
   selectedTimeSlotText: {
     color: '#000',
   },
-}); 
+});
