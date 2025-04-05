@@ -49,14 +49,11 @@ const LoginPage: FC = () => {
         {/* Logo Section */}
         <View style={styles.logoContainer}>
           <Image source={require("@/assets/images/icon.jpg")} style={styles.logo} />
-          <View style={styles.logoOverlay}>
-            <Ionicons name="restaurant" size={40} color="#FFD337" />
-          </View>
         </View>
 
         {/* Welcome Text */}
         <View style={styles.textContainer}>
-          <Text style={styles.heading}>Welcome to Small Bites 🍽️</Text>
+          <Text style={styles.heading}>Welcome to Small Bites</Text>
           <Text style={styles.subheading}>
             Order your favorite food from campus canteens with ease!
           </Text>
@@ -157,7 +154,7 @@ const createStyles = (theme: Theme) =>
       textAlign: "center",
     },
     link: {
-      color: "#FFD337",
+      color: theme.colors.primary,
       fontWeight: "bold",
       textDecorationLine: "underline",
     },
