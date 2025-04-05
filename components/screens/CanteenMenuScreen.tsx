@@ -11,7 +11,6 @@ import {
   ScrollView,
 } from "react-native";
 import { useTheme } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useCart } from "../../lib/context/CartContext";
@@ -170,7 +169,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
   const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.back()}
@@ -181,7 +180,10 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
         <Text style={styles.headerTitle}>{canteenName}</Text>
         <TouchableOpacity
           style={styles.cartButton}
-          onPress={() => router.push("/user/cart")}
+          onPress={() => router.push({pathname: "/user/cart",  params: {
+            canteenId: canteenId,
+            canteenName: canteenName,
+          }})}
         >
           <Ionicons name="cart-outline" size={24} color="#333" />
           <View style={styles.cartBadge}>
@@ -250,14 +252,13 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
       >
         {`${lastAddedItem} added to Cart`}
       </Snackbar>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const createStyles = (theme: any) =>
   StyleSheet.create({
     container: {
-      flex: 1,
       backgroundColor: "#F5F5F5", // Light grey background
     },
     fixedHeader: {
