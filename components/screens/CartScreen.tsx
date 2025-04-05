@@ -6,7 +6,7 @@ import { useCart } from '../../lib/context/CartContext';
 import type { CartItem } from '../../lib/context/CartContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function CartScreen() {
+export default function CartScreen({id, name}: {id: string, name: string}) {
   const { cart, dispatch } = useCart();
   const router = useRouter();
 

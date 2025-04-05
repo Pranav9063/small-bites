@@ -14,20 +14,20 @@ const initialExpenses = [
 const ExpensesScreen = () => {
   const [expenses, setExpenses] = useState(initialExpenses);
   const [modalVisible, setModalVisible] = useState(false);
-  const [newExpense, setNewExpense] = useState({ 
-    name: '', 
-    amount: '', 
-    date: new Date().toISOString().split('T')[0], 
-    category: '', 
-    canteen: '' 
+  const [newExpense, setNewExpense] = useState({
+    name: '',
+    amount: '',
+    date: new Date().toISOString().split('T')[0],
+    category: '',
+    canteen: ''
   });
 
   const router = useRouter();
 
   // Calculate total expenses and expenses by canteen
-  const totalExpenses = useMemo(() => 
+  const totalExpenses = useMemo(() =>
     expenses.reduce((sum, expense) => sum + expense.amount, 0), [expenses]);
-  
+
   const canteenExpenses = useMemo(() => {
     const grouped = expenses.reduce((acc: { [key: string]: number }, expense) => {
       acc[expense.canteen] = (acc[expense.canteen] || 0) + expense.amount;
@@ -101,10 +101,10 @@ const ExpensesScreen = () => {
       </View>
 
       {/* Expenses List */}
-      <FlatList 
-        data={expenses} 
-        renderItem={renderExpense} 
-        keyExtractor={(item) => item.id} 
+      <FlatList
+        data={expenses}
+        renderItem={renderExpense}
+        keyExtractor={(item) => item.id}
         contentContainerStyle={styles.expensesList}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -114,69 +114,69 @@ const ExpensesScreen = () => {
       />
 
       {/* Bottom Navigation */}
-                          <View style={styles.bottomNav}>
-                              <TouchableOpacity style={styles.navItem}>
-                                  <Ionicons name="home" size={24} color="#007AFF" />
-                                  <Text style={[styles.navText, { color: '#007AFF' }]}>Home</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity style={styles.navItem}>
-                                  <Ionicons name="heart-outline" size={24} color="#666" />
-                                  <Text style={styles.navText}>Favorites</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity style={[styles.centerButton, styles.centerButtonGradient]}>
-                                  <Ionicons name="grid" size={24} color="white" />
-                              </TouchableOpacity>
-                              <TouchableOpacity 
-                                  style={styles.navItem}
-                                  onPress={() => router.push('/user/expenses')}
-                              >
-                                  <Ionicons name="cash-outline" size={24} color="#666" />
-                                  <Text style={styles.navText}>Expenses</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity
-                                  style={styles.navItem}
-                                  onPress={() => router.push('/user/profile')}
-                              >
-                                  <Ionicons name="person-outline" size={24} color="#666" />
-                                  <Text style={styles.navText}>Profile</Text>
-                              </TouchableOpacity>
-                          </View>
+      {/* <View style={styles.bottomNav}>
+          <TouchableOpacity style={styles.navItem}>
+              <Ionicons name="home" size={24} color="#007AFF" />
+              <Text style={[styles.navText, { color: '#007AFF' }]}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+              <Ionicons name="heart-outline" size={24} color="#666" />
+              <Text style={styles.navText}>Favorites</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.centerButton, styles.centerButtonGradient]}>
+              <Ionicons name="grid" size={24} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity 
+              style={styles.navItem}
+              onPress={() => router.push('/user/expenses')}
+          >
+              <Ionicons name="cash-outline" size={24} color="#666" />
+              <Text style={styles.navText}>Expenses</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+              style={styles.navItem}
+              onPress={() => router.push('/user/profile')}
+          >
+              <Ionicons name="person-outline" size={24} color="#666" />
+              <Text style={styles.navText}>Profile</Text>
+          </TouchableOpacity>
+      </View> */}
 
       {/* Add Expense Modal */}
       <Modal visible={modalVisible} animationType="slide" transparent>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Add New Expense</Text>
-            <TextInput 
-              placeholder="Expense Name" 
-              style={styles.input} 
-              value={newExpense.name} 
-              onChangeText={(text) => setNewExpense({ ...newExpense, name: text })} 
+            <TextInput
+              placeholder="Expense Name"
+              style={styles.input}
+              value={newExpense.name}
+              onChangeText={(text) => setNewExpense({ ...newExpense, name: text })}
             />
-            <TextInput 
-              placeholder="Amount" 
-              style={styles.input} 
-              keyboardType="numeric" 
-              value={newExpense.amount} 
-              onChangeText={(text) => setNewExpense({ ...newExpense, amount: text })} 
+            <TextInput
+              placeholder="Amount"
+              style={styles.input}
+              keyboardType="numeric"
+              value={newExpense.amount}
+              onChangeText={(text) => setNewExpense({ ...newExpense, amount: text })}
             />
-            <TextInput 
-              placeholder="Date" 
-              style={styles.input} 
-              value={newExpense.date} 
-              onChangeText={(text) => setNewExpense({ ...newExpense, date: text })} 
+            <TextInput
+              placeholder="Date"
+              style={styles.input}
+              value={newExpense.date}
+              onChangeText={(text) => setNewExpense({ ...newExpense, date: text })}
             />
-            <TextInput 
-              placeholder="Category" 
-              style={styles.input} 
-              value={newExpense.category} 
-              onChangeText={(text) => setNewExpense({ ...newExpense, category: text })} 
+            <TextInput
+              placeholder="Category"
+              style={styles.input}
+              value={newExpense.category}
+              onChangeText={(text) => setNewExpense({ ...newExpense, category: text })}
             />
-            <TextInput 
-              placeholder="Canteen" 
-              style={styles.input} 
-              value={newExpense.canteen} 
-              onChangeText={(text) => setNewExpense({ ...newExpense, canteen: text })} 
+            <TextInput
+              placeholder="Canteen"
+              style={styles.input}
+              value={newExpense.canteen}
+              onChangeText={(text) => setNewExpense({ ...newExpense, canteen: text })}
             />
             <View style={styles.modalButtons}>
               <Button mode="contained" onPress={handleAddExpense} style={styles.addButton}>
@@ -194,21 +194,21 @@ const ExpensesScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#F7F9FC' 
+  container: {
+    flex: 1,
+    backgroundColor: '#F7F9FC'
   },
-  header: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    padding: 16, 
-    backgroundColor: '#4A90E2' 
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#4A90E2'
   },
-  title: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    color: 'white' 
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white'
   },
   summaryContainer: {
     backgroundColor: '#4A90E2',
@@ -251,11 +251,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#4A90E2',
   },
-  expensesList: { 
-    padding: 16 
+  expensesList: {
+    padding: 16
   },
-  card: { 
-    marginBottom: 12, 
+  card: {
+    marginBottom: 12,
     backgroundColor: 'white',
     elevation: 3,
     borderRadius: 10,
@@ -266,10 +266,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  expenseName: { 
-    fontSize: 18, 
-    fontWeight: 'bold', 
-    color: '#333' 
+  expenseName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333'
   },
   expenseAmount: {
     fontSize: 16,
@@ -280,42 +280,42 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  expenseDetails: { 
-    fontSize: 14, 
+  expenseDetails: {
+    fontSize: 14,
     color: '#666',
     alignItems: 'center',
   },
-  modalContainer: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: 'rgba(0, 0, 0, 0.5)' 
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
-  modalContent: { 
-    width: '90%', 
-    padding: 20, 
-    backgroundColor: 'white', 
+  modalContent: {
+    width: '90%',
+    padding: 20,
+    backgroundColor: 'white',
     borderRadius: 15,
     elevation: 10,
   },
-  modalTitle: { 
-    fontSize: 22, 
-    fontWeight: 'bold', 
-    color: '#333', 
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
     marginBottom: 20,
     textAlign: 'center',
   },
-  input: { 
-    borderWidth: 1, 
-    borderColor: '#E0E0E0', 
-    padding: 12, 
-    marginBottom: 16, 
-    borderRadius: 8, 
-    fontSize: 16 
+  input: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    padding: 12,
+    marginBottom: 16,
+    borderRadius: 8,
+    fontSize: 16
   },
-  modalButtons: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between' 
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   addButton: {
     flex: 1,

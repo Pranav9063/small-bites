@@ -52,9 +52,10 @@ function RootContent() {
   }
 
   return (
-    <Stack>
+    <Stack screenOptions={{headerShown: false}}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="auth" options={{ headerShown: false }} />
+      <Stack.Screen name="user/(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="user/canteen/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="canteen" options={{ headerShown: false }} />
     </Stack>
