@@ -1,8 +1,9 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
+import { OrderProvider } from '@/context/OrderContext';
 
-export default function TabLayout() {
+function TabContent() {
     const theme = useTheme();
     return (
         <Tabs screenOptions={{ tabBarActiveTintColor: theme.colors.primary, tabBarStyle: { height: 55 } }}>
@@ -24,6 +25,7 @@ export default function TabLayout() {
                 options={{
                     title: 'Menu',
                     tabBarIcon: ({ color }) => <Ionicons size={28} name="book-outline" color={color} />,
+                    headerShown: false,
                 }}
             />
             <Tabs.Screen
@@ -41,5 +43,13 @@ export default function TabLayout() {
                 }}
             />
         </Tabs>
+    );
+}
+
+export default function Layout() {
+    return (
+        <OrderProvider>
+            <TabContent />
+        </OrderProvider>
     );
 }

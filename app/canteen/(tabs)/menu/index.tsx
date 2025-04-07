@@ -10,6 +10,7 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -24,24 +25,26 @@ export default function Menu() {
   const [searchQuery, setSearchQuery] = useState('');
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [refreshing, setRefreshing] = React.useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const theme = useTheme();
 
-  useEffect(() => {
-    const fetchMenuItems = async () => {
-      try {
-        const canteenData = await fetchCanteenByCanteenOwnerId(user?.uid || '') as CanteenData;
-        if (canteenData) {
-          const menu = canteenData.menu || []; // Adjust based on your data structure
-          console.log("Fetched menu items:", menu);
-          setMenuItems(menu);
-        } else {
-          console.log("No canteen data found for this user.");
-        }
-      } catch (error) {
-        console.error("Error fetching menu items:", error);
+  const fetchMenuItems = async () => {
+    try {
+      const canteenData = await fetchCanteenByCanteenOwnerId(user?.uid || '') as CanteenData;
+      if (canteenData) {
+        const menu = canteenData.menu || []; // Adjust based on your data structure
+        console.log("Fetched menu items:", menu);
+        setMenuItems(menu);
+      } else {
+        console.log("No canteen data found for this user.");
       }
+    } catch (error) {
+      console.error("Error fetching menu items:", error);
     }
+  }
+
+  useEffect(() => {
     fetchMenuItems();
   }, [])
   const categories = ['All', 'Breakfast', 'Lunch', 'Snacks', 'Beverages'];
@@ -81,7 +84,7 @@ export default function Menu() {
   // Edit item
   const handleEditItem = (item: MenuItem) => {
     router.push({
-      pathname: "/canteen/editItem",
+      pathname: "/canteen/menu/editItem",
       params: {
         id: item.item_id,
         name: item.name,
@@ -94,7 +97,18 @@ export default function Menu() {
 
   // Add new item
   const handleAddItem = () => {
-    router.push("/canteen/addItem");
+    router.push("/canteen/menu/add");
+  };
+
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await fetchMenuItems();
+    } catch (error) {
+      console.log("Error refreshing menu items:", error);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const filteredItems = menuItems.filter(item => {
@@ -163,6 +177,9 @@ export default function Menu() {
         <ScrollView
           style={styles.menuList}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
           {filteredItems.map((item) => (
             <View key={item.item_id} style={styles.menuItem}>
@@ -222,7 +239,7 @@ export default function Menu() {
           style={styles.addButton}
           onPress={handleAddItem}
         >
-          <Ionicons name="add-circle-outline" size={24} color="#333" />
+          <Ionicons name="add" size={28} color="#fff" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -256,7 +273,13 @@ const createStyles = (theme: Theme) => {
       color: '#333',
     },
     addButton: {
-      padding: 4,
+      position: 'absolute',
+      bottom: 20,
+      right: 20,
+      backgroundColor: theme.colors.primary,
+      borderRadius: 50,
+      padding: 16,
+      elevation: 5
     },
     searchContainer: {
       flexDirection: 'row',
