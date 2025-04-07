@@ -34,6 +34,9 @@ const HomePage = () => {
     if (role === "user") {
       router.replace("/user/(tabs)");
     }
+    if (role === "canteen") {
+      router.replace("/canteen/(tabs)");
+    }
   }, [role, router]);
 
   if (!user || loading) {

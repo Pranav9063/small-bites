@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet, Animated, Image, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Animated, Image, Dimensions, ActivityIndicator } from "react-native";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useRouter } from "expo-router";
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Theme } from "@/constants/Theme";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -15,6 +15,7 @@ const LoginPage: FC = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
@@ -34,6 +35,30 @@ const LoginPage: FC = () => {
       })
     ]).start();
   }, []);
+
+  const handleSignIn = async () => {
+    try {
+      setLoading(true);
+      await signIn("user");
+      router.replace("/");
+    } catch (error) {
+      console.error("Sign in error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.innerContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={{ marginTop: 20 }}>Signing you in...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -61,7 +86,7 @@ const LoginPage: FC = () => {
 
         {/* Sign In Button */}
         <View style={styles.buttonContainer}>
-          <GoogleSignInButton onPress={() => { signIn("user"); router.replace("/") }} />
+          <GoogleSignInButton onPress={handleSignIn} />
         </View>
 
         {/* Register Link */}

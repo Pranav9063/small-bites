@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useOrders } from '../../../context/OrderContext';
+import { useOrders } from '../../../../context/OrderContext';
 
 // Add interface for order items
 interface OrderItem {
@@ -21,9 +21,9 @@ interface Order {
 
 // Update orders array with items
 const orders = [
-  { 
-    id: '1', 
-    name: 'Order #143021', 
+  {
+    id: '1',
+    name: 'Order #143021',
     status: 'pending',
     items: [
       { name: 'Burger', quantity: 2 },
@@ -31,18 +31,18 @@ const orders = [
       { name: 'Soda', quantity: 2 }
     ]
   },
-  { 
-    id: '2', 
-    name: 'Order #142501', 
+  {
+    id: '2',
+    name: 'Order #142501',
     status: 'preparing',
     items: [
       { name: 'Pizza', quantity: 1 },
       { name: 'Coke', quantity: 2 }
     ]
   },
-  { 
-    id: '3', 
-    name: 'Order #142009', 
+  {
+    id: '3',
+    name: 'Order #142009',
     status: 'ready',
     items: [
       { name: 'Sandwich', quantity: 1 }

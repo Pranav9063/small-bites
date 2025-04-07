@@ -8,6 +8,7 @@ import { addCanteenOwnerToFirestore, registerCanteen } from "@/lib/services/fire
 import { Link, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Theme } from "@/constants/Theme";
+import GoogleSignInButton from "../GoogleSignInButton";
 
 const { width, height } = Dimensions.get('window');
 
@@ -105,7 +106,7 @@ const CanteenSignUpScreen: React.FC = () => {
             <View style={styles.logoContainer}>
               <Image source={require("@/assets/images/icon.jpg")} style={styles.logo} />
             </View>
-            
+
             {/* Heading & Subheading */}
             <Text style={styles.heading}>Register Your Canteen</Text>
             <Text style={styles.subheading}>
@@ -180,21 +181,16 @@ const CanteenSignUpScreen: React.FC = () => {
                 </TouchableOpacity>
                 {image && (
                   <TouchableOpacity onPress={pickImage} style={styles.changeImageButton}>
-                    <MaterialIcons name="edit" size={20}/>
+                    <MaterialIcons name="edit" size={20} />
                   </TouchableOpacity>
                 )}
               </View>
 
               {error && <Text style={styles.errorText}>{error}</Text>}
 
-              <TouchableOpacity 
-                onPress={onSubmit} 
-                style={[styles.submitButton, (uploading) && styles.disabledButton]} 
-                disabled={uploading}
-              >
-                <Ionicons name="logo-google" color="white" size={20} />
-                <Text style={styles.submitButtonText}>Register with Google</Text>
-              </TouchableOpacity>
+              <View style={{ marginTop: 10 }}>
+                <GoogleSignInButton onPress={onSubmit} disabled={uploading} />
+              </View>
 
               <Text style={styles.loginText}>
                 Already have an account?{" "}
@@ -264,6 +260,7 @@ const createStyles = (theme: Theme) =>
     },
     timeInputWrapper: {
       flex: 0.48,
+      marginBottom: 10,
     },
     inputIcon: {
       position: 'absolute',
@@ -331,7 +328,7 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.primary,
       borderRadius: 10,
       paddingVertical: 14,
-      marginTop: 10,
+      marginTop: 20,
     },
     disabledButton: {
       opacity: 0.5,

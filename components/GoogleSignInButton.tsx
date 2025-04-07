@@ -3,18 +3,18 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "react-native-paper";
 import { Theme } from "@/constants/Theme";
 
-export default function GoogleSignInButton({ onPress }: { onPress: () => void }) {
+export default function GoogleSignInButton({ onPress, disabled }: { onPress: () => void, disabled?: boolean }) {
   const theme = useTheme();
   const styles = createStyles(theme);
   return (
-    <Pressable style={styles.button} onPress={onPress}>
+    <Pressable style={styles.button} onPress={onPress} disabled={disabled}>
       <Ionicons name="logo-google" color="#000" style={styles.buttonIcon} />
       <Text style={styles.buttonText}>Continue with Google</Text>
     </Pressable>
   );
 }
 
-const createStyles = (theme : Theme) => {
+const createStyles = (theme: Theme) => {
   return StyleSheet.create({
     button: {
       flexDirection: "row",
