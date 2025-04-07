@@ -190,12 +190,21 @@ export default function Menu() {
                   >
                     <Ionicons name="create-outline" size={20} color="#666" />
                   </TouchableOpacity>
-                  <TouchableOpacity 
+                    <TouchableOpacity 
                     style={styles.deleteButton}
-                    onPress={() => deleteItem(item.item_id)}
-                  >
+                    onPress={() => 
+                      Alert.alert(
+                      "Confirm Delete",
+                      "Are you sure you want to delete this item?",
+                      [
+                        { text: "Cancel", style: "cancel" },
+                        { text: "Delete", style: "destructive", onPress: () => deleteItem(item.item_id) }
+                      ]
+                      )
+                    }
+                    >
                     <Ionicons name="trash-outline" size={20} color="#FF4D4D" />
-                  </TouchableOpacity>
+                    </TouchableOpacity>
                 </View>
               </View>
             </View>

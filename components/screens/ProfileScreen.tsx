@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/context/AuthContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const {user, signOut} = useAuth()
+  const { user, signOut } = useAuth()
   // const { useR, signOut } = useAuth();
 
 
@@ -24,7 +24,7 @@ export default function ProfileScreen() {
     <TouchableOpacity
       key={item.label}
       style={styles.menuItem}
-      // onPress={() => router.push(item.route)}
+    // onPress={() => router.push(item.route)}
     >
       <View style={styles.menuItemLeft}>
         <View style={styles.menuItemIcon}>
@@ -46,7 +46,7 @@ export default function ProfileScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Profile Card */}
         <View style={styles.profileCard}>
-          <Image source={user?.photoURL ? {uri: user?.photoURL} : require('../../assets/images/canteenImg.png')} style={styles.profileImage} />
+          <Image source={user?.photoURL ? { uri: user?.photoURL } : require('../../assets/images/canteenImg.png')} style={styles.profileImage} />
           <View style={styles.profileInfo}>
             <Text style={styles.name}>{user?.displayName}</Text>
             <Text style={styles.email}>{user?.email}</Text>
@@ -70,36 +70,33 @@ export default function ProfileScreen() {
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-                              <TouchableOpacity style={styles.navItem}
-                                   onPress={() => router.push('/')}>
-                                  <Ionicons name="home" size={24} color="#007AFF" />
-                                  <Text style={[styles.navText, { color: '#007AFF' }]}
-                                  >Home</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity style={styles.navItem}
-                                onPress={() => router.push('/user/expenses')}>
-                                  <Ionicons name="heart-outline" size={24} color="#666" />
-                                  <Text style={styles.navText}>Favorites</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity style={[styles.centerButton, styles.centerButtonGradient]}>
-                                  <Ionicons name="grid" size={24} color="white" />
-                              </TouchableOpacity>
-                              <TouchableOpacity 
-                                  style={styles.navItem}
-                                  onPress={() => router.push('/user/expenses')}
-                              >
-                                  <Ionicons name="cash-outline" size={24} color="#666" />
-                                  <Text style={styles.navText}>Expenses</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity
-                                  style={styles.navItem}
-                                  onPress={() => router.push('/user/profile')}
-                              >
-                                  <Ionicons name="person-outline" size={24} color="#666" />
-                                  <Text style={styles.navText}>Profile</Text>
-                              </TouchableOpacity>
-                          </View>
+      {/* <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navItem}>
+          <Ionicons name="home" size={24} color="#007AFF" />
+          <Text style={[styles.navText, { color: '#007AFF' }]}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem}>
+          <Ionicons name="heart-outline" size={24} color="#666" />
+          <Text style={styles.navText}>Favorites</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.centerButton, styles.centerButtonGradient]}>
+          <Ionicons name="grid" size={24} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push('/user/expenses')}
+        >
+          <Ionicons name="cash-outline" size={24} color="#666" />
+          <Text style={styles.navText}>Expenses</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push('/user/profile')}
+        >
+          <Ionicons name="person-outline" size={24} color="#666" />
+          <Text style={styles.navText}>Profile</Text>
+        </TouchableOpacity>
+      </View> */}
     </SafeAreaView>
   );
 }

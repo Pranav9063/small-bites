@@ -32,7 +32,7 @@ export default function AddItem() {
 
   const categories = ['All', 'Breakfast', 'Lunch', 'Snacks', 'Beverages'];
 
-  const handleSave =async () => {
+  const handleSave = async () => {
     try {
       if (!name || !price || !calories || !category || !description || !image) {
         Alert.alert('Error', 'Please fill in all required fields');
@@ -40,30 +40,30 @@ export default function AddItem() {
       }
       setLoading(true)
       const imageURL = await uploadImage();
-      if(!imageURL) {
+      if (!imageURL) {
         Alert.alert('Error', 'Failed to upload image. Please try again.');
         return;
       }
-  
-      const menuItem : MenuItem= {
+
+      const menuItem: MenuItem = {
         item_id: Math.random().toString(36).substring(2, 9),
         name,
         price: parseFloat(price),
         calories: parseInt(calories),
         category,
         description,
-        image : imageURL,
+        image: imageURL,
         availability: true,
       };
 
-      if(!user) {
+      if (!user) {
         Alert.alert('Error', 'User not found. Please log in again.');
         return;
       }
 
-      const res = await addMenuItemToCanteen(user.uid , menuItem);
+      const res = await addMenuItemToCanteen(user.uid, menuItem);
 
-      if(res.success) {
+      if (res.success) {
         Alert.alert('Success', 'Item added successfully!');
         router.back();
       } else {
@@ -76,7 +76,7 @@ export default function AddItem() {
     } catch (error) {
       console.error("Error saving item:", error);
       Alert.alert('Error', 'Failed to save item. Please try again.');
-    } finally{
+    } finally {
       setLoading(false)
     }
 
@@ -84,9 +84,9 @@ export default function AddItem() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <ActivityIndicator size={'large'} color="#007AFF"/>
-        <Text style={{ fontSize: 20, color: "#333" }}>Saving...</Text>
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size={'large'} color="#007AFF" />
+        <Text style={styles.loadingText}>Saving...</Text>
       </SafeAreaView>
     );
   }
@@ -189,7 +189,7 @@ export default function AddItem() {
             </TouchableOpacity>
 
             {/* Display Selected Image */}
-            <View style={{ display: "flex", alignItems: "center" , marginBottom: 16}}>
+            <View style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
               {image && <Image source={{ uri: image }} style={{ width: 100, height: 100, borderRadius: 50 }} />}
             </View>
 
@@ -204,6 +204,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingText: {
+    fontSize: 20,
+    color: '#333',
   },
   content: {
     flex: 1

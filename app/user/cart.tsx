@@ -1,16 +1,18 @@
 import React from 'react';
-import { Stack } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import CartScreen from '../../components/screens/CartScreen';
 
 export default function CartPage() {
+
+  const { id, name } = useLocalSearchParams() as { id: string, name: string };
   return (
     <>
-      <Stack.Screen 
+      <Stack.Screen
         options={{
           headerShown: false,
-        }} 
+        }}
       />
-      <CartScreen />
+      <CartScreen id={id} name={name} />
     </>
   );
 } 
