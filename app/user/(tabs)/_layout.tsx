@@ -1,21 +1,38 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs } from 'expo-router';
+import { Tabs } from "expo-router";
+import UserTabBar from "@/components/UserTabBar";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: 'blue' }}>
+    <Tabs tabBar={props => <UserTabBar {...props} />} screenOptions={{ tabBarActiveTintColor: 'blue', headerShown: false, }}>
+      <Tabs.Screen
+        name="orders"
+        options={{
+          title: 'Orders',
+        }}
+      />
+      <Tabs.Screen
+        name="favourites"
+        options={{
+          title: 'Favourites',
+        }}
+      />
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="expenses"
         options={{
-          title: 'Settings',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="cog" color={color} />,
+          title: 'Expenses',
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
         }}
       />
     </Tabs>

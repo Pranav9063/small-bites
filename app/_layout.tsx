@@ -43,20 +43,21 @@ function RootContent() {
   }, [user, initializing]);
 
 
-  if (initializing) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  // if (initializing) {
+  //   return (
+  //     <View style={styles.centered}>
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
 
   return (
-    <Stack>
+    <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="auth" options={{ headerShown: false }} />
+      <Stack.Screen name="user/(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="user/canteen/[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="canteen" options={{ headerShown: false }} />
+      <Stack.Screen name="canteen/(tabs)" options={{ headerShown: false }} />
     </Stack>
   );
 }
