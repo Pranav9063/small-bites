@@ -44,7 +44,7 @@ export default function Profile() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Profile Card */}
         <View style={styles.profileCard}>
-          <Image source={user?.photoURL ? {uri: user?.photoURL} : require('../../assets/images/canteenImg.png')} style={styles.profileImage} />
+          <Image source={user?.photoURL ? {uri: user?.photoURL} : require('@/assets/images/canteenImg.png')} style={styles.profileImage} />
           <View style={styles.profileInfo}>
             <Text style={styles.name}>{user?.displayName}</Text>
             <Text style={styles.email}>{user?.email}</Text>
