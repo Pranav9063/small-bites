@@ -6,18 +6,21 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
-  Platform,
-  StatusBar,
   Alert,
   Image,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useImageUpload } from '@/lib/hooks/useImageUpload';
 import { addMenuItemToCanteen } from '@/lib/services/firestoreService';
 import { useAuth } from '@/lib/context/AuthContext';
+import { Theme } from '@/constants/Theme';
+import { useTheme } from 'react-native-paper';
+import { MaterialIcons } from '@expo/vector-icons';
+
+const { width, height } = Dimensions.get('window');
 
 export default function AddItem() {
   const router = useRouter();
@@ -29,6 +32,8 @@ export default function AddItem() {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const { image, pickImage, uploadImage, uploading } = useImageUpload();
+  const theme = useTheme();
+  const styles = createStyles(theme);
 
   const categories = ['All', 'Breakfast', 'Lunch', 'Snacks', 'Beverages'];
 
@@ -93,19 +98,8 @@ export default function AddItem() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      {/* <StatusBar barStyle="dark-content" /> */}
       <View style={styles.content}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#333" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Add New Item</Text>
-          <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-            <Text style={styles.saveButtonText}>Save</Text>
-          </TouchableOpacity>
-        </View>
-
         <ScrollView style={styles.form}>
           {/* Name Input */}
           <View style={styles.inputContainer}>
@@ -182,25 +176,34 @@ export default function AddItem() {
           </View>
 
           {/* Image Upload */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Upload Image *</Text>
-            <TouchableOpacity onPress={pickImage} style={StyleSheet.compose(styles.input, { marginBottom: 8 })}>
-              <Text style={styles.saveButtonText}>{image ? "Select a different image" : "Select Canteen Image"}</Text>
+          <View style={styles.imageSection}>
+            <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+              {image ? (
+                <Image source={{ uri: image }} style={styles.selectedImage} />
+              ) : (
+                <View style={styles.imagePickerPlaceholder}>
+                  <MaterialIcons name="add-a-photo" size={36} color={theme.colors.primary} />
+                  <Text style={styles.imagePickerText}>Add Food Pics</Text>
+                </View>
+              )}
             </TouchableOpacity>
-
-            {/* Display Selected Image */}
-            <View style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-              {image && <Image source={{ uri: image }} style={{ width: 100, height: 100, borderRadius: 50 }} />}
-            </View>
-
+            {image && (
+              <TouchableOpacity onPress={pickImage} style={styles.changeImageButton}>
+                <MaterialIcons name="edit" size={20} />
+              </TouchableOpacity>
+            )}
           </View>
+
+          <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
+            <Text style={styles.saveButtonText}>Save</Text>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -238,9 +241,13 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     padding: 8,
+    width: '100%',
+    backgroundColor: theme.colors.primary,
+    borderRadius: 8,
+    marginBottom: 30
   },
   saveButtonText: {
-    color: '#007AFF',
+    color: theme.colors.onPrimary,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
@@ -250,7 +257,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   inputContainer: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
@@ -278,14 +285,62 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   selectedCategory: {
-    backgroundColor: '#FFD337',
+    backgroundColor: theme.colors.primary,
   },
   categoryText: {
     fontSize: 14,
     color: '#666',
   },
   selectedCategoryText: {
-    color: '#333',
+    color: theme.colors.onPrimary,
     fontWeight: '600',
+  },
+  imageSection: {
+    position: "relative",
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  imagePicker: {
+    width: width * 0.5,
+    height: width * 0.35,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#f5f5f5',
+    borderWidth: 2,
+    borderColor: '#ddd',
+    borderStyle: 'dashed',
+  },
+  imagePickerPlaceholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  selectedImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  imagePickerText: {
+    marginTop: 8,
+    color: '#888',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  changeImageButton: {
+    position: "absolute",
+    zIndex: 1,
+    bottom: 10,
+    right: 95,
+    marginTop: 12,
+    padding: 5,
+    alignSelf: 'center',
+    backgroundColor: "white",
+    borderRadius: "50%"
+  },
+  changeImageText: {
+    color: theme.colors.primary,
+    fontWeight: '600',
+    fontSize: 14,
   },
 }); 
