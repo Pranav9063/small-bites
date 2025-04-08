@@ -23,7 +23,7 @@ type TimeSlot = {
   label: string;
 };
 
-export default function CheckoutScreen() {
+export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: string, canteenName: string }) {
   const router = useRouter();
   const { cart } = useCart();
   const [selectedPayment, setSelectedPayment] = useState<string>('');
@@ -35,20 +35,20 @@ export default function CheckoutScreen() {
     const slots: TimeSlot[] = [];
     for (let hour = 10; hour < 22; hour++) {
       const time24 = `${hour}:00`;
-      const timeLabel = hour < 12 ? `${hour}:00 AM` : 
-                       hour === 12 ? `12:00 PM` : 
-                       `${hour-12}:00 PM`;
+      const timeLabel = hour < 12 ? `${hour}:00 AM` :
+        hour === 12 ? `12:00 PM` :
+          `${hour - 12}:00 PM`;
       slots.push({
         id: time24,
         time: time24,
         label: timeLabel
       });
-      
+
       // Add half-hour slots
       const halfHour = `${hour}:30`;
-      const halfHourLabel = hour < 12 ? `${hour}:30 AM` : 
-                          hour === 12 ? `12:30 PM` : 
-                          `${hour-12}:30 PM`;
+      const halfHourLabel = hour < 12 ? `${hour}:30 AM` :
+        hour === 12 ? `12:30 PM` :
+          `${hour - 12}:30 PM`;
       slots.push({
         id: halfHour,
         time: halfHour,
@@ -67,15 +67,15 @@ export default function CheckoutScreen() {
   ];
 
   const orderTimings: OrderTiming[] = [
-    { 
-      id: 'now', 
-      name: 'Collect Now', 
+    {
+      id: 'now',
+      name: 'Collect Now',
       description: 'Your order will be ready in 15-20 minutes'
     },
-    { 
-      id: 'schedule', 
+    {
+      id: 'schedule',
       name: 'Schedule Collection',
-      description: selectedTimeSlot 
+      description: selectedTimeSlot
         ? `Pickup at ${selectedTimeSlot.label}`
         : 'Pick up your order at your preferred time'
     },
@@ -152,10 +152,10 @@ export default function CheckoutScreen() {
             >
               <View style={styles.optionInfo}>
                 <View style={styles.timingIcon}>
-                  <Ionicons 
-                    name={timing.id === 'now' ? 'time-outline' : 'calendar-outline'} 
-                    size={24} 
-                    color="#FFD337" 
+                  <Ionicons
+                    name={timing.id === 'now' ? 'time-outline' : 'calendar-outline'}
+                    size={24}
+                    color="#FFD337"
                   />
                 </View>
                 <View>

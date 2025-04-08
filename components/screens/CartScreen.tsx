@@ -90,7 +90,10 @@ export default function CartScreen({id, name}: {id: string, name: string}) {
             </View>
             <TouchableOpacity 
               style={styles.checkoutButton}
-              onPress={() => router.push('/user/checkout')}
+              onPress={() => router.push({pathname: '/user/checkout', params: {
+                canteenId: id,
+                canteenName: name
+              }})}
             >
               <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
               <Ionicons name="arrow-forward" size={20} color="#333" />
