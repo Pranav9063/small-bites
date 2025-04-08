@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useOrders } from '../../../context/OrderContext';
+import { useOrders } from '../../../../context/OrderContext';
 
 interface OrderItem {
   id: number;
@@ -17,7 +17,7 @@ const OrderDetail: React.FC = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { orders, updateOrderStatus } = useOrders();
-  
+
   const currentOrder = orders.find(order => order.id === id);
   const statusSteps: OrderStatus[] = ['pending', 'preparing', 'ready'];
 
@@ -53,8 +53,8 @@ const OrderDetail: React.FC = () => {
                 onPress={() => updateOrderStatus(id as string, status)}
                 style={[
                   styles.statusDot,
-                  { 
-                    backgroundColor: statusSteps.indexOf(currentOrder.status) >= index 
+                  {
+                    backgroundColor: statusSteps.indexOf(currentOrder.status) >= index
                       ? getStatusColor(status)
                       : '#eee'
                   }

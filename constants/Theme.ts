@@ -5,7 +5,7 @@ import {
 const mytheme = {
   ...DefaultTheme,
   colors:  {
-      "primary": "rgb(0, 95, 175)",
+      "primary": "rgb(49, 141, 161)",
       "onPrimary": "rgb(255, 255, 255)",
       "primaryContainer": "rgb(212, 227, 255)",
       "onPrimaryContainer": "rgb(0, 28, 58)",

@@ -5,11 +5,7 @@ export const googleSignIn = async () => {
   try {
     await GoogleSignin.hasPlayServices();  
     const userInfo = await GoogleSignin.signIn();
-    const idToken = userInfo.data?.idToken;
-
-    if (!idToken) {
-      throw new Error("Google Sign-In failed");
-    }
+    const idToken = userInfo.data?.idToken as string;
 
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
     const res = await auth().signInWithCredential(googleCredential);

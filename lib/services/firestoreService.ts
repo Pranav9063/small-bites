@@ -1,6 +1,7 @@
-import { db } from "@/lib/services/firebaseConfig";
+import { db, storage } from "@/lib/services/firebaseConfig";
 import { doc, setDoc, getDoc, addDoc, collection, getDocs } from "@react-native-firebase/firestore";
 import { googleSignIn } from "./authService";
+import { deleteObject, getMetadata, ref } from "@react-native-firebase/storage";
 
 export type NewUser = {
   id: string;
@@ -225,7 +226,7 @@ const getCanteenIdFromUserId = async (userId: string) => {
 export const addMenuItemToCanteen = async (userId: string, menuItem: any) => {
   try {
     const canteenId = await getCanteenIdFromUserId(userId);
-    if(!canteenId) {
+    if (!canteenId) {
       throw new Error("Canteen ID not found for user.");
     }
     const canteenRef = doc(db, "canteens", canteenId);
@@ -249,19 +250,34 @@ export const addMenuItemToCanteen = async (userId: string, menuItem: any) => {
 
 export const deleteMenuItemFromCanteen = async (userId: string, itemId: string) => {
   try {
-    console.log(userId, itemId)
     const canteenId = await getCanteenIdFromUserId(userId);
-    if(!canteenId) {
+    if (!canteenId) {
       throw new Error("Canteen ID not found for user.");
     }
     const canteenRef = doc(db, "canteens", canteenId);
     const canteenSnap = await getDoc(canteenRef);
 
     if (canteenSnap.exists) {
-      const canteenData = canteenSnap.data();
-      const menu = canteenData ? canteenData.menu || [] : [];
-      const updatedMenu = menu.filter((item: any) => item.item_id !== itemId);
+      const canteenData = canteenSnap.data() as CanteenData;
+      const menu = canteenData ? canteenData.menu || [] : [] as MenuItem[];
+      const imageURL = menu.find((item) => item.item_id === itemId)?.image;
+      const updatedMenu = menu.filter((item) => item.item_id !== itemId);
       await setDoc(canteenRef, { menu: updatedMenu }, { merge: true });
+      // Delete image from storage if necessary
+      if (imageURL) {
+        const imagePath = imageURL.replace(/.*\/o\/(.+)\?.*/, "$1").replace("%2F", "/");
+        const storageRef = ref(storage, decodeURIComponent(imagePath));
+        try {
+          await getMetadata(storageRef); // Check if the file exists
+          await deleteObject(storageRef);
+        } catch (error: any) {
+          if (error.code === "storage/object-not-found") {
+            console.warn("Image not found, skipping deletion");
+          } else {
+            console.error("Error deleting image:", error);
+          }
+        }
+      }
       console.log("Menu item deleted successfully!");
       return { success: true };
     } else {
