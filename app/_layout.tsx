@@ -2,7 +2,7 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { configureOptions } from "@/constants/Config";
 import { useEffect, useState } from "react";
-import auth from "@react-native-firebase/auth";
+import { onAuthStateChanged } from "@react-native-firebase/auth";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -11,6 +11,7 @@ import { useTheme } from "react-native-paper";
 import { PaperProvider } from "react-native-paper";
 import mytheme from "@/constants/Theme";
 import { CartProvider } from '../lib/context/CartContext';
+import { auth } from "@/lib/services/firebaseConfig";
 
 function RootContent() {
   const [initializing, setInitializing] = useState(true);
@@ -20,7 +21,7 @@ function RootContent() {
   // console.log(segments);
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(() => {
+    const subscriber = onAuthStateChanged(auth, () => {
       setInitializing(false);
     });
     return subscriber;
