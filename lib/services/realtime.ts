@@ -2,6 +2,7 @@
 import { OrderDetails } from "@/assets/types/db"
 import { ref, set } from "@react-native-firebase/database"
 import { database } from "@/lib/services/firebaseConfig";
+import { fetchCanteenByCanteenOwnerId } from "./firestoreService";
 
 export async function placeNewOrder(OrderDetails: OrderDetails) {
     try {
@@ -26,5 +27,23 @@ export async function getUserOrders(userId: string) {
         return userOrders;
     } catch (error) {
         console.error("Error fetching user orders:", error);
+    }
+}
+
+export async function getCanteenOrders(userId: string) {
+    try {
+        const canteenId = await fetchCanteenByCanteenOwnerId(userId);
+        if (!canteenId) {
+            throw new Error("Canteen ID not found for user: " + userId);
+        }
+        const ordersRef = ref(database, `orders`);
+        const canteenOrdersQuery = ordersRef.orderByChild('canteenId').equalTo(canteenId.id);
+        const canteenOrders = await canteenOrdersQuery.once('value').then(snapshot => {
+            const canteenOrders = snapshot.val();
+            return canteenOrders;
+        });
+        return canteenOrders;
+    } catch (error) {
+        console.error("Error fetching canteen orders:", error);
     }
 }

@@ -1,9 +1,13 @@
-import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useOrders } from '../../../../context/OrderContext';
+import { useAuth } from '@/lib/context/AuthContext';
+import { OrderDetails } from '@/assets/types/db';
+import { CartItem } from '@/lib/context/CartContext';
+import { getCanteenOrders } from '@/lib/services/realtime';
 
 // Add interface for order items
 interface OrderItem {
@@ -19,60 +23,39 @@ interface Order {
   items: OrderItem[];
 }
 
-// Update orders array with items
-const orders = [
-  {
-    id: '1',
-    name: 'Order #143021',
-    status: 'pending',
-    items: [
-      { name: 'Burger', quantity: 2 },
-      { name: 'Fries', quantity: 1 },
-      { name: 'Soda', quantity: 2 }
-    ]
-  },
-  {
-    id: '2',
-    name: 'Order #142501',
-    status: 'preparing',
-    items: [
-      { name: 'Pizza', quantity: 1 },
-      { name: 'Coke', quantity: 2 }
-    ]
-  },
-  {
-    id: '3',
-    name: 'Order #142009',
-    status: 'ready',
-    items: [
-      { name: 'Sandwich', quantity: 1 }
-    ]
-  },
-];
-
 const OrdersScreen = () => {
   const router = useRouter();
-  const { orders } = useOrders();  // Get orders from context
+  const [orders, setOrders] = useState<OrderDetails[]>([]);
+  const { user } = useAuth();
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const orders = await getCanteenOrders(user!.uid);
+      setOrders(orders);
+    };
+    fetchOrders();
+  }, [])
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return '#FF9800';
       case 'preparing': return '#2196F3';
       case 'ready': return '#4CAF50';
+      case 'cancelled': return '#F44336';
+      case 'completed': return '#9E9E9E';
       default: return '#999';
     }
   };
 
-  const renderOrderCard = ({ item }: { item: Order }) => (
+  const renderOrderCard = ({ item: order }: { item: OrderDetails }) => (
     <TouchableOpacity
       style={styles.orderCard}
-      onPress={() => router.push(`/canteen/orders/${item.id}`)}
+      onPress={() => router.push(`/canteen/orders/${order.orderId}`)}
     >
       <View style={styles.orderHeader}>
         <View style={styles.orderInfo}>
-          <Text style={styles.orderText}>{item.name}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
-            <Text style={styles.statusText}>{item.status.charAt(0).toUpperCase() + item.status.slice(1)}</Text>
+          <Text style={styles.orderText}>{`Order ${order.orderId}`}</Text>
+          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.orderStatus) }]}>
+            <Text style={styles.statusText}>{order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}</Text>
           </View>
         </View>
         <Ionicons name="chevron-forward" size={24} color="#999" />
@@ -81,7 +64,7 @@ const OrdersScreen = () => {
       <View style={styles.divider} />
 
       <View style={styles.itemsContainer}>
-        {item.items.map((orderItem, index) => (
+        {order.cart.map((orderItem, index) => (
           <View key={index} style={styles.itemRow}>
             <Ionicons name="restaurant-outline" size={16} color="#666" />
             <Text style={styles.orderItemText}>
@@ -96,11 +79,14 @@ const OrdersScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={orders}  // Use orders from context
-        keyExtractor={(item) => item.id}
+        data={orders} // Ensure orders is always an array
+        keyExtractor={(item) => item.orderId}
         renderItem={renderOrderCard}
         contentContainerStyle={styles.listContainer}
       />
+      <Pressable style={{ padding: 16 }} onPress={() => router.push('/user/profile')}>
+        <Text>Profile</Text>
+      </Pressable>
     </SafeAreaView>
   );
 };

@@ -81,6 +81,7 @@ const UserHomeScreen = () => {
                     console.error("No canteens found");
                     return;
                 }
+                console.log(fetchedCanteens)
                 setSortedCanteens(fetchedCanteens);
             } catch (error) {
                 console.error("Error fetching canteens:", error);

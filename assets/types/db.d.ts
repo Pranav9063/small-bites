@@ -21,6 +21,7 @@ type MenuItem = {
 }
 
 type OrderDetails = {
+    orderId: string;
     userId: string;
     canteenId: string;
     canteenName: string;
