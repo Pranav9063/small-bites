@@ -21,10 +21,11 @@ type MenuItem = {
 }
 
 type OrderDetails = {
+    userId: string;
     canteenId: string;
     canteenName: string;
+    orderStatus: "pending" | "ready" | "cancelled" | "preparing" | "completed";
     cart: CartItem[];
     paymentMethod: string;
-    collectionTiming: string;
     scheduledTime: Date;
 };

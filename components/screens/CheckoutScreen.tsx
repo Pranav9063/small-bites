@@ -5,6 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCart } from '../../lib/context/CartContext';
 import { OrderDetails } from '@/assets/types/db';
+import { useAuth } from '@/lib/context/AuthContext';
+import { placeNewOrder } from '@/lib/services/realtime';
+import { set } from '@react-native-firebase/database';
 
 type PaymentMethod = {
   id: string;
@@ -27,10 +30,12 @@ type TimeSlot = {
 export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: string, canteenName: string }) {
   const router = useRouter();
   const { cart } = useCart();
+  const { user } = useAuth();
   const [selectedPayment, setSelectedPayment] = useState<string>('');
   const [selectedTiming, setSelectedTiming] = useState<string>('');
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const generateTimeSlots = (): TimeSlot[] => {
     const slots: TimeSlot[] = [];
@@ -85,8 +90,9 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const total = subtotal;
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     try {
+      setIsLoading(true);
       if (!selectedPayment || !selectedTiming) {
         // Show error message
         return;
@@ -96,22 +102,28 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
         return;
       }
       if (selectedPayment != 'cash') {
-        Alert.alert("Please proceed with Cash on Delivery only.")
+        Alert.alert("Please proceed with Cash on Delivery only.");
+        return;
       }
       // Handle order placement
       const orderDetails = {
+        userId: user?.uid,
+        orderStatus: 'pending',
         canteenId,
         canteenName,
         cart,
         paymentMethod: selectedPayment,
-        collectionTiming: selectedTiming,
         scheduledTime: selectedTiming === 'schedule' ? new Date(`${new Date().toISOString().split('T')[0]}T${selectedTimeSlot?.time}:00`) : new Date(),
       } as OrderDetails;
 
-
+      // Call the function to place the order
+      await placeNewOrder(orderDetails);
+      Alert.alert("Order placed successfully!")
+      router.push('/user/orders');
     } catch (error) {
       console.error('Error placing order:', error);
-
+    } finally {
+      setIsLoading(false);
     }
   };
 
