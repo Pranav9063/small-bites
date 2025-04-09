@@ -1,6 +1,6 @@
 
 import { OrderDetails } from "@/assets/types/db"
-import { ref, set } from "@react-native-firebase/database"
+import { equalTo, onValue, orderByChild, query, ref, set, update } from "@react-native-firebase/database"
 import { database } from "@/lib/services/firebaseConfig";
 import { fetchCanteenByCanteenOwnerId } from "./firestoreService";
 
@@ -16,34 +16,52 @@ export async function placeNewOrder(OrderDetails: OrderDetails) {
     }
 }
 
-export async function getUserOrders(userId: string) {
+export async function subscribeToUserOrders(userId: string, callback: (orders: any) => void) {
     try {
         const ordersRef = ref(database, `orders`);
         const userOrdersQuery = ordersRef.orderByChild('userId').equalTo(userId);
-        const userOrders = await userOrdersQuery.once('value').then(snapshot => {
-            const userOrders = snapshot.val();
-            return userOrders;
+        const unsubscribe = onValue(userOrdersQuery, (snapshot) => {
+            const data = snapshot.val() || {};
+            callback(data);
         });
-        return userOrders;
+        return unsubscribe;
     } catch (error) {
         console.error("Error fetching user orders:", error);
     }
 }
 
-export async function getCanteenOrders(userId: string) {
+export async function subscribeToCanteenOrders(userId: string, callback: (orders: any) => void) {
     try {
         const canteenId = await fetchCanteenByCanteenOwnerId(userId);
         if (!canteenId) {
             throw new Error("Canteen ID not found for user: " + userId);
         }
-        const ordersRef = ref(database, `orders`);
-        const canteenOrdersQuery = ordersRef.orderByChild('canteenId').equalTo(canteenId.id);
-        const canteenOrders = await canteenOrdersQuery.once('value').then(snapshot => {
-            const canteenOrders = snapshot.val();
-            return canteenOrders;
+
+        const ordersQuery = query(
+            ref(database, 'orders'),
+            orderByChild('canteenId'),
+            equalTo(canteenId.id)
+        );
+
+        const unsubscribe = onValue(ordersQuery, (snapshot) => {
+            const data = snapshot.val() || {};
+            callback(data);
         });
-        return canteenOrders;
+
+        // return unsubscribe function to allow manual cleanup
+        return unsubscribe;
     } catch (error) {
-        console.error("Error fetching canteen orders:", error);
+        console.error("Error subscribing to canteen orders:", error);
+    }
+}
+
+
+export async function updateOrderStatus(orderId: string, status: string) {
+    try {
+        const orderRef = ref(database, `orders/${orderId}`);
+        await update(orderRef, { orderStatus: status });
+        console.log("Order status updated successfully:", orderId);
+    } catch (error) {
+        console.error("Error updating order status:", error);
     }
 }

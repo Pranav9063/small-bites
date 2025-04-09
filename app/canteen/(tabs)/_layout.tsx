@@ -8,16 +8,11 @@ function TabContent() {
     return (
         <Tabs screenOptions={{ tabBarActiveTintColor: theme.colors.primary, tabBarStyle: { height: 55 } }}>
             <Tabs.Screen
-                name="orders/index"
+                name="orders"
                 options={{
                     title: 'Orders',
                     tabBarIcon: ({ color }) => <Ionicons size={28} name="receipt-outline" color={color} />,
-                }}
-            />
-            <Tabs.Screen
-                name="orders/[id]"
-                options={{
-                    href: null,
+                    headerShown: false
                 }}
             />
             <Tabs.Screen

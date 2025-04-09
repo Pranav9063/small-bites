@@ -1,20 +1,29 @@
 import { View, Text, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getUserOrders } from '@/lib/services/realtime';
+import { subscribeToUserOrders } from '@/lib/services/realtime';
 import { useAuth } from '@/lib/context/AuthContext';
 
 const orders = () => {
     const [userOrders, setUserOrders] = useState(null);
     const { user } = useAuth();
-    const userId = user!.uid; // Replace with the actual user ID
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            const orders = await getUserOrders(userId);
-            setUserOrders(orders);
+        if (!user) return;
+
+        let unsubscribe: (() => void) | undefined;
+
+        const listenToOrders = async () => {
+            unsubscribe = await subscribeToUserOrders(user.uid, (fetchedOrders) => {
+                setUserOrders(fetchedOrders);
+            });
         };
-        fetchOrders();
+
+        listenToOrders();
+
+        return () => {
+            if (unsubscribe) unsubscribe(); // Cleanup on unmount
+        };
     }, []);
 
     return (

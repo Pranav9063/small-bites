@@ -1,31 +1,43 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { useOrders } from '../../../../context/OrderContext';
+import { useLocalSearchParams } from 'expo-router';
+import { OrderDetails } from '@/assets/types/db';
+import { updateOrderStatus } from '@/lib/services/realtime';
+import { database } from '@/lib/services/firebaseConfig';
+import { ref, onValue } from '@react-native-firebase/database';
 
-interface OrderItem {
-  id: number;
-  name: string;
-  quantity: number;
-  price: number;
-}
-
-type OrderStatus = 'pending' | 'preparing' | 'ready';
+type OrderStatus = 'pending' | 'preparing' | 'ready' | 'cancelled' | 'completed';
 
 const OrderDetail: React.FC = () => {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
-  const { orders, updateOrderStatus } = useOrders();
+  const [currentOrder, setCurrentOrder] = React.useState<OrderDetails>();
+  const statusSteps: OrderStatus[] = ['pending', 'preparing', 'ready', "cancelled", "completed"];
 
-  const currentOrder = orders.find(order => order.id === id);
-  const statusSteps: OrderStatus[] = ['pending', 'preparing', 'ready'];
+  useEffect(() => {
+    if (!id) return;
 
-  const getStatusColor = (status: OrderStatus) => {
+    const orderRef = ref(database, `orders/${id}`);
+
+    const unsubscribe = onValue(orderRef, (snapshot) => {
+      const orderData = snapshot.val();
+      if (orderData) {
+        setCurrentOrder(orderData);
+      } else {
+        console.error("Order not found");
+      }
+    });
+
+    // Cleanup the listener on unmount
+    return () => unsubscribe();
+  }, [id]);
+
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return '#FF9800';
       case 'preparing': return '#2196F3';
       case 'ready': return '#4CAF50';
+      case 'cancelled': return '#F44336';
+      case 'completed': return '#9E9E9E';
       default: return '#999';
     }
   };
@@ -47,14 +59,14 @@ const OrderDetail: React.FC = () => {
             <React.Fragment key={status}>
               {index > 0 && <View style={[
                 styles.statusLine,
-                { backgroundColor: currentOrder.status === 'pending' ? '#eee' : getStatusColor(currentOrder.status) }
+                { backgroundColor: currentOrder.orderStatus === 'pending' ? '#eee' : getStatusColor(currentOrder.orderStatus) }
               ]} />}
               <TouchableOpacity
                 onPress={() => updateOrderStatus(id as string, status)}
                 style={[
                   styles.statusDot,
                   {
-                    backgroundColor: statusSteps.indexOf(currentOrder.status) >= index
+                    backgroundColor: statusSteps.indexOf(currentOrder.orderStatus) >= index
                       ? getStatusColor(status)
                       : '#eee'
                   }
@@ -69,7 +81,7 @@ const OrderDetail: React.FC = () => {
 
       <View style={styles.itemsContainer}>
         <Text style={styles.sectionTitle}>Order Items</Text>
-        {currentOrder.items.map((item, index) => (
+        {currentOrder.cart.map((item, index) => (
           <View key={index} style={styles.itemRow}>
             <View style={styles.itemInfo}>
               <Text style={styles.itemName}>{item.name}</Text>
@@ -82,7 +94,7 @@ const OrderDetail: React.FC = () => {
 
       <View style={styles.totalContainer}>
         <Text style={styles.totalLabel}>Total Amount:</Text>
-        <Text style={styles.totalAmount}>₹{currentOrder.items.reduce((sum, item) => sum + item.quantity * 100, 0)}</Text>
+        <Text style={styles.totalAmount}>₹{currentOrder.cart.reduce((sum, item) => sum + item.quantity * 100, 0)}</Text>
       </View>
 
       <View style={styles.deliveryInfo}>

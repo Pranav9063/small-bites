@@ -3,11 +3,9 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Pressable } from 'r
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useOrders } from '../../../../context/OrderContext';
 import { useAuth } from '@/lib/context/AuthContext';
 import { OrderDetails } from '@/assets/types/db';
-import { CartItem } from '@/lib/context/CartContext';
-import { getCanteenOrders } from '@/lib/services/realtime';
+import { subscribeToCanteenOrders } from '@/lib/services/realtime';
 
 // Add interface for order items
 interface OrderItem {
@@ -28,12 +26,22 @@ const OrdersScreen = () => {
   const [orders, setOrders] = useState<OrderDetails[]>([]);
   const { user } = useAuth();
   useEffect(() => {
-    const fetchOrders = async () => {
-      const orders = await getCanteenOrders(user!.uid);
-      setOrders(orders);
+    if (!user) return;
+
+    let unsubscribe: (() => void) | undefined;
+
+    const listenToOrders = async () => {
+      unsubscribe = await subscribeToCanteenOrders(user.uid, (fetchedOrders) => {
+        setOrders(fetchedOrders);
+      });
     };
-    fetchOrders();
-  }, [])
+
+    listenToOrders();
+
+    return () => {
+      if (unsubscribe) unsubscribe(); // Cleanup on unmount
+    };
+  }, [user]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -46,41 +54,44 @@ const OrdersScreen = () => {
     }
   };
 
-  const renderOrderCard = ({ item: order }: { item: OrderDetails }) => (
-    <TouchableOpacity
-      style={styles.orderCard}
-      onPress={() => router.push(`/canteen/orders/${order.orderId}`)}
-    >
-      <View style={styles.orderHeader}>
-        <View style={styles.orderInfo}>
-          <Text style={styles.orderText}>{`Order ${order.orderId}`}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.orderStatus) }]}>
-            <Text style={styles.statusText}>{order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}</Text>
+  const renderOrderCard = ({ item }: { item: [string, OrderDetails] }) => {
+    const [orderId, order] = item;
+    return (
+      <TouchableOpacity
+        style={styles.orderCard}
+        onPress={() => router.push(`/canteen/orders/${orderId}`)}
+      >
+        <View style={styles.orderHeader}>
+          <View style={styles.orderInfo}>
+            <Text style={styles.orderText}>{`Order #${orderId}`}</Text>
+            <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.orderStatus) }]}>
+              <Text style={styles.statusText}>{order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}</Text>
+            </View>
           </View>
+          <Ionicons name="chevron-forward" size={24} color="#999" />
         </View>
-        <Ionicons name="chevron-forward" size={24} color="#999" />
-      </View>
 
-      <View style={styles.divider} />
+        <View style={styles.divider} />
 
-      <View style={styles.itemsContainer}>
-        {order.cart.map((orderItem, index) => (
-          <View key={index} style={styles.itemRow}>
-            <Ionicons name="restaurant-outline" size={16} color="#666" />
-            <Text style={styles.orderItemText}>
-              {orderItem.name} × {orderItem.quantity}
-            </Text>
-          </View>
-        ))}
-      </View>
-    </TouchableOpacity>
-  );
+        <View style={styles.itemsContainer}>
+          {order.cart.map((orderItem, index) => (
+            <View key={index} style={styles.itemRow}>
+              <Ionicons name="restaurant-outline" size={16} color="#666" />
+              <Text style={styles.orderItemText}>
+                {orderItem.name} × {orderItem.quantity}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </TouchableOpacity>
+    )
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={orders} // Ensure orders is always an array
-        keyExtractor={(item) => item.orderId}
+        data={Object.entries(orders)}
+        keyExtractor={([key]) => key}
         renderItem={renderOrderCard}
         contentContainerStyle={styles.listContainer}
       />
