@@ -7,8 +7,7 @@ import { useAuth } from '@/lib/context/AuthContext';
 const orders = () => {
     const [userOrders, setUserOrders] = useState(null);
     const { user } = useAuth();
-    if (!user) return null; // Ensure user is available before proceeding
-    const userId = user.uid; // Replace with the actual user ID
+    const userId = user!.uid; // Replace with the actual user ID
 
     useEffect(() => {
         const fetchOrders = async () => {
