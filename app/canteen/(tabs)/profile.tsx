@@ -37,14 +37,14 @@ export default function Profile() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
-      </View>
+      </View> */}
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Profile Card */}
         <View style={styles.profileCard}>
-          <Image source={user?.photoURL ? { uri: user?.photoURL } : require('../../assets/images/canteenImg.png')} style={styles.profileImage} />
+          <Image source={user?.photoURL ? { uri: user?.photoURL } : require('@/assets/images/canteenImg.png')} style={styles.profileImage} />
           <View style={styles.profileInfo}>
             <Text style={styles.name}>{user?.displayName}</Text>
             <Text style={styles.email}>{user?.email}</Text>

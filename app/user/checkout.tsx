@@ -3,7 +3,7 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import CheckoutScreen from '@/components/screens/CheckoutScreen';
 
 export default function CheckoutPage() {
-  const { id, name } = useLocalSearchParams() as { id: string, name: string };
+  const { canteenId, canteenName } = useLocalSearchParams() as { canteenId: string, canteenName: string };
   return (
     <>
       <Stack.Screen
@@ -11,7 +11,7 @@ export default function CheckoutPage() {
           headerShown: false,
         }}
       />
-      <CheckoutScreen canteenId={id} canteenName={name} />
+      <CheckoutScreen canteenId={canteenId} canteenName={canteenName} />
     </>
   );
 } 

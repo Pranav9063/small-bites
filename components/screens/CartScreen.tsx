@@ -91,10 +91,9 @@ export default function CartScreen({ id, name }: { id: string, name: string }) {
             <TouchableOpacity
               style={styles.checkoutButton}
               onPress={() => router.push({
-                pathname: "/user/checkout",
-                params: {
-                  id,
-                  name,
+                pathname: '/user/checkout', params: {
+                  canteenId: id,
+                  canteenName: name
                 }
               })}
             >
