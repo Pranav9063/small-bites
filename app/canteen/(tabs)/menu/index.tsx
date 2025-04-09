@@ -67,18 +67,32 @@ export default function Menu() {
 
   // Delete item
   const deleteItem = async (id: string) => {
-    try {
-      const result = await deleteMenuItemFromCanteen(user?.uid || '', id);
-      if (result.success) {
-        setMenuItems(prevItems => prevItems.filter(item => item.item_id !== id));
-        Alert.alert("Success", "Item deleted successfully.");
-      }
-      else {
-        throw new Error("Failed to delete item.");
-      }
-    } catch (error) {
-      console.error("Error deleting item:", error);
-    }
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this item?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Delete", 
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const result = await deleteMenuItemFromCanteen(user?.uid || '', id);
+              if (result.success) {
+                setMenuItems(prevItems => prevItems.filter(item => item.item_id !== id));
+                Alert.alert("Success", "Item deleted successfully.");
+              }
+              else {
+                throw new Error("Failed to delete item.");
+              }
+            } catch (error) {
+              console.error("Error deleting item:", error);
+              Alert.alert("Error", "Failed to delete item. Please try again.");
+            }
+          }
+        }
+      ]
+    );
   };
 
   // Edit item
@@ -90,7 +104,8 @@ export default function Menu() {
         name: item.name,
         price: item.price.toString(),
         category: item.category,
-        calories: item.calories?.toString() || "0"
+        calories: item.calories?.toString() || "0",
+        description: item.description || ""
       }
     });
   };
@@ -117,6 +132,7 @@ export default function Menu() {
     return matchesSearch && matchesCategory;
   });
 
+  
 
 
   return (
@@ -130,7 +146,7 @@ export default function Menu() {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Menu</Text>
           <TouchableOpacity style={styles.addButton} onPress={handleAddItem}>
-            <Ionicons name="add-circle-outline" size={24} color="#333" />
+            <Ionicons name="add-circle" size={28} color="#FFD337" />
           </TouchableOpacity>
         </View> */}
 
@@ -174,65 +190,90 @@ export default function Menu() {
         </View>
 
         {/* Menu Items */}
-        <ScrollView
+        <ScrollView contentContainerStyle = {{paddingBottom:70}}
           style={styles.menuList}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
-          {filteredItems.map((item) => (
-            <View key={item.item_id} style={styles.menuItem}>
-              {item.image && <Image source={{ uri: item.image }} style={styles.itemImage} />}
-              <View style={styles.itemDetails}>
-                <Text style={styles.itemName}>{item.name}</Text>
-                <Text style={styles.itemPrice}>₹{item.price}</Text>
-                {item.calories && (
-                  <Text style={styles.itemCalories}>{item.calories} cal</Text>
-                )}
-              </View>
-              <View style={styles.itemActions}>
-                <TouchableOpacity
-                  style={[
-                    styles.availabilityButton,
-                    !item.availability && styles.unavailableButton,
-                  ]}
-                  onPress={() => toggleAvailability(item.item_id)}
-                >
-                  <Text style={[
-                    styles.availabilityText,
-                    !item.availability && styles.unavailabilityText,
-                  ]}>
-                    {item.availability ? 'Available' : 'Unavailable'}
-                  </Text>
-                </TouchableOpacity>
-                <View style={styles.actionButtons}>
-                  <TouchableOpacity
-                    style={styles.editButton}
-                    onPress={() => handleEditItem(item)}
+          {filteredItems.length > 0 ? (
+            filteredItems.map((item) => (
+              <View key={item.item_id} style={styles.menuItem}>
+                <View style={styles.itemHeader}>
+                  {item.image ? (
+                    <Image source={{uri: item.image}} style={styles.itemImage} />
+                  ) : (
+                    <View style={styles.placeholderImage}>
+                      <Ionicons name="fast-food" size={24} color="#ccc" />
+                    </View>
+                  )}
+                  <View style={styles.itemDetails}>
+                    <Text style={styles.itemName}>{item.name}</Text>
+                    <View style={styles.priceCaloriesContainer}>
+                      <Text style={styles.itemPrice}>₹{item.price}</Text>
+                      {item.calories && (
+                        <Text style={styles.itemCalories}>{item.calories} cal</Text>
+                      )}
+                    </View>
+                    {item.description && (
+                      <Text style={styles.itemDescription} numberOfLines={2}>
+                        {item.description}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                
+                <View style={styles.itemActions}>
+                  <TouchableOpacity 
+                    style={[
+                      styles.availabilityButton,
+                      !item.availability && styles.unavailableButton,
+                    ]}
+                    onPress={() => toggleAvailability(item.item_id)}
                   >
-                    <Ionicons name="create-outline" size={20} color="#666" />
+                    <Text style={[
+                      styles.availabilityText,
+                      !item.availability && styles.unavailabilityText,
+                    ]}>
+                      {item.availability ? 'Available' : 'Unavailable'}
+                    </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={() =>
-                      Alert.alert(
-                        "Confirm Delete",
-                        "Are you sure you want to delete this item?",
-                        [
-                          { text: "Cancel", style: "cancel" },
-                          { text: "Delete", style: "destructive", onPress: () => deleteItem(item.item_id) }
-                        ]
-                      )
-                    }
-                  >
-                    <Ionicons name="trash-outline" size={20} color="#FF4D4D" />
-                  </TouchableOpacity>
+                  <View style={styles.actionButtons}>
+                    <TouchableOpacity 
+                      style={styles.editButton}
+                      onPress={() => handleEditItem(item)}
+                    >
+                      <Ionicons name="create" size={20} color="#666" />
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={styles.deleteButton}
+                      onPress={() =>
+                        Alert.alert(
+                          "Confirm Delete",
+                          "Are you sure you want to delete this item?",
+                          [
+                            { text: "Cancel", style: "cancel" },
+                            { text: "Delete", style: "destructive", onPress: () => deleteItem(item.item_id) }
+                          ]
+                        )
+                      }
+                    >
+                      <Ionicons name="trash" size={20} color="#FF4D4D" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
+            ))
+          ) : (
+            <View style={styles.noItemsContainer}>
+              <Ionicons name="search" size={48} color="#ccc" />
+              <Text style={styles.noItemsText}>No items found</Text>
+              <Text style={styles.noItemsSubtext}>Try changing your search or category</Text>
             </View>
-          ))}
+          )}
         </ScrollView>
+      
 
         {/* Add menu button */}
         <TouchableOpacity
@@ -320,80 +361,186 @@ const createStyles = (theme: Theme) => {
       color: 'white',
       fontWeight: '600',
     },
-    menuList: {
-      flex: 1,
-      paddingHorizontal: 16,
-    },
-    menuItem: {
-      flexDirection: 'row',
-      padding: 12,
-      backgroundColor: '#fff',
-      borderRadius: 12,
-      marginBottom: 16,
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    itemImage: {
-      width: 60,
-      height: 60,
-      borderRadius: 8,
-    },
-    itemDetails: {
-      flex: 1,
-      marginLeft: 12,
-      justifyContent: 'center',
-    },
-    itemName: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: '#333',
-      marginBottom: 4,
-    },
-    itemPrice: {
-      fontSize: 14,
-      color: '#666',
-    },
+    // menuList: {
+    //   flex: 1,
+    //   paddingHorizontal: 16,
+    // },
+    // menuItem: {
+    //   flexDirection: 'row',
+    //   padding: 12,
+    //   backgroundColor: '#fff',
+    //   borderRadius: 12,
+    //   marginBottom: 16,
+    //   shadowColor: '#000',
+    //   shadowOffset: {
+    //     width: 0,
+    //     height: 2,
+    //   },
+    //   shadowOpacity: 0.1,
+    //   shadowRadius: 4,
+    //   elevation: 3,
+    // },
+    // itemImage: {
+    //   width: 60,
+    //   height: 60,
+    //   borderRadius: 8,
+    // },
+    // itemDetails: {
+    //   flex: 1,
+    //   marginLeft: 12,
+    //   justifyContent: 'center',
+    // },
+    // itemName: {
+    //   fontSize: 16,
+    //   fontWeight: '600',
+    //   color: '#333',
+    //   marginBottom: 4,
+    // },
+    // itemPrice: {
+    //   fontSize: 14,
+    //   color: '#666',
+    // },
     itemActions: {
-      justifyContent: 'center',
-      alignItems: 'flex-end',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: 12,
+      paddingTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: '#f0f0f0',
     },
     availabilityButton: {
       paddingHorizontal: 12,
-      paddingVertical: 6,
-      borderRadius: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
       backgroundColor: '#E8F5E9',
-      marginBottom: 8,
     },
     unavailableButton: {
       backgroundColor: '#FFEBEE',
     },
     availabilityText: {
-      fontSize: 12,
+      fontSize: 14,
+      fontWeight: '500',
       color: '#4CAF50',
     },
     unavailabilityText: {
       color: '#FF5252',
-    },
-    editButton: {
-      padding: 4,
+      fontWeight: '500',
     },
     actionButtons: {
       flexDirection: 'row',
-      gap: 8,
+      gap: 12,
+    },
+    editButton: {
+      padding: 8,
+      backgroundColor: '#f5f5f5',
+      borderRadius: 12,
+      width: 36,
+      height: 36,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     deleteButton: {
-      padding: 4,
+      padding: 8,
+      backgroundColor: '#ffeeee',
+      borderRadius: 12,
+      width: 36,
+      height: 36,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
-    itemCalories: {
-      fontSize: 12,
-      color: '#666',
-      marginTop: 2,
-    },
+    // itemCalories: {
+    //   fontSize: 12,
+    //   color: '#666',
+    //   marginTop: 2,
+    // },
+    // Add these to your StyleSheet:
+
+menuList: {
+  flex: 1,
+  paddingHorizontal: 16,
+},
+menuItem: {
+  padding: 16,
+  backgroundColor: '#fff',
+  borderRadius: 16,
+  marginBottom: 16,
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+},
+itemHeader: {
+  flexDirection: 'row',
+  marginBottom: 12,
+},
+itemImage: {
+  width: 80,
+  height: 80,
+  borderRadius: 12,
+},
+placeholderImage: {
+  width: 80,
+  height: 80,
+  borderRadius: 12,
+  backgroundColor: '#f5f5f5',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+itemDetails: {
+  flex: 1,
+  marginLeft: 16,
+  justifyContent: 'center',
+},
+itemName: {
+  fontSize: 18,
+  fontWeight: '600',
+  color: '#333',
+  marginBottom: 4,
+},
+priceCaloriesContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 6,
+},
+itemPrice: {
+  fontSize: 16,
+  fontWeight: '500',
+  color: '#333',
+  marginRight: 12,
+},
+itemCalories: {
+  fontSize: 14,
+  color: '#777',
+  backgroundColor: '#f0f0f0',
+  paddingHorizontal: 8,
+  paddingVertical: 2,
+  borderRadius: 12,
+},
+itemDescription: {
+  fontSize: 14,
+  color: '#666',
+  lineHeight: 20,
+},
+noItemsContainer: {
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingVertical: 60,
+},
+noItemsText: {
+  fontSize: 18,
+  fontWeight: '600',
+  color: '#666',
+  marginTop: 16,
+},
+noItemsSubtext: {
+  fontSize: 14,
+  color: '#999',
+  marginTop: 8,
+},
   })
 };
