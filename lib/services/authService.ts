@@ -1,14 +1,15 @@
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
-import auth from "@react-native-firebase/auth";
+import { GoogleAuthProvider, signInWithCredential } from "@react-native-firebase/auth";
+import { auth } from "./firebaseConfig";
 
 export const googleSignIn = async () => {
   try {
-    await GoogleSignin.hasPlayServices();  
+    await GoogleSignin.hasPlayServices();
     const userInfo = await GoogleSignin.signIn();
     const idToken = userInfo.data?.idToken as string;
 
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    const res = await auth().signInWithCredential(googleCredential);
+    const googleCredential = GoogleAuthProvider.credential(idToken);
+    const res = await signInWithCredential(auth, googleCredential);
     console.log("User signed in successfully!", res);
 
     return res;

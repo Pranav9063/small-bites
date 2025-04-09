@@ -8,16 +8,11 @@ function TabContent() {
     return (
         <Tabs screenOptions={{ tabBarActiveTintColor: theme.colors.primary, tabBarStyle: { height: 55 } }}>
             <Tabs.Screen
-                name="orders/index"
+                name="orders"
                 options={{
-                    title: 'Orders',
+                    title: 'Orders', headerTitleAlign: "center",
                     tabBarIcon: ({ color }) => <Ionicons size={28} name="receipt-outline" color={color} />,
-                }}
-            />
-            <Tabs.Screen
-                name="orders/[id]"
-                options={{
-                    href: null,
+                    headerShown: false
                 }}
             />
             <Tabs.Screen
@@ -31,15 +26,22 @@ function TabContent() {
             <Tabs.Screen
                 name="analytics"
                 options={{
-                    title: 'Analytics',
+                    title: 'Analytics', headerTitleAlign: "center",
                     tabBarIcon: ({ color }) => <Ionicons size={28} name="stats-chart-outline" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="reviews"
                 options={{
-                    title: 'Reviews',
+                    title: 'Reviews', headerTitleAlign: "center",
                     tabBarIcon: ({ color }) => <Ionicons size={28} name="star-outline" color={color} />,
+                }}
+            />
+            <Tabs.Screen
+                name="profile"
+                options={{
+                    title: 'Profile', headerTitleAlign: "center",
+                    tabBarIcon: ({ color }) => <Ionicons size={28} name="person-outline" color={color} />,
                 }}
             />
         </Tabs>

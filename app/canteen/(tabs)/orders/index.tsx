@@ -1,9 +1,11 @@
-import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useOrders } from '../../../../context/OrderContext';
+import { useAuth } from '@/lib/context/AuthContext';
+import { OrderDetails } from '@/assets/types/db';
+import { subscribeToCanteenOrders } from '@/lib/services/realtime';
 
 // Add interface for order items
 interface OrderItem {
@@ -19,89 +21,81 @@ interface Order {
   items: OrderItem[];
 }
 
-// Update orders array with items
-const orders = [
-  {
-    id: '1',
-    name: 'Order #143021',
-    status: 'pending',
-    items: [
-      { name: 'Burger', quantity: 2 },
-      { name: 'Fries', quantity: 1 },
-      { name: 'Soda', quantity: 2 }
-    ]
-  },
-  {
-    id: '2',
-    name: 'Order #142501',
-    status: 'preparing',
-    items: [
-      { name: 'Pizza', quantity: 1 },
-      { name: 'Coke', quantity: 2 }
-    ]
-  },
-  {
-    id: '3',
-    name: 'Order #142009',
-    status: 'ready',
-    items: [
-      { name: 'Sandwich', quantity: 1 }
-    ]
-  },
-];
-
 const OrdersScreen = () => {
   const router = useRouter();
-  const { orders } = useOrders();  // Get orders from context
+  const [orders, setOrders] = useState<OrderDetails[]>([]);
+  const { user } = useAuth();
+  useEffect(() => {
+    if (!user) return;
+
+    let unsubscribe: (() => void) | undefined;
+
+    const listenToOrders = async () => {
+      unsubscribe = await subscribeToCanteenOrders(user.uid, (fetchedOrders) => {
+        setOrders(fetchedOrders);
+      });
+    };
+
+    listenToOrders();
+
+    return () => {
+      if (unsubscribe) unsubscribe(); // Cleanup on unmount
+    };
+  }, [user]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return '#FF9800';
       case 'preparing': return '#2196F3';
       case 'ready': return '#4CAF50';
+      case 'cancelled': return '#F44336';
+      case 'completed': return '#9E9E9E';
       default: return '#999';
     }
   };
 
-  const renderOrderCard = ({ item }: { item: Order }) => (
-    <TouchableOpacity
-      style={styles.orderCard}
-      onPress={() => router.push(`/canteen/orders/${item.id}`)}
-    >
-      <View style={styles.orderHeader}>
-        <View style={styles.orderInfo}>
-          <Text style={styles.orderText}>{item.name}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
-            <Text style={styles.statusText}>{item.status.charAt(0).toUpperCase() + item.status.slice(1)}</Text>
+  const renderOrderCard = ({ item }: { item: [string, OrderDetails] }) => {
+    const [orderId, order] = item;
+    return (
+      <TouchableOpacity
+        style={styles.orderCard}
+        onPress={() => router.push(`/canteen/orders/${orderId}`)}
+      >
+        <View style={styles.orderHeader}>
+          <View style={styles.orderInfo}>
+            <Text style={styles.orderText}>{`Order #${orderId}`}</Text>
+            <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.orderStatus) }]}>
+              <Text style={styles.statusText}>{order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}</Text>
+            </View>
           </View>
+          <Ionicons name="chevron-forward" size={24} color="#999" />
         </View>
-        <Ionicons name="chevron-forward" size={24} color="#999" />
-      </View>
 
-      <View style={styles.divider} />
+        <View style={styles.divider} />
 
-      <View style={styles.itemsContainer}>
-        {item.items.map((orderItem, index) => (
-          <View key={index} style={styles.itemRow}>
-            <Ionicons name="restaurant-outline" size={16} color="#666" />
-            <Text style={styles.orderItemText}>
-              {orderItem.name} × {orderItem.quantity}
-            </Text>
-          </View>
-        ))}
-      </View>
-    </TouchableOpacity>
-  );
+        <View style={styles.itemsContainer}>
+          {order.cart.map((orderItem, index) => (
+            <View key={index} style={styles.itemRow}>
+              <Ionicons name="restaurant-outline" size={16} color="#666" />
+              <Text style={styles.orderItemText}>
+                {orderItem.name} × {orderItem.quantity}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </TouchableOpacity>
+    )
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <FlatList
-        data={orders}  // Use orders from context
-        keyExtractor={(item) => item.id}
+        data={Object.entries(orders)}
+        keyExtractor={([key]) => key}
         renderItem={renderOrderCard}
         contentContainerStyle={styles.listContainer}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

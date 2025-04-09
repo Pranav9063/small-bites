@@ -7,8 +7,8 @@ import { useAuth } from '@/lib/context/AuthContext';
 
 export default function Profile() {
   const router = useRouter();
-  const {user, signOut} = useAuth()
-  // const { useR, signOut } = useAuth();
+  const { user, signOutUser } = useAuth()
+  // const { useR, signOutUser } = useAuth();
 
 
   const menuItems = [
@@ -22,7 +22,7 @@ export default function Profile() {
     <TouchableOpacity
       key={item.label}
       style={styles.menuItem}
-      // onPress={() => router.push(item.route)}
+    // onPress={() => router.push(item.route)}
     >
       <View style={styles.menuItemLeft}>
         <View style={styles.menuItemIcon}>
@@ -35,16 +35,11 @@ export default function Profile() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
-      </View>
-
+    <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Profile Card */}
         <View style={styles.profileCard}>
-          <Image source={user?.photoURL ? {uri: user?.photoURL} : require('../../assets/images/canteenImg.png')} style={styles.profileImage} />
+          <Image source={user?.photoURL ? { uri: user?.photoURL } : require('@/assets/images/canteenImg.png')} style={styles.profileImage} />
           <View style={styles.profileInfo}>
             <Text style={styles.name}>{user?.displayName}</Text>
             <Text style={styles.email}>{user?.email}</Text>
@@ -60,7 +55,7 @@ export default function Profile() {
         </View>
 
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
+        <TouchableOpacity style={styles.logoutButton} onPress={signOutUser}>
           <Ionicons name="log-out-outline" size={22} color="#FF4D4D" />
           <Text style={styles.logoutText}>
             Logout</Text>
@@ -68,7 +63,7 @@ export default function Profile() {
       </ScrollView>
 
       {/* Bottom Navigation */}
-          </SafeAreaView>
+    </View>
   );
 }
 
