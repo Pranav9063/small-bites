@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Platform, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Platform, FlatList, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCart } from '../../lib/context/CartContext';
+import { OrderDetails } from '@/assets/types/db';
 
 type PaymentMethod = {
   id: string;
@@ -23,7 +24,7 @@ type TimeSlot = {
   label: string;
 };
 
-export default function CheckoutScreen() {
+export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: string, canteenName: string }) {
   const router = useRouter();
   const { cart } = useCart();
   const [selectedPayment, setSelectedPayment] = useState<string>('');
@@ -35,20 +36,20 @@ export default function CheckoutScreen() {
     const slots: TimeSlot[] = [];
     for (let hour = 10; hour < 22; hour++) {
       const time24 = `${hour}:00`;
-      const timeLabel = hour < 12 ? `${hour}:00 AM` : 
-                       hour === 12 ? `12:00 PM` : 
-                       `${hour-12}:00 PM`;
+      const timeLabel = hour < 12 ? `${hour}:00 AM` :
+        hour === 12 ? `12:00 PM` :
+          `${hour - 12}:00 PM`;
       slots.push({
         id: time24,
         time: time24,
         label: timeLabel
       });
-      
+
       // Add half-hour slots
       const halfHour = `${hour}:30`;
-      const halfHourLabel = hour < 12 ? `${hour}:30 AM` : 
-                          hour === 12 ? `12:30 PM` : 
-                          `${hour-12}:30 PM`;
+      const halfHourLabel = hour < 12 ? `${hour}:30 AM` :
+        hour === 12 ? `12:30 PM` :
+          `${hour - 12}:30 PM`;
       slots.push({
         id: halfHour,
         time: halfHour,
@@ -67,15 +68,15 @@ export default function CheckoutScreen() {
   ];
 
   const orderTimings: OrderTiming[] = [
-    { 
-      id: 'now', 
-      name: 'Collect Now', 
+    {
+      id: 'now',
+      name: 'Collect Now',
       description: 'Your order will be ready in 15-20 minutes'
     },
-    { 
-      id: 'schedule', 
+    {
+      id: 'schedule',
       name: 'Schedule Collection',
-      description: selectedTimeSlot 
+      description: selectedTimeSlot
         ? `Pickup at ${selectedTimeSlot.label}`
         : 'Pick up your order at your preferred time'
     },
@@ -85,18 +86,33 @@ export default function CheckoutScreen() {
   const total = subtotal;
 
   const handlePlaceOrder = () => {
-    if (!selectedPayment || !selectedTiming) {
-      // Show error message
-      return;
+    try {
+      if (!selectedPayment || !selectedTiming) {
+        // Show error message
+        return;
+      }
+      if (selectedTiming === 'schedule' && !selectedTimeSlot) {
+        // Show error message for missing scheduled time
+        return;
+      }
+      if (selectedPayment != 'cash') {
+        Alert.alert("Please proceed with Cash on Delivery only.")
+      }
+      // Handle order placement
+      const orderDetails = {
+        canteenId,
+        canteenName,
+        cart,
+        paymentMethod: selectedPayment,
+        collectionTiming: selectedTiming,
+        scheduledTime: selectedTiming === 'schedule' ? new Date(`${new Date().toISOString().split('T')[0]}T${selectedTimeSlot?.time}:00`) : new Date(),
+      } as OrderDetails;
+
+
+    } catch (error) {
+      console.error('Error placing order:', error);
+
     }
-    if (selectedTiming === 'schedule' && !selectedTimeSlot) {
-      // Show error message for missing scheduled time
-      return;
-    }
-    // Handle order placement
-    router.push({
-      pathname: '/order-confirmation'
-    } as any);
   };
 
   const handleTimingSelect = (timingId: string) => {
@@ -152,10 +168,10 @@ export default function CheckoutScreen() {
             >
               <View style={styles.optionInfo}>
                 <View style={styles.timingIcon}>
-                  <Ionicons 
-                    name={timing.id === 'now' ? 'time-outline' : 'calendar-outline'} 
-                    size={24} 
-                    color="#FFD337" 
+                  <Ionicons
+                    name={timing.id === 'now' ? 'time-outline' : 'calendar-outline'}
+                    size={24}
+                    color="#FFD337"
                   />
                 </View>
                 <View>

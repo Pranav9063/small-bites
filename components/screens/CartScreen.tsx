@@ -6,7 +6,7 @@ import { useCart } from '../../lib/context/CartContext';
 import type { CartItem } from '../../lib/context/CartContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function CartScreen({id, name}: {id: string, name: string}) {
+export default function CartScreen({ id, name }: { id: string, name: string }) {
   const { cart, dispatch } = useCart();
   const router = useRouter();
 
@@ -22,8 +22,8 @@ export default function CartScreen({id, name}: {id: string, name: string}) {
 
   const renderItem = ({ item }: { item: CartItem }) => (
     <View style={styles.cartItem}>
-      <Image 
-        source={require('../../assets/images/menuItems/pasta.jpg')} 
+      <Image
+        source={require('../../assets/images/menuItems/pasta.jpg')}
         style={styles.itemImage}
       />
       <View style={styles.itemContent}>
@@ -88,9 +88,15 @@ export default function CartScreen({id, name}: {id: string, name: string}) {
                 <Text style={styles.grandTotalValue}>Rs.{(totalAmount + 40).toFixed(2)}</Text>
               </View>
             </View>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.checkoutButton}
-              onPress={() => router.push('/user/checkout')}
+              onPress={() => router.push({
+                pathname: "/user/checkout",
+                params: {
+                  id,
+                  name,
+                }
+              })}
             >
               <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
               <Ionicons name="arrow-forward" size={20} color="#333" />
@@ -106,7 +112,7 @@ export default function CartScreen({id, name}: {id: string, name: string}) {
           <Text style={styles.emptyStateText}>
             Looks like you haven't added anything to your cart yet
           </Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.startShoppingButton}
             onPress={() => router.back()}
           >
