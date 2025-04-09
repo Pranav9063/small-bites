@@ -75,7 +75,7 @@ const ReviewScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <FlatList
         data={reviews}
@@ -84,7 +84,7 @@ const ReviewScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.reviewsList}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   reviewsList: {
     padding: 16,

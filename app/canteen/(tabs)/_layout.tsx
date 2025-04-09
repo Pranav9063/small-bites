@@ -10,7 +10,7 @@ function TabContent() {
             <Tabs.Screen
                 name="orders"
                 options={{
-                    title: 'Orders',headerTitleAlign: "center",
+                    title: 'Orders', headerTitleAlign: "center",
                     tabBarIcon: ({ color }) => <Ionicons size={28} name="receipt-outline" color={color} />,
                     headerShown: false
                 }}
@@ -33,14 +33,14 @@ function TabContent() {
             <Tabs.Screen
                 name="reviews"
                 options={{
-                    title: 'Reviews',headerTitleAlign: "center",
+                    title: 'Reviews', headerTitleAlign: "center",
                     tabBarIcon: ({ color }) => <Ionicons size={28} name="star-outline" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="profile"
                 options={{
-                    title: 'Profile',
+                    title: 'Profile', headerTitleAlign: "center",
                     tabBarIcon: ({ color }) => <Ionicons size={28} name="person-outline" color={color} />,
                 }}
             />

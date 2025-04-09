@@ -88,17 +88,14 @@ const OrdersScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <FlatList
         data={Object.entries(orders)}
         keyExtractor={([key]) => key}
         renderItem={renderOrderCard}
         contentContainerStyle={styles.listContainer}
       />
-      <Pressable style={{ padding: 16 }} onPress={() => router.push('/user/profile')}>
-        <Text>Profile</Text>
-      </Pressable>
-    </SafeAreaView>
+    </View>
   );
 };
 

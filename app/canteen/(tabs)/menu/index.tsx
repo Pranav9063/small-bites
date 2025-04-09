@@ -19,6 +19,7 @@ import { useAuth } from '@/lib/context/AuthContext';
 import { deleteMenuItemFromCanteen, fetchCanteenByCanteenOwnerId } from '@/lib/services/firestoreService';
 import { useTheme } from 'react-native-paper';
 import { Theme } from '@/constants/Theme';
+import { CanteenData, MenuItem } from '@/assets/types/db';
 
 export default function Menu() {
   const router = useRouter();
@@ -72,8 +73,8 @@ export default function Menu() {
       "Are you sure you want to delete this item?",
       [
         { text: "Cancel", style: "cancel" },
-        { 
-          text: "Delete", 
+        {
+          text: "Delete",
           style: "destructive",
           onPress: async () => {
             try {
@@ -132,11 +133,11 @@ export default function Menu() {
     return matchesSearch && matchesCategory;
   });
 
-  
+
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.content}>
         {/* Header */}
@@ -190,7 +191,7 @@ export default function Menu() {
         </View>
 
         {/* Menu Items */}
-        <ScrollView contentContainerStyle = {{paddingBottom:70}}
+        <ScrollView contentContainerStyle={{ paddingBottom: 70 }}
           style={styles.menuList}
           showsVerticalScrollIndicator={false}
           refreshControl={
@@ -202,7 +203,7 @@ export default function Menu() {
               <View key={item.item_id} style={styles.menuItem}>
                 <View style={styles.itemHeader}>
                   {item.image ? (
-                    <Image source={{uri: item.image}} style={styles.itemImage} />
+                    <Image source={{ uri: item.image }} style={styles.itemImage} />
                   ) : (
                     <View style={styles.placeholderImage}>
                       <Ionicons name="fast-food" size={24} color="#ccc" />
@@ -223,9 +224,9 @@ export default function Menu() {
                     )}
                   </View>
                 </View>
-                
+
                 <View style={styles.itemActions}>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={[
                       styles.availabilityButton,
                       !item.availability && styles.unavailableButton,
@@ -240,13 +241,13 @@ export default function Menu() {
                     </Text>
                   </TouchableOpacity>
                   <View style={styles.actionButtons}>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       style={styles.editButton}
                       onPress={() => handleEditItem(item)}
                     >
                       <Ionicons name="create" size={20} color="#666" />
                     </TouchableOpacity>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       style={styles.deleteButton}
                       onPress={() =>
                         Alert.alert(
@@ -273,7 +274,7 @@ export default function Menu() {
             </View>
           )}
         </ScrollView>
-      
+
 
         {/* Add menu button */}
         <TouchableOpacity
@@ -283,7 +284,7 @@ export default function Menu() {
           <Ionicons name="add" size={28} color="#fff" />
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -292,6 +293,7 @@ const createStyles = (theme: Theme) => {
     container: {
       flex: 1,
       backgroundColor: '#fff',
+      paddingTop: 20,
     },
     content: {
       flex: 1,
@@ -456,91 +458,91 @@ const createStyles = (theme: Theme) => {
     // },
     // Add these to your StyleSheet:
 
-menuList: {
-  flex: 1,
-  paddingHorizontal: 16,
-},
-menuItem: {
-  padding: 16,
-  backgroundColor: '#fff',
-  borderRadius: 16,
-  marginBottom: 16,
-  shadowColor: '#000',
-  shadowOffset: {
-    width: 0,
-    height: 2,
-  },
-  shadowOpacity: 0.1,
-  shadowRadius: 4,
-  elevation: 3,
-},
-itemHeader: {
-  flexDirection: 'row',
-  marginBottom: 12,
-},
-itemImage: {
-  width: 80,
-  height: 80,
-  borderRadius: 12,
-},
-placeholderImage: {
-  width: 80,
-  height: 80,
-  borderRadius: 12,
-  backgroundColor: '#f5f5f5',
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-itemDetails: {
-  flex: 1,
-  marginLeft: 16,
-  justifyContent: 'center',
-},
-itemName: {
-  fontSize: 18,
-  fontWeight: '600',
-  color: '#333',
-  marginBottom: 4,
-},
-priceCaloriesContainer: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginBottom: 6,
-},
-itemPrice: {
-  fontSize: 16,
-  fontWeight: '500',
-  color: '#333',
-  marginRight: 12,
-},
-itemCalories: {
-  fontSize: 14,
-  color: '#777',
-  backgroundColor: '#f0f0f0',
-  paddingHorizontal: 8,
-  paddingVertical: 2,
-  borderRadius: 12,
-},
-itemDescription: {
-  fontSize: 14,
-  color: '#666',
-  lineHeight: 20,
-},
-noItemsContainer: {
-  alignItems: 'center',
-  justifyContent: 'center',
-  paddingVertical: 60,
-},
-noItemsText: {
-  fontSize: 18,
-  fontWeight: '600',
-  color: '#666',
-  marginTop: 16,
-},
-noItemsSubtext: {
-  fontSize: 14,
-  color: '#999',
-  marginTop: 8,
-},
+    menuList: {
+      flex: 1,
+      paddingHorizontal: 16,
+    },
+    menuItem: {
+      padding: 16,
+      backgroundColor: '#fff',
+      borderRadius: 16,
+      marginBottom: 16,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    itemHeader: {
+      flexDirection: 'row',
+      marginBottom: 12,
+    },
+    itemImage: {
+      width: 80,
+      height: 80,
+      borderRadius: 12,
+    },
+    placeholderImage: {
+      width: 80,
+      height: 80,
+      borderRadius: 12,
+      backgroundColor: '#f5f5f5',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    itemDetails: {
+      flex: 1,
+      marginLeft: 16,
+      justifyContent: 'center',
+    },
+    itemName: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: '#333',
+      marginBottom: 4,
+    },
+    priceCaloriesContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 6,
+    },
+    itemPrice: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: '#333',
+      marginRight: 12,
+    },
+    itemCalories: {
+      fontSize: 14,
+      color: '#777',
+      backgroundColor: '#f0f0f0',
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 12,
+    },
+    itemDescription: {
+      fontSize: 14,
+      color: '#666',
+      lineHeight: 20,
+    },
+    noItemsContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 60,
+    },
+    noItemsText: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: '#666',
+      marginTop: 16,
+    },
+    noItemsSubtext: {
+      fontSize: 14,
+      color: '#999',
+      marginTop: 8,
+    },
   })
 };

@@ -35,12 +35,7 @@ export default function Profile() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      {/* <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
-      </View> */}
-
+    <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Profile Card */}
         <View style={styles.profileCard}>
@@ -68,7 +63,7 @@ export default function Profile() {
       </ScrollView>
 
       {/* Bottom Navigation */}
-    </SafeAreaView>
+    </View>
   );
 }
 

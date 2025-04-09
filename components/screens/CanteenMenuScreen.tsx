@@ -356,6 +356,7 @@ const createStyles = (theme: any) =>
     categoriesWrapper: {
       paddingLeft: 16,
       marginTop: 10,
+      paddingBottom: 10,
     },
     categoriesContainer: {
       paddingRight: 16,
@@ -394,7 +395,7 @@ const createStyles = (theme: any) =>
     },
     menuList: {
       paddingHorizontal: 16,
-      paddingBottom: 16,
+      paddingBottom: 200,
     },
     menuItemContainer: {
       marginBottom: 20,

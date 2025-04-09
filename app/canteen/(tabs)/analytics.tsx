@@ -13,12 +13,12 @@ const salesData = [
 const HistoryScreen = () => {
   const totalRevenue = salesData.reduce((sum, item) => sum + item.revenue, 0);
   const totalSold = salesData.reduce((sum, item) => sum + item.sold, 0);
-  const bestSeller = salesData.reduce((prev, current) => 
+  const bestSeller = salesData.reduce((prev, current) =>
     prev.sold > current.sold ? prev : current
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         {/* Summary Cards */}
         <View style={styles.summaryContainer}>
@@ -54,14 +54,14 @@ const HistoryScreen = () => {
                 <Text style={styles.itemSold}>{item.sold} sold</Text>
               </View>
               <View style={styles.progressBarContainer}>
-                <View 
+                <View
                   style={[
-                    styles.progressBar, 
-                    { 
+                    styles.progressBar,
+                    {
                       width: `${(item.sold / bestSeller.sold) * 100}%`,
                       backgroundColor: getProgressColor(item.sold / bestSeller.sold)
                     }
-                  ]} 
+                  ]}
                 />
               </View>
               <Text style={styles.itemRevenue}>₹{item.revenue}</Text>
@@ -69,7 +69,7 @@ const HistoryScreen = () => {
           ))}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
