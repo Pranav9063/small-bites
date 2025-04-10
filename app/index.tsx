@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { fetchRole } from "@/lib/services/firestoreService";
 import { ActivityIndicator, View } from "react-native";
-import Dashboard from "./canteen";
 import { useRouter } from "expo-router";
 
 const HomePage = () => {
@@ -34,6 +33,9 @@ const HomePage = () => {
     if (role === "user") {
       router.replace("/user/(tabs)");
     }
+    if (role === "canteen") {
+      router.replace("/canteen/(tabs)/orders");
+    }
   }, [role, router]);
 
   if (!user || loading) {
@@ -42,10 +44,6 @@ const HomePage = () => {
         <ActivityIndicator size="large" />
       </View>
     );
-  }
-
-  if (role === "canteen") {
-    return <Dashboard />;
   }
 
   return null; // Ensure component returns something

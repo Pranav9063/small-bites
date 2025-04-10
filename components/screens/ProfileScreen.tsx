@@ -7,8 +7,8 @@ import { useAuth } from '@/lib/context/AuthContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { user, signOut } = useAuth()
-  // const { useR, signOut } = useAuth();
+  const { user, signOutUser } = useAuth()
+  // const { useR, signOutUser } = useAuth();
 
 
   const menuItems = [
@@ -62,7 +62,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
+        <TouchableOpacity style={styles.logoutButton} onPress={signOutUser}>
           <Ionicons name="log-out-outline" size={22} color="#FF4D4D" />
           <Text style={styles.logoutText}>
             Logout</Text>

@@ -16,6 +16,7 @@ import { useRouter } from "expo-router";
 import { useCart } from "../../lib/context/CartContext";
 import { fetchCanteenById } from "@/lib/services/firestoreService";
 import { Snackbar } from "react-native-paper";
+import { CanteenData, MenuItem } from "@/assets/types/db";
 
 type CartItem = MenuItem & {
   quantity: number;
@@ -48,10 +49,6 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
     };
     fetchMenuItems();
   }, []);
-
-  useEffect(() => {
-    console.log("Updated Menu Items:", menuItems);
-  }, [menuItems]);
 
   if (!menuItems) {
     return (
@@ -180,10 +177,12 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
         <Text style={styles.headerTitle}>{canteenName}</Text>
         <TouchableOpacity
           style={styles.cartButton}
-          onPress={() => router.push({pathname: "/user/cart",  params: {
-            canteenId: canteenId,
-            canteenName: canteenName,
-          }})}
+          onPress={() => router.push({
+            pathname: "/user/cart", params: {
+              id: canteenId,
+              name: canteenName,
+            }
+          })}
         >
           <Ionicons name="cart-outline" size={24} color="#333" />
           <View style={styles.cartBadge}>
@@ -357,6 +356,7 @@ const createStyles = (theme: any) =>
     categoriesWrapper: {
       paddingLeft: 16,
       marginTop: 10,
+      paddingBottom: 10,
     },
     categoriesContainer: {
       paddingRight: 16,
@@ -395,7 +395,7 @@ const createStyles = (theme: any) =>
     },
     menuList: {
       paddingHorizontal: 16,
-      paddingBottom: 16,
+      paddingBottom: 200,
     },
     menuItemContainer: {
       marginBottom: 20,

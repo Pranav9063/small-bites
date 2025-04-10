@@ -7,6 +7,7 @@ import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-font
 import * as SplashScreen from 'expo-splash-screen';
 import { Link, useRouter } from 'expo-router';
 import { fetchAllCanteens } from '@/lib/services/firestoreService';
+import { CanteenData } from '@/assets/types/db';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,7 +26,7 @@ const canteens = [
 ];
 
 const UserHomeScreen = () => {
-    const { user, signOut } = useAuth();
+    const { user, signOutUser } = useAuth();
     const styles = createStyles();
     const router = useRouter();
 
@@ -80,6 +81,7 @@ const UserHomeScreen = () => {
                     console.error("No canteens found");
                     return;
                 }
+                console.log(fetchedCanteens)
                 setSortedCanteens(fetchedCanteens);
             } catch (error) {
                 console.error("Error fetching canteens:", error);
@@ -222,7 +224,7 @@ const UserHomeScreen = () => {
                                 <Text style={styles.menuText}>{user.email}</Text>
                                 <TouchableOpacity
                                     style={styles.signOutButton}
-                                    onPress={signOut}
+                                    onPress={signOutUser}
                                 >
                                     <Text style={styles.signOutText}>Sign Out</Text>
                                 </TouchableOpacity>
