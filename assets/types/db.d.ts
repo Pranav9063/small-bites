@@ -1,4 +1,5 @@
 import { CartItem } from "@/lib/context/CartContext";
+import { Firestore } from "firebase/firestore";
 
 type CanteenData = {
     id: string;
@@ -30,3 +31,11 @@ type OrderDetails = {
     paymentMethod: string;
     scheduledTime: Date;
 };
+
+type UserExpense = {
+    canteenId: string;
+    canteenName: string;
+    amountSpent: number;
+    orderId: string;
+    date: Firestore.Timestamp;
+}

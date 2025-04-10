@@ -2,6 +2,7 @@ import { db, storage } from "@/lib/services/firebaseConfig";
 import { doc, setDoc, getDoc, addDoc, collection, getDocs } from "@react-native-firebase/firestore";
 import { googleSignIn } from "./authService";
 import { deleteObject, getMetadata, ref } from "@react-native-firebase/storage";
+import { CanteenData, MenuItem, OrderDetails, UserExpense } from "@/assets/types/db";
 
 export type NewUser = {
   id: string;
@@ -16,6 +17,7 @@ export type FirestoreUser = {
   name: string | null;
   email: string | null;
   role: "user" | "admin" | "canteen";
+  expenses: UserExpense[];
   createdAt: Date;
 };
 
@@ -50,6 +52,7 @@ export const addMemberToFirestore = async (role: "user" | "admin" | "canteen") =
         name: user.displayName,
         email: user.email,
         role: role,
+        expenses: [],
         createdAt: new Date(),
       };
       await setDoc(userRef, newUser);
@@ -175,6 +178,15 @@ export const fetchCanteenById = async (canteenId: string) => {
   }
 }
 
+export function convertFirestoreTimestampToDate(timestamp: { seconds: number; nanoseconds: number }): string {
+  const date = new Date(timestamp.seconds * 1000); // Convert seconds to milliseconds
+  const day = date.getDate().toString().padStart(2, '0'); // Ensure 2-digit day
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
+
 export const fetchCanteenByCanteenOwnerId = async (userId: string) => {
   try {
     const userRef = doc(db, "users", userId);
@@ -285,6 +297,56 @@ export const deleteMenuItemFromCanteen = async (userId: string, itemId: string) 
     }
   } catch (error) {
     console.error("Error deleting menu item:", error);
+    return { success: false, error };
+  }
+}
+
+export const addUserExpense = async (userId: string, expense: UserExpense) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists) {
+      const userData = userSnap.data() as FirestoreUser;
+      const temp = userData.expenses || [];
+      const expenses = [expense, ...temp];
+      await setDoc(userRef, { expenses }, { merge: true });
+      console.log("Expense added successfully!");
+      return { success: true };
+    } else {
+      throw new Error("User not found.");
+    }
+  } catch (error) {
+    console.error("Error adding expense:", error);
+    return { success: false, error };
+  }
+}
+
+export const fetchUserExpenses = async (userId: string) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists) {
+      const userData = userSnap.data() as FirestoreUser;
+      return userData.expenses || [];
+    } else {
+      throw new Error("User not found.");
+    }
+  } catch (error) {
+    console.error("Error fetching expenses:", error);
+    return null;
+  }
+}
+
+export const addNewOrderToFirestore = async (orderId: string, orderDetails: OrderDetails) => {
+  try {
+    const orderRef = doc(db, "orders", orderId);
+    await setDoc(orderRef, orderDetails);
+    console.log("Order added successfully!");
+    return { success: true };
+  } catch (error) {
+    console.error("Error adding order:", error);
     return { success: false, error };
   }
 }

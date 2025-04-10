@@ -1,25 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/lib/context/AuthContext';
 import { OrderDetails } from '@/assets/types/db';
 import { subscribeToCanteenOrders } from '@/lib/services/realtime';
-
-// Add interface for order items
-interface OrderItem {
-  name: string;
-  quantity: number;
-}
-
-// Add interface for Order type
-interface Order {
-  id: string;
-  name: string;
-  status: 'pending' | 'preparing' | 'ready';
-  items: OrderItem[];
-}
 
 const OrdersScreen = () => {
   const router = useRouter();
@@ -39,7 +24,7 @@ const OrdersScreen = () => {
     listenToOrders();
 
     return () => {
-      if (unsubscribe) unsubscribe(); // Cleanup on unmount
+      if (unsubscribe) unsubscribe();
     };
   }, [user]);
 

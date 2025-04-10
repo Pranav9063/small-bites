@@ -1,9 +1,12 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, Dimensions } from 'react-native';
+import React, { useState, useMemo, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, Dimensions, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Button } from 'react-native-paper';
 import { useRouter } from 'expo-router';
+import { convertFirestoreTimestampToDate, fetchUserExpenses } from '@/lib/services/firestoreService';
+import { useAuth } from '@/lib/context/AuthContext';
+import { UserExpense } from '@/assets/types/db';
 
 const initialExpenses = [
   { id: '1', name: 'Burger', amount: 10, date: '2025-03-01', canteen: 'Amul', category: 'Fast Food' },
@@ -12,7 +15,7 @@ const initialExpenses = [
 ];
 
 const ExpensesScreen = () => {
-  const [expenses, setExpenses] = useState(initialExpenses);
+  const [expenses, setExpenses] = useState<UserExpense[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [newExpense, setNewExpense] = useState({
     name: '',
@@ -23,50 +26,61 @@ const ExpensesScreen = () => {
   });
 
   const router = useRouter();
+  const { user } = useAuth();
+
+
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      if (!user) return;
+      const userExpenses = await fetchUserExpenses(user.uid);
+      if (!userExpenses) return;
+      console.log('Fetched user expenses:', userExpenses[0].date);
+      setExpenses(userExpenses);
+    };
+    fetchExpenses();
+  }, []);
 
   // Calculate total expenses and expenses by canteen
   const totalExpenses = useMemo(() =>
-    expenses.reduce((sum, expense) => sum + expense.amount, 0), [expenses]);
+    expenses.reduce((sum, expense) => sum + expense.amountSpent, 0), [expenses]);
 
   const canteenExpenses = useMemo(() => {
     const grouped = expenses.reduce((acc: { [key: string]: number }, expense) => {
-      acc[expense.canteen] = (acc[expense.canteen] || 0) + expense.amount;
+      acc[expense.canteenName] = (acc[expense.canteenName] || 0) + expense.amountSpent;
       return acc;
     }, {});
     return Object.entries(grouped).map(([canteen, amount]) => ({ canteen, amount }));
   }, [expenses]);
+  // const handleAddExpense = () => {
+  //   if (!newExpense.name || !newExpense.amount || !newExpense.date || !newExpense.category || !newExpense.canteen) {
+  //     alert('Please fill in all fields');
+  //     return;
+  //   }
+  //   const expense = {
+  //     id: (expenses.length + 1).toString(),
+  //     ...newExpense,
+  //     amount: parseFloat(newExpense.amount),
+  //   };
+  //   setExpenses([...expenses, expense]);
+  //   setModalVisible(false);
+  //   setNewExpense({ name: '', amount: '', date: new Date().toISOString().split('T')[0], category: '', canteen: '' });
+  // };
 
-  const handleAddExpense = () => {
-    if (!newExpense.name || !newExpense.amount || !newExpense.date || !newExpense.category || !newExpense.canteen) {
-      alert('Please fill in all fields');
-      return;
-    }
-    const expense = {
-      id: (expenses.length + 1).toString(),
-      ...newExpense,
-      amount: parseFloat(newExpense.amount),
-    };
-    setExpenses([...expenses, expense]);
-    setModalVisible(false);
-    setNewExpense({ name: '', amount: '', date: new Date().toISOString().split('T')[0], category: '', canteen: '' });
-  };
-
-  const renderExpense = ({ item }: { item: { id: string; name: string; amount: number; date: string; canteen: string; category: string; } }) => (
+  const renderExpense = ({ item }: { item: UserExpense }) => (
     <Card style={styles.card}>
       <Card.Content>
         <View style={styles.expenseRow}>
-          <Text style={styles.expenseName}>{item.name}</Text>
-          <Text style={styles.expenseAmount}>Rs {item.amount.toFixed(2)}</Text>
+          <Text style={styles.expenseName}>{item.canteenName}</Text>
+          <Text style={styles.expenseAmount}>Rs {item.amountSpent.toFixed(2)}</Text>
         </View>
         <View style={styles.expenseDetailsRow}>
           <Text style={styles.expenseDetails}>
-            <Ionicons name="calendar-outline" size={14} /> {item.date}
+            <Ionicons name="calendar-outline" size={14} />
+            <Text>{convertFirestoreTimestampToDate(item.date)}</Text>
           </Text>
           <Text style={styles.expenseDetails}>
-            <Ionicons name="restaurant-outline" size={14} /> {item.canteen}
-          </Text>
-          <Text style={styles.expenseDetails}>
-            <Ionicons name="pricetag-outline" size={14} /> {item.category}
+            <Ionicons name="restaurant-outline" size={14} /> {item.canteenName}
           </Text>
         </View>
       </Card.Content>
@@ -79,7 +93,7 @@ const ExpensesScreen = () => {
       <View style={styles.header}>
         <Text style={styles.title}>Student Expenses</Text>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Ionicons name="add-circle" size={32} color="#4A90E2" />
+          <Ionicons name="add-circle" size={32} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -104,7 +118,7 @@ const ExpensesScreen = () => {
       <FlatList
         data={expenses}
         renderItem={renderExpense}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.orderId}
         contentContainerStyle={styles.expensesList}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -179,7 +193,7 @@ const ExpensesScreen = () => {
               onChangeText={(text) => setNewExpense({ ...newExpense, canteen: text })}
             />
             <View style={styles.modalButtons}>
-              <Button mode="contained" onPress={handleAddExpense} style={styles.addButton}>
+              <Button mode="contained" onPress={() => { Alert.alert("Manav implement mat kar.. Mai dekh lunga") }} style={styles.addButton}>
                 Add Expense
               </Button>
               <Button mode="outlined" onPress={() => setModalVisible(false)} style={styles.cancelButton}>
