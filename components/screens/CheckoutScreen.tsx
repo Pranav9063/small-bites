@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Platform, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, FlatList, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -7,7 +7,6 @@ import { useCart } from '../../lib/context/CartContext';
 import { OrderDetails } from '@/assets/types/db';
 import { useAuth } from '@/lib/context/AuthContext';
 import { placeNewOrder } from '@/lib/services/realtime';
-import { set } from '@react-native-firebase/database';
 
 type PaymentMethod = {
   id: string;

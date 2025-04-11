@@ -1,8 +1,8 @@
 
-import { OrderDetails } from "@/assets/types/db"
+import { OrderDetails, UserExpense } from "@/assets/types/db"
 import { equalTo, onValue, orderByChild, query, ref, set, update } from "@react-native-firebase/database"
 import { database } from "@/lib/services/firebaseConfig";
-import { fetchCanteenByCanteenOwnerId } from "./firestoreService";
+import { addNewOrderToFirestore, addUserExpense, fetchCanteenByCanteenOwnerId } from "./firestoreService";
 
 export async function placeNewOrder(OrderDetails: OrderDetails) {
     try {
@@ -10,6 +10,15 @@ export async function placeNewOrder(OrderDetails: OrderDetails) {
         const orderId = new Date().getTime().toString();
         const orderRef = ref(database, `orders/${orderId}`);
         await set(orderRef, OrderDetails);
+        const userExpense: UserExpense = {
+            canteenId: OrderDetails.canteenId,
+            canteenName: OrderDetails.canteenName,
+            amountSpent: OrderDetails.cart.reduce((total, item) => total + (item.price * item.quantity), 0),
+            orderId: orderId,
+            date: new Date()
+        }
+        await addNewOrderToFirestore(orderId, OrderDetails);
+        await addUserExpense(OrderDetails.userId, userExpense);
         console.log("Order placed successfully:", orderId);
     } catch (error) {
         console.error("Error placing order:", error);
