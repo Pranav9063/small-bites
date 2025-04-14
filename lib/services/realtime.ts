@@ -1,5 +1,5 @@
 
-import { OrderDetails, UserExpense } from "@/assets/types/db"
+import { OrderDetails, UserExpense, UserOrders } from "@/assets/types/db"
 import { equalTo, onValue, orderByChild, query, ref, set, update } from "@react-native-firebase/database"
 import { database } from "@/lib/services/firebaseConfig";
 import { addNewOrderToFirestore, addUserExpense, fetchCanteenByCanteenOwnerId } from "./firestoreService";
@@ -25,12 +25,14 @@ export async function placeNewOrder(OrderDetails: OrderDetails) {
     }
 }
 
-export async function subscribeToUserOrders(userId: string, callback: (orders: any) => void) {
+export async function subscribeToUserOrders(userId: string, callback: (orders: UserOrders) => void) {
     try {
         const ordersRef = ref(database, `orders`);
         const userOrdersQuery = ordersRef.orderByChild('userId').equalTo(userId);
         const unsubscribe = onValue(userOrdersQuery, (snapshot) => {
-            const data = snapshot.val() || {};
+            const data = snapshot.val() || {} as UserOrders;
+            console.log(data)
+            console.log(typeof(data))
             callback(data);
         });
         return unsubscribe;
