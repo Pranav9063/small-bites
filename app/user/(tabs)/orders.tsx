@@ -28,8 +28,8 @@ const orders = () => {
         };
     }, []);
 
-    
-    const getStatusStyle = (status) => {
+
+    const getStatusStyle = (status: OrderDetails['orderStatus']) => {
         switch (status) {
             case 'ready':
                 return {
@@ -76,14 +76,14 @@ const orders = () => {
                         <Text style={[styles.statusText, statusStyle.text]}>{order.orderStatus}</Text>
                     </View>
                 </View>
-                
+
                 <View style={styles.orderInfo}>
                     <Text style={styles.canteenName}>{order.canteenName}</Text>
                     <Text style={styles.paymentMethod}>Payment: {order.paymentMethod || "cash"}</Text>
                 </View>
-                
+
                 <View style={styles.divider} />
-                
+
                 <Text style={styles.itemsHeader}>Items:</Text>
                 {order.cart?.map((item, index) => (
                     <View key={index} style={styles.itemRow}>
@@ -91,12 +91,12 @@ const orders = () => {
                             <Text style={styles.itemName}>{item.name}</Text>
                             <Text style={styles.itemQuantity}>x{item.quantity}</Text>
                         </View>
-                        <Text style={styles.itemPrice}>${(item.price * item.quantity).toFixed(2)}</Text>
+                        <Text style={styles.itemPrice}>Rs. {(item.price * item.quantity).toFixed(2)}</Text>
                     </View>
                 ))}
-                
+
                 <View style={styles.divider} />
-                
+
                 {/* <View style={styles.orderSummary}>
                     <Text style={styles.totalItemsText}>{totalItems} items</Text>
                     <Text style={styles.totalPriceText}>Total: ${totalPrice.toFixed(2)}</Text>
@@ -108,7 +108,7 @@ const orders = () => {
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.heading}>My Orders</Text>
-            
+
             {userOrders ? (
                 <FlatList
                     data={Object.entries(userOrders)}
@@ -121,7 +121,7 @@ const orders = () => {
                     <Text style={styles.loadingText}>Loading orders...</Text>
                 </View>
             )}
-            
+
             {userOrders && Object.keys(userOrders).length === 0 && (
                 <View style={styles.emptyContainer}>
                     <Text style={styles.emptyText}>No orders found</Text>
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
-   
+
     statusBadge: {
         paddingHorizontal: 10,
         paddingVertical: 4,
