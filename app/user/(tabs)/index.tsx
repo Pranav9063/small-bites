@@ -48,31 +48,6 @@ const UserHomeScreen = () => {
         }
     }, [fontsLoaded]);
 
-    // useEffect(() => {
-    //     if (!selectedFilter) return;
-
-    //     let updatedCanteens = [...canteens];
-
-
-    //     if (selectedFilter === "⭐Ratings") {
-    //         updatedCanteens.sort((a, b) => b.rating - a.rating);
-    //     }
-
-    //     setSortedCanteens(updatedCanteens);
-    // }, [selectedFilter]);
-
-    // useEffect(() => {
-    //     let updatedCanteens = [...canteens];
-
-    //     if (searchQuery) {
-    //         updatedCanteens = updatedCanteens.filter(canteen =>
-    //             canteen.name.toLowerCase().includes(searchQuery.toLowerCase())
-    //         );
-    //     }
-
-    //     setSortedCanteens(updatedCanteens);
-    // }, [selectedFilter, searchQuery]);
-
     useEffect(() => {
         const fetchCanteens = async () => {
             try {
@@ -100,18 +75,22 @@ const UserHomeScreen = () => {
 
     const renderItem = ({ item }: { item: CanteenData }) => (
         <TouchableOpacity style={styles.card} onPress={() => handleCanteenPress(item)}>
-            <Image source={item.image ? { uri: item.image } : require('@/assets/images/canteenImg.png')} style={styles.foodImage} />
-            <View style={styles.imageOverlay} />
+            <Image 
+                source={item.image ? { uri: item.image } : require('@/assets/images/canteenImg.png')} 
+                style={styles.foodImage} 
+            />
             <View style={styles.cardContent}>
-                <Text style={styles.foodName}>{item.name}</Text>
-                <View style={styles.ratingContainer}>
-                    <Ionicons name="star" size={16} color="#FFD700" />
-                    <Text style={styles.rating}>N/A</Text>
+                <View style={styles.cardHeader}>
+                    <Text style={styles.foodName}>{item.name}</Text>
+                    <View style={styles.ratingContainer}>
+                        <Ionicons name="star" size={16} color="#FFD700" />
+                        <Text style={styles.rating}>N/A</Text>
+                    </View>
                 </View>
+                <Text style={styles.description}>Traditional Campus Dining</Text>
             </View>
         </TouchableOpacity>
     );
-
 
     if (!appIsReady) {
         return <ActivityIndicator size="large" color="#0000ff" />;
@@ -119,7 +98,6 @@ const UserHomeScreen = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* <Link href="/user">Click me!</Link> */}
             {user ? (
                 <>
                     {/* Fixed Header */}
@@ -181,40 +159,10 @@ const UserHomeScreen = () => {
                         data={sortedCanteens}
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id}
-                        numColumns={2}
-                        columnWrapperStyle={styles.row}
+                        numColumns={1}
                         contentContainerStyle={styles.menuList}
                         showsVerticalScrollIndicator={false}
                     />
-
-                    {/* Bottom Navigation */}
-                    {/* <View style={styles.bottomNav}>
-                        <TouchableOpacity style={styles.navItem}>
-                            <Ionicons name="home" size={24} color="#007AFF" />
-                            <Text style={[styles.navText, { color: '#007AFF' }]}>Home</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.navItem}>
-                            <Ionicons name="heart-outline" size={24} color="#666" />
-                            <Text style={styles.navText}>Favorites</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.centerButton, styles.centerButtonGradient]}>
-                            <Ionicons name="grid" size={24} color="white" />
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                            style={styles.navItem}
-                            onPress={() => router.push('/user/expenses')}
-                        >
-                            <Ionicons name="cash-outline" size={24} color="#666" />
-                            <Text style={styles.navText}>Expenses</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.navItem}
-                            onPress={() => router.push('/user/profile')}
-                        >
-                            <Ionicons name="person-outline" size={24} color="#666" />
-                            <Text style={styles.navText}>Profile</Text>
-                        </TouchableOpacity>
-                    </View> */}
 
                     {/* Profile Dropdown Menu */}
                     <Modal transparent={true} visible={menuVisible} animationType="fade">
@@ -339,43 +287,44 @@ const createStyles = () =>
             padding: 16,
             paddingTop: 16,
         },
-        row: {
-            justifyContent: "space-between",
-        },
         card: {
             backgroundColor: "white",
-            borderRadius: 20,
-            width: "48%",
+            borderRadius: 24,
+            width: '100%',
             marginBottom: 16,
             overflow: 'hidden',
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.1,
+            shadowOpacity: 0.15,
             shadowRadius: 8,
             elevation: 5,
+            flexDirection: 'row',
+            height: 120,
         },
         foodImage: {
-            width: '100%',
-            height: 120,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-        },
-        imageOverlay: {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 120,
-            backgroundColor: 'rgba(0,0,0,0.2)',
+            width: 120,
+            height: '100%',
         },
         cardContent: {
+            flex: 1,
             padding: 12,
+            justifyContent: 'center',
+        },
+        cardHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 8,
         },
         foodName: {
-            fontSize: 16,
-            fontWeight: "bold",
+            fontSize: 18,
+            fontWeight: "700",
             color: "#333",
-            marginBottom: 8,
+            flex: 1,
+        },
+        description: {
+            fontSize: 13,
+            color: '#666',
         },
         ratingContainer: {
             flexDirection: "row",
@@ -383,48 +332,14 @@ const createStyles = () =>
             backgroundColor: '#FFF9E6',
             paddingHorizontal: 8,
             paddingVertical: 4,
-            borderRadius: 12,
-            alignSelf: 'flex-start',
+            borderRadius: 8,
+            marginLeft: 8,
         },
         rating: {
             marginLeft: 4,
             fontSize: 14,
             fontWeight: "600",
             color: "#333",
-        },
-        bottomNav: {
-            flexDirection: "row",
-            justifyContent: "space-around",
-            alignItems: "center",
-            backgroundColor: "#fff",
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            borderTopWidth: 1,
-            borderTopColor: "#f0f0f0",
-        },
-        navItem: {
-            alignItems: "center",
-        },
-        navText: {
-            fontSize: 12,
-            color: "#666",
-            marginTop: 4,
-        },
-        centerButton: {
-            marginTop: -30,
-        },
-        centerButtonGradient: {
-            width: 56,
-            height: 56,
-            borderRadius: 28,
-            backgroundColor: "#007AFF",
-            justifyContent: "center",
-            alignItems: "center",
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.2,
-            shadowRadius: 8,
-            elevation: 5,
         },
         overlay: {
             flex: 1,

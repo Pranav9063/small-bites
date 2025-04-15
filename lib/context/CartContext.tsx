@@ -5,6 +5,7 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  image?: string; // Add the image property as optional
 }
 
 export interface CartState {
@@ -12,7 +13,16 @@ export interface CartState {
 }
 
 type CartAction = 
-  | { type: 'ADD_ITEM'; payload: { id: string; name: string; price: number; quantity: number } }
+  | { 
+      type: 'ADD_ITEM'; 
+      payload: { 
+        id: string; 
+        name: string; 
+        price: number; 
+        quantity: number; 
+        image: string; // Add the image property here
+      }; 
+    }
   | { type: 'REMOVE_ITEM'; payload: { id: string } }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; delta: number } };
 

@@ -183,7 +183,7 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
                   <Ionicons
                     name={timing.id === 'now' ? 'time-outline' : 'calendar-outline'}
                     size={24}
-                    color="#FFD337"
+                    color="#1976D2" // Updated icon color
                   />
                 </View>
                 <View>
@@ -291,29 +291,30 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#F5F5F7", // Updated background color
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: "#EEEEEE", // Updated border color
+    backgroundColor: "#FFFFFF", // Updated header background
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#F1F3F4", // Updated button background
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#212121", // Updated text color
   },
   placeholder: {
     width: 40,
@@ -324,54 +325,55 @@ const styles = StyleSheet.create({
   section: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: "#EEEEEE", // Updated border color
+    backgroundColor: "#FFFFFF", // Updated section background
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#212121", // Updated text color
     marginBottom: 16,
   },
   optionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   selectedCard: {
-    borderColor: '#FFD337',
+    borderColor: "#1976D2", // Updated selection color
     borderWidth: 2,
   },
   optionInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   timingIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#FFF9E6',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#E3F2FD", // Updated icon background
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
   optionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#212121", // Updated text color
   },
   optionSubtitle: {
     fontSize: 14,
-    color: '#666',
+    color: "#757575", // Updated text color
     marginTop: 4,
   },
   radioButton: {
@@ -379,117 +381,117 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#ddd',
+    borderColor: "#E0E0E0", // Updated border color
   },
   radioButtonSelected: {
-    borderColor: '#FFD337',
-    backgroundColor: '#FFD337',
+    borderColor: "#1976D2", // Updated selection color
+    backgroundColor: "#1976D2",
   },
   summaryCard: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 12,
   },
   summaryLabel: {
     fontSize: 14,
-    color: '#666',
+    color: "#757575", // Updated text color
   },
   summaryValue: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#212121", // Updated text color
   },
   totalRow: {
     marginTop: 8,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    borderTopColor: "#EEEEEE", // Updated border color
     marginBottom: 0,
   },
   totalLabel: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#212121", // Updated text color
   },
   totalValue: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FFD337',
+    fontWeight: "bold",
+    color: "#1976D2", // Updated highlight color
   },
   footer: {
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
-    backgroundColor: '#fff',
+    borderTopColor: "#EEEEEE", // Updated border color
+    backgroundColor: "#FFFFFF", // Updated footer background
   },
   placeOrderButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFD337',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#1976D2", // Updated button color
     padding: 16,
     borderRadius: 25,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   disabledButton: {
-    backgroundColor: '#ddd',
+    backgroundColor: "#E0E0E0", // Updated disabled button color
   },
   placeOrderText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#FFFFFF", // Updated text color
     marginRight: 8,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: "#FFFFFF", // Updated modal background
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
   },
   modalHeader: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#212121", // Updated text color
     marginBottom: 8,
   },
   modalSubtitle: {
     fontSize: 14,
-    color: '#666',
+    color: "#757575", // Updated text color
   },
   modalCloseButton: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#F1F3F4", // Updated button background
     padding: 15,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
   },
   modalCloseButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#212121", // Updated text color
   },
   timeSlotList: {
     paddingHorizontal: 8,
@@ -498,20 +500,20 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 8,
     padding: 16,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#F1F3F4", // Updated background color
     borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   selectedTimeSlot: {
-    backgroundColor: '#FFD337',
+    backgroundColor: "#1976D2", // Updated selection color
   },
   timeSlotText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#212121", // Updated text color
   },
   selectedTimeSlotText: {
-    color: '#000',
+    color: "#FFFFFF", // Updated text color
   },
 });
