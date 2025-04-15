@@ -22,7 +22,6 @@ type MenuItem = {
 }
 
 type OrderDetails = {
-    orderId: string;
     userId: string;
     canteenId: string;
     canteenName: string;
@@ -39,3 +38,5 @@ type UserExpense = {
     orderId: string;
     date: Firestore.Timestamp;
 }
+
+type UserOrders = Record<string, OrderDetails>;
