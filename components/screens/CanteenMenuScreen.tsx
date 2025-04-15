@@ -14,10 +14,30 @@ import {
 import { useTheme } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+// Assuming CartContext.tsx is in this relative path
 import { useCart } from "../../lib/context/CartContext";
+// Assuming firestoreService.ts is in this relative path
 import { fetchCanteenById } from "@/lib/services/firestoreService";
 import { Snackbar } from "react-native-paper";
+// Assuming db.ts defines these types in this relative path
 import { CanteenData, MenuItem } from "@/assets/types/db";
+// Assuming Theme is defined here
+import { Theme } from "@/constants/Theme";
+
+// Interface for MenuItem (ensure this matches your actual type)
+// export interface MenuItem {
+//   item_id: string;
+//   name: string;
+//   price: number;
+//   originalPrice?: number;
+//   description?: string;
+//   image?: string;
+//   category?: string;
+//   rating?: number;
+//   ratingCount?: number;
+//   isBestseller?: boolean;
+//   isCustomizable?: boolean;
+// }
 
 type CanteenMenuScreenProps = {
   canteenId: string;
@@ -28,7 +48,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
   canteenId,
   canteenName,
 }) => {
-  const theme = useTheme();
+  const theme = useTheme() as Theme; // Cast theme if using custom Theme type
   const router = useRouter();
   const styles = createStyles(theme);
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,35 +57,54 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
   const { cart, dispatch } = useCart();
   const [favorites, setFavorites] = useState<string[]>([]);
   const [visible, setVisible] = useState(false);
-  const [lastAddedItem, setLastAddedItem] = useState<string>("");
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
+  // --- Fetch Menu Items ---
   useEffect(() => {
     const fetchMenuItems = async () => {
-      const data = (await fetchCanteenById(canteenId)) as CanteenData;
-      console.log("Fetched menu items:", data.menu);
-      setMenuItems(data.menu);
+      try {
+        const data = (await fetchCanteenById(canteenId)) as CanteenData;
+        console.log("Fetched menu items:", data.menu);
+        // Add mock data if necessary for testing UI elements
+        // IMPORTANT: Replace this mock data logic with your actual data structure
+        const augmentedMenu = data.menu.map((item, index) => ({
+            ...item,
+            originalPrice: item.price + 20 + index,
+            rating: 4.0 + (index % 5) / 10.0,
+            ratingCount: 30 + index * 5,
+            category: item.category || (index % 2 === 0 ? 'All Day Breakfast' : 'Lunch')
+        }))
+        setMenuItems(augmentedMenu);
+      } catch (error) {
+        console.error("Failed to fetch menu:", error);
+        setMenuItems([]); // Set to empty array on error
+      }
     };
     fetchMenuItems();
-  }, []);
+  }, [canteenId]);
 
-  if (!menuItems) {
+
+  // --- Loading State ---
+  if (menuItems === null) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#1976D2" />
+        <ActivityIndicator size="large" color={theme.colors.primary} />
         <Text style={styles.loadingText}>Loading delicious items...</Text>
       </View>
     );
   }
 
-  const categories = [
-    { name: "All" },
-    { name: "Breakfast" },
-    { name: "Lunch" },
-    { name: "Dinner" },
-  ];
+  // --- Categories ---
+  const categories = Array.from(new Set(['All', ...menuItems.map(item => item.category || 'Other')]))
+                         .map(name => ({ name: name || 'Other' }));
 
-  const addToCart = (item: MenuItem) => {
+  // --- Cart Actions ---
+  const showSnackbar = (message: string) => {
+    setSnackbarMessage(message);
+    setVisible(true);
+  };
+
+  const handleAddItem = (item: MenuItem) => {
     dispatch({
       type: "ADD_ITEM",
       payload: {
@@ -76,15 +115,24 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
         image: item.image || "",
       },
     });
-
-    setLastAddedItem(item.name);
-    setVisible(true);
-
-    setTimeout(() => {
-      setVisible(false);
-    }, 2000);
+    showSnackbar(`${item.name} added to Cart`);
   };
 
+  const handleIncreaseQuantity = (itemId: string) => {
+    dispatch({
+        type: "UPDATE_QUANTITY",
+        payload: { id: itemId, delta: 1 }
+    });
+  };
+
+  const handleDecreaseQuantity = (itemId: string) => {
+     dispatch({
+        type: "UPDATE_QUANTITY",
+        payload: { id: itemId, delta: -1 }
+     });
+  };
+
+  // --- Favorite Action ---
   const toggleFavorite = (itemId: string) => {
     setFavorites((prev) =>
       prev.includes(itemId)
@@ -93,89 +141,118 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
     );
   };
 
-  const toggleExpandItem = (itemId: string) => {
-    setExpandedItem(expandedItem === itemId ? null : itemId);
-  };
-
+  // --- Render Item Function ---
   const renderCanteenItem = ({ item }: { item: MenuItem }) => {
     const isFavorite = favorites.includes(item.item_id);
-    const isExpanded = expandedItem === item.item_id;
+    const cartItem = cart.find((cartEntry) => cartEntry.id === item.item_id);
+    const quantityInCart = cartItem ? cartItem.quantity : 0;
+
+    // Ensure description is a string, provide default if null/undefined
+    const descriptionText = item.description || `Delicious ${item.name} available.`;
 
     return (
-      <View style={styles.canteenCard}>
-        <View style={styles.cardContent}>
-          <TouchableOpacity
-            activeOpacity={0.95}
-            onPress={() => toggleExpandItem(item.item_id)}
-            style={styles.imageContainer}
-          >
-            <Image source={{ uri: item.image }} style={styles.canteenImage} />
-            <TouchableOpacity
-              style={styles.favoriteButton}
-              onPress={() => toggleFavorite(item.item_id)}
-            >
-              <Ionicons
-                name={isFavorite ? "heart" : "heart-outline"}
-                size={24}
-                color={isFavorite ? "#FF5252" : "#fff"}
-              />
-            </TouchableOpacity>
-          </TouchableOpacity>
+      <View style={styles.itemCard}>
+        {/* Left Side: Details */}
+        <View style={styles.itemDetails}>
+          {/* Category */}
+          <Text style={styles.itemCategory}>{item.category || 'Food'}</Text>
+          {/* Name */}
+          <Text style={styles.itemName}>{item.name}</Text>
+          {/* Rating */}
+          {item.rating && item.ratingCount ? ( // Check both rating and count
+             <View style={styles.ratingContainer}>
+               <Ionicons name="star" size={14} color="#FFB300" />
+               <Text style={styles.ratingText}>
+                 {`${item.rating.toFixed(1)} (${item.ratingCount} ratings)`}
+               </Text>
+             </View>
+           ) : null /* Render nothing if no rating */}
+          {/* Price */}
+          <View style={styles.priceContainer}>
+             <Text style={styles.currentPrice}>₹{item.price}</Text>
+          </View>
+          {/* Description */}
+          <Text style={styles.itemDescription} numberOfLines={2}>
+            {descriptionText}
+          </Text>
+          {/* Like/Share Icons */}
+          <View style={styles.itemActions}>
+             <TouchableOpacity onPress={() => toggleFavorite(item.item_id)}>
+               <Ionicons
+                  name={isFavorite ? "heart" : "heart-outline"}
+                  size={22}
+                  color={isFavorite ? "#FF5252" : "#757575"}
+                />
+             </TouchableOpacity>
+             <TouchableOpacity style={{ marginLeft: 15 }}>
+               <Ionicons name="share-social-outline" size={20} color="#757575" />
+             </TouchableOpacity>
+          </View>
+        </View>
 
-          <View style={styles.infoSection}>
-            <View style={styles.canteenNameContainer}>
-              <Text style={styles.canteenNameText}>{item.name}</Text>
-            </View>
-
-            <View style={styles.itemDescriptionContainer}>
-              <Text
-                style={styles.itemDescriptionText}
-                numberOfLines={isExpanded ? undefined : 2}
-              >
-                {item.description ||
-                  `Delicious ${item.name} made with authentic recipes and fresh ingredients.`}
-              </Text>
-            </View>
-
-            <View style={styles.cardFooter}>
-              <Text style={styles.priceText}>₹{item.price}</Text>
+        {/* Right Side: Image & Add/Quantity Button */}
+        <View style={styles.itemImageContainer}>
+          <Image source={{ uri: item.image }} style={styles.itemImage} />
+          <View style={styles.addQuantityContainer}>
+            {quantityInCart === 0 ? (
               <TouchableOpacity
                 style={styles.addButton}
-                onPress={() => addToCart(item)}
+                onPress={() => handleAddItem(item)}
               >
-                <Ionicons name="add-circle" size={20} color="#FFFFFF" />
                 <Text style={styles.addButtonText}>ADD</Text>
+                <Ionicons name="add" size={16} color={theme.colors.primary} style={{ marginLeft: 2 }}/>
               </TouchableOpacity>
-            </View>
+            ) : (
+              <View style={styles.quantitySelector}>
+                <TouchableOpacity
+                  style={styles.quantityButton}
+                  onPress={() => handleDecreaseQuantity(item.item_id)}
+                >
+                  <Ionicons name="remove" size={16} color="white" />
+                </TouchableOpacity>
+                <Text style={styles.quantityText}>{quantityInCart}</Text>
+                <TouchableOpacity
+                  style={styles.quantityButton}
+                  onPress={() => handleIncreaseQuantity(item.item_id)}
+                >
+                  <Ionicons name="add" size={16} color="white" />
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         </View>
       </View>
     );
   };
 
+  // --- Cart Summary ---
   const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotalAmount = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
+  // --- Main Return Structure ---
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
 
+      {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#212121" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{canteenName}</Text>
+        {/* Ensure canteenName is treated as text */}
+        <Text style={styles.headerTitle}>{canteenName || 'Canteen Menu'}</Text>
         <TouchableOpacity style={styles.menuButton}>
           <Ionicons name="ellipsis-vertical" size={24} color="#212121" />
         </TouchableOpacity>
       </View>
 
+      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
-          <Ionicons name="search" size={22} color="#757575" />
+          <Ionicons name="search" size={20} color="#757575" />
           <TextInput
             placeholder="Search for dishes..."
             style={styles.searchInput}
@@ -184,123 +261,117 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
             onChangeText={setSearchQuery}
           />
         </View>
-
         <TouchableOpacity style={styles.filterButton}>
-          <Ionicons name="filter" size={22} color="#1976D2" />
+          <Ionicons name="filter" size={20} color={theme.colors.primary} />
         </TouchableOpacity>
       </View>
 
-      <View style={styles.categoriesWrapper}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesContainer}
-        >
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category.name}
-              style={[
-                styles.categoryButton,
-                selectedCategory === category.name && styles.selectedCategory,
-              ]}
-              onPress={() => setSelectedCategory(category.name)}
-            >
-              <Text
+       {/* Categories Scroll */}
+       {categories.length > 1 && (
+        <View style={styles.categoriesWrapper}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoriesContainer}
+          >
+            {categories.map((category) => (
+              <TouchableOpacity
+                key={category.name}
                 style={[
-                  styles.categoryButtonText,
-                  selectedCategory === category.name &&
-                    styles.selectedCategoryText,
+                  styles.categoryButton,
+                  selectedCategory === category.name && styles.selectedCategory,
                 ]}
+                onPress={() => setSelectedCategory(category.name)}
               >
-                {category.name}
-              </Text>
-              {selectedCategory === category.name && (
-                <View style={styles.categoryIndicator} />
-              )}
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+                <Text
+                  style={[
+                    styles.categoryButtonText,
+                    selectedCategory === category.name &&
+                      styles.selectedCategoryText,
+                  ]}
+                >
+                  {category.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+       )}
 
+
+      {/* Menu List */}
       <FlatList
-        data={menuItems.filter(
-          (item) =>
-            item.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            (selectedCategory === "All" ||
-              item.category === selectedCategory.toLowerCase())
+         data={menuItems.filter(
+            (item) =>
+                item.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+                (selectedCategory === "All" || item.category === selectedCategory)
         )}
         renderItem={renderCanteenItem}
         keyExtractor={(item) => item.item_id}
         contentContainerStyle={styles.canteenList}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+            <View style={styles.emptyListContainer}>
+                <Text style={styles.emptyListText}>No dishes found.</Text>
+                 {searchQuery || selectedCategory !== 'All' ? (
+                    <Text style={styles.emptyListSubText}>Try adjusting your search or filter.</Text>
+                 ) : null}
+            </View>
+         }
       />
 
+      {/* Cart Button */}
       {cartItemsCount > 0 && (
         <TouchableOpacity
           style={styles.cartButton}
           onPress={() =>
             router.push({
-              pathname: "/user/cart",
-              params: {
-                id: canteenId,
-                name: canteenName,
-              },
+              pathname: "/user/cart", // Ensure path is correct
+              params: { id: canteenId, name: canteenName },
             })
           }
         >
           <View style={styles.cartButtonContent}>
-            <View style={styles.cartInfo}>
-              <Text style={styles.cartItemCount}>
-                {cartItemsCount} {cartItemsCount === 1 ? "ITEM" : "ITEMS"}
-              </Text>
-              <Text style={styles.cartTotalAmount}>₹{cartTotalAmount}</Text>
+             <View style={styles.cartInfo}>
+               <Text style={styles.cartItemCount}>
+                  {`${cartItemsCount} ${cartItemsCount === 1 ? "ITEM" : "ITEMS"}`}
+                </Text>
+                <Text style={styles.cartTotalAmount}>{`₹${cartTotalAmount.toFixed(2)}`}</Text>
             </View>
             <View style={styles.viewCartContainer}>
-              <Text style={styles.cartButtonText}>View Cart</Text>
-              <Ionicons name="chevron-forward" size={20} color="#fff" />
+                <Text style={styles.cartButtonText}>View Cart</Text>
+                <Ionicons name="chevron-forward" size={20} color="#fff" />
             </View>
           </View>
         </TouchableOpacity>
       )}
 
+      {/* Snackbar */}
       <Snackbar
         visible={visible}
         onDismiss={() => setVisible(false)}
         duration={2000}
         style={styles.snackbar}
+        action={{
+          label: 'OK',
+          onPress: () => { setVisible(false); },
+          textColor: '#FFFFFF',
+        }}
       >
-        {`${lastAddedItem} added to Cart`}
+         {/* Ensure snackbar message is always rendered within Text */}
+         <Text style={styles.snackbarText}>{snackbarMessage}</Text>
       </Snackbar>
     </View>
   );
 };
 
-const createStyles = (theme: any) =>
+// --- Styles ---
+// Ensure Theme type includes colors.primary and colors.inversePrimary
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: "#F5F5F7",
-    },
-    headerContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      backgroundColor: "#FFFFFF",
-      paddingHorizontal: 16,
-      paddingVertical: 14,
-      borderBottomWidth: 1,
-      borderBottomColor: "#EEEEEE",
-    },
-    headerTitle: {
-      fontSize: 20,
-      fontWeight: "700",
-      color: "#212121",
-    },
-    backButton: {
-      padding: 8,
-    },
-    menuButton: {
-      padding: 8,
+      backgroundColor: "#F8F8F8",
     },
     loadingContainer: {
       flex: 1,
@@ -309,216 +380,312 @@ const createStyles = (theme: any) =>
       backgroundColor: "#FFFFFF",
     },
     loadingText: {
-      fontSize: 18,
+      marginTop: 15,
+      fontSize: 16,
       fontWeight: "600",
-      color: "#1976D2",
+      color: "#555",
     },
+    headerContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      backgroundColor: "#FFFFFF",
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: "#E0E0E0",
+    },
+    headerTitle: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: "#333",
+    },
+    backButton: { padding: 6 },
+    menuButton: { padding: 6 },
     searchContainer: {
       flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 16,
-      paddingVertical: 12,
+      paddingVertical: 10,
       backgroundColor: "#FFFFFF",
-      borderBottomWidth: 1,
-      borderBottomColor: "#EEEEEE",
     },
     searchInputContainer: {
       flex: 1,
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: "#F1F3F4",
+      backgroundColor: "#F0F0F0",
+      borderRadius: 8,
       paddingHorizontal: 12,
       paddingVertical: 8,
-      borderRadius: 24,
       marginRight: 10,
     },
     searchInput: {
       flex: 1,
       marginLeft: 8,
       fontSize: 15,
-      color: "#212121",
+      color: "#333",
     },
     filterButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: "#F1F3F4",
-      justifyContent: "center",
-      alignItems: "center",
+      padding: 8,
     },
     categoriesWrapper: {
-      paddingVertical: 12,
-      backgroundColor: "#FFFFFF",
-      marginBottom: 4,
-      borderBottomWidth: 1,
-      borderBottomColor: "#EEEEEE",
+        paddingVertical: 10,
+        backgroundColor: '#FFFFFF',
+        borderBottomWidth: 1,
+        borderBottomColor: '#EFEFEF',
+        marginBottom: 6,
     },
     categoriesContainer: {
-      paddingHorizontal: 12,
+        paddingHorizontal: 12,
     },
     categoryButton: {
-      alignItems: "center",
-      marginHorizontal: 8,
-      paddingHorizontal: 16,
-      paddingVertical: 10,
-      borderRadius: 20,
-      backgroundColor: "#F5F5F7",
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 18,
+        backgroundColor: '#F0F0F0',
+        marginHorizontal: 5,
+        borderWidth: 1,
+        borderColor: 'transparent',
     },
     categoryButtonText: {
-      fontSize: 14,
-      fontWeight: "600",
-      color: "#757575",
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#555',
     },
     selectedCategory: {
-      backgroundColor: "#E3F2FD",
+        // Use theme colors safely
+        backgroundColor: theme.colors.inversePrimary || '#FFF0F0',
+        borderColor: theme.colors.primary || '#D32F2F',
     },
     selectedCategoryText: {
-      color: "#1976D2",
-      fontWeight: "700",
-    },
-    categoryIndicator: {
-      width: 24,
-      height: 3,
-      backgroundColor: "#1976D2",
-      borderRadius: 1.5,
-      marginTop: 6,
-      position: "absolute",
-      bottom: -2,
+        color: theme.colors.primary || '#D32F2F',
+        fontWeight: 'bold',
     },
     canteenList: {
-      paddingHorizontal: 12,
+      paddingHorizontal: 16,
       paddingBottom: 100,
-      paddingTop: 8,
+      paddingTop: 10,
     },
-    canteenCard: {
+    emptyListContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 50,
+        paddingHorizontal: 20,
+    },
+    emptyListText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#666',
+        textAlign: 'center',
+    },
+    emptyListSubText: {
+        fontSize: 14,
+        color: '#888',
+        marginTop: 5,
+        textAlign: 'center',
+    },
+    itemCard: {
+      flexDirection: "row",
       backgroundColor: "#FFFFFF",
-      borderRadius: 16,
+      borderRadius: 12,
       marginBottom: 16,
       overflow: "hidden",
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
+      borderWidth: 1,
+      borderColor: '#EEEEEE'
     },
-    cardContent: {
-      flexDirection: 'row',
-      height: 140,
-    },
-    imageContainer: {
-      width: 140,
-      height: '100%',
-      position: 'relative',
-    },
-    canteenImage: {
-      width: '100%',
-      height: '100%',
-    },
-    favoriteButton: {
-      position: 'absolute',
-      top: 8,
-      right: 8,
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      backgroundColor: "rgba(0,0,0,0.5)",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    infoSection: {
+    itemDetails: {
       flex: 1,
       padding: 12,
       justifyContent: 'space-between',
     },
-    canteenNameContainer: {
-      marginBottom: 4,
+     bestsellerTag: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FFF3E0',
+        borderRadius: 4,
+        paddingHorizontal: 6,
+        paddingVertical: 3,
+        alignSelf: 'flex-start',
+        marginBottom: 5,
     },
-    canteenNameText: {
+    bestsellerText: {
+        fontSize: 11,
+        fontWeight: 'bold',
+        color: '#E65100',
+        marginLeft: 4,
+    },
+    itemCategory: {
+      fontSize: 12,
+      color: "#666",
+      marginBottom: 2,
+      textTransform: 'capitalize',
+    },
+    itemName: {
       fontSize: 16,
       fontWeight: "bold",
-      color: "#212121",
+      color: "#333",
+      marginBottom: 4,
     },
-    itemDescriptionContainer: {
-      marginVertical: 8,
+    ratingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
     },
-    itemDescriptionText: {
-      fontSize: 13,
-      color: "#757575",
-      lineHeight: 18,
+    ratingText: {
+        fontSize: 13,
+        color: '#555',
+        marginLeft: 4,
     },
-    cardFooter: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginTop: 'auto',
+    priceContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
     },
-    priceText: {
+    currentPrice: {
       fontSize: 16,
-      fontWeight: 'bold',
-      color: '#212121',
+      fontWeight: "bold",
+      color: "#333",
+    },
+    originalPrice: {
+      fontSize: 13,
+      color: "#999",
+      textDecorationLine: "line-through",
+      marginLeft: 8,
+    },
+    itemDescription: {
+      fontSize: 12,
+      color: "#777",
+      lineHeight: 16,
+      marginBottom: 8,
+      minHeight: 32,
+    },
+    itemActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 'auto',
+    },
+    itemImageContainer: {
+      width: 130,
+      alignItems: "center",
+      paddingTop: 10,
+      paddingBottom: 10,
+      paddingRight: 10,
+      justifyContent: 'space-between',
+    },
+    itemImage: {
+      width: 110,
+      height: 110,
+      borderRadius: 10,
+    },
+    addQuantityContainer: {
+        alignItems: 'center',
+        width: '100%',
+        marginTop: 8,
     },
     addButton: {
-      backgroundColor: "#1976D2",
-      paddingHorizontal: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#FFF",
+      borderWidth: 1.5,
+      borderColor: theme.colors.primary || '#D32F2F',
+      borderRadius: 8,
       paddingVertical: 6,
-      borderRadius: 6,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 4,
+      paddingHorizontal: 18,
+      minWidth: 90,
+      height: 32,
     },
     addButtonText: {
+      color: theme.colors.primary || '#D32F2F',
+      fontWeight: "bold",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      fontSize: 14,
+      marginRight: 2,
+    },
+    quantitySelector: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      backgroundColor: theme.colors.primary || '#D32F2F',
+      borderRadius: 8,
+      minWidth: 90,
+      height: 32,
+    },
+    quantityButton: {
+        paddingHorizontal: 10,
+        height: '100%',
+        justifyContent: 'center',
+    },
+    quantityText: {
       color: "#FFFFFF",
       fontWeight: "bold",
       fontSize: 14,
+      minWidth: 25,
+      textAlign: 'center',
+    },
+     customizableText: {
+        fontSize: 11,
+        color: '#777',
+        marginTop: 5,
     },
     cartButton: {
-      position: "absolute",
-      bottom: 20,
-      left: 20,
-      right: 20,
-      backgroundColor: "#1976D2",
-      paddingVertical: 12,
-      borderRadius: 12,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 6,
+        position: "absolute",
+        bottom: 15,
+        left: 15,
+        right: 15,
+        backgroundColor: theme.colors.primary || '#D32F2F',
+        paddingVertical: 12,
+        borderRadius: 10,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
     },
     cartButtonContent: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingHorizontal: 16,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 16,
     },
-    cartInfo: {
-      flexDirection: "column",
-    },
+    cartInfo: {},
     cartItemCount: {
-      color: "#E0E0E0",
-      fontSize: 12,
-      fontWeight: "bold",
+        color: theme.colors.inversePrimary || "#FFEBEE", // Use theme color or fallback
+        fontSize: 11,
+        fontWeight: "bold",
+        marginBottom: 2,
     },
     cartTotalAmount: {
-      color: "#FFFFFF",
-      fontSize: 18,
-      fontWeight: "bold",
+        color: "#FFFFFF",
+        fontSize: 16,
+        fontWeight: "bold",
     },
     viewCartContainer: {
-      flexDirection: "row",
-      alignItems: "center",
+        flexDirection: "row",
+        alignItems: "center",
     },
     cartButtonText: {
-      color: "#fff",
-      fontWeight: "bold",
-      fontSize: 16,
-      marginRight: 4,
+        color: "#fff",
+        fontWeight: "bold",
+        fontSize: 15,
+        marginRight: 4,
     },
     snackbar: {
-      backgroundColor: "#4CAF50",
-      borderRadius: 8,
-      marginBottom: 80,
+       backgroundColor: theme.colors.primary || '#D32F2F',
+       borderRadius: 8,
+       marginHorizontal: 15,
+       // Calculate marginBottom dynamically based on cart state
+       // This requires cartItemsCount to be accessible here or passed down
+       // For simplicity, using a fixed margin or adjust based on your state management
+       marginBottom: 85, // Adjust this value as needed
     },
+    snackbarText: {
+       color: '#FFFFFF',
+    },
+
   });
 
 export default CanteenMenuScreen;

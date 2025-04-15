@@ -28,7 +28,7 @@ type TimeSlot = {
 
 export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: string, canteenName: string }) {
   const router = useRouter();
-  const { cart } = useCart();
+  const { cart, dispatch } = useCart();
   const { user } = useAuth();
   const [selectedPayment, setSelectedPayment] = useState<string>('');
   const [selectedTiming, setSelectedTiming] = useState<string>('');
@@ -117,6 +117,11 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
 
       // Call the function to place the order
       await placeNewOrder(orderDetails);
+      // Clear the cart 
+      cart.forEach((item) => {
+        dispatch({ type: 'REMOVE_ITEM', payload: { id: item.id } });
+      })
+
       Alert.alert("Order placed successfully!")
       router.push('/user/orders');
     } catch (error) {
@@ -251,7 +256,7 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
           disabled={!selectedPayment || !selectedTiming || (selectedTiming === 'schedule' && !selectedTimeSlot)}
         >
           <Text style={styles.placeOrderText}>Place Order</Text>
-          <Ionicons name="arrow-forward" size={20} color="#333" />
+          <Ionicons name="arrow-forward" size={20} color="white" />
         </TouchableOpacity>
       </View>
 

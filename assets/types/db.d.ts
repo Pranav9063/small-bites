@@ -10,15 +10,16 @@ type CanteenData = {
     menu: MenuItem[];
 }
 
-type MenuItem = {
-    item_id: string;
-    name: string;
-    price: number;
-    description: string;
-    category: string;
-    calories?: number;
-    image?: string;
-    availability: boolean;
+export interface MenuItem {
+  item_id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  description?: string;
+  image?: string;
+  category?: string;
+  rating?: number;
+  ratingCount?: number;
 }
 
 type OrderDetails = {

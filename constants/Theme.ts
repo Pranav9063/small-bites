@@ -5,7 +5,7 @@ import {
 const mytheme = {
   ...DefaultTheme,
   colors:  {
-      "primary": "rgb(49, 141, 161)",
+      "primary": "rgb(74, 144, 226)",
       "onPrimary": "rgb(255, 255, 255)",
       "primaryContainer": "rgb(212, 227, 255)",
       "onPrimaryContainer": "rgb(0, 28, 58)",
@@ -33,7 +33,7 @@ const mytheme = {
       "scrim": "rgb(0, 0, 0)",
       "inverseSurface": "rgb(47, 48, 51)",
       "inverseOnSurface": "rgb(241, 240, 244)",
-      "inversePrimary": "rgb(165, 200, 255)",
+      "inversePrimary": "rgb(228, 234, 240)",
       "elevation": {
         "level0": "transparent",
         "level1": "rgb(240, 244, 251)",

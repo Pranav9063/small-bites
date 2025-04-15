@@ -5,11 +5,14 @@ import { PlatformPressable } from '@react-navigation/elements'
 import { useLinkBuilder } from '@react-navigation/native'
 import { EdgeInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
+import { useTheme } from 'react-native-paper'
+import { Theme } from '@/constants/Theme'
 
 
 const UserTabBar = ({ state, descriptors, navigation, insets }: BottomTabBarProps) => {
   const { buildHref } = useLinkBuilder();
-  const styles = createStyles(insets);
+  const theme = useTheme();
+  const styles = createStyles(insets,theme);
 
   interface IconProps {
     color?: string;
@@ -63,7 +66,7 @@ const UserTabBar = ({ state, descriptors, navigation, insets }: BottomTabBarProp
           });
         };
 
-        const color = isFocused ? '#4A90E2' : '#666';
+        const color = isFocused ? theme.colors.primary : '#666';
         if (route.name == 'index') {
           return (
             <PlatformPressable
@@ -110,7 +113,7 @@ const UserTabBar = ({ state, descriptors, navigation, insets }: BottomTabBarProp
   )
 }
 
-const createStyles = (insets: EdgeInsets) => {
+const createStyles = (insets: EdgeInsets, theme: Theme) => {
   return StyleSheet.create({
     tabBar: {
       flexDirection: 'row',
