@@ -54,7 +54,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
-  const { cart, dispatch } = useCart();
+  const { cart, currentCanteen, dispatch } = useCart();
   const [favorites, setFavorites] = useState<string[]>([]);
   const [visible, setVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -105,6 +105,12 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
   };
 
   const handleAddItem = (item: MenuItem) => {
+    // Check if trying to add from different canteen
+    if (currentCanteen && currentCanteen.id !== canteenId) {
+      showSnackbar(`Clear your cart first to order from ${canteenName}`);
+      return;
+    }
+
     dispatch({
       type: "ADD_ITEM",
       payload: {
@@ -113,6 +119,8 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
         price: item.price,
         quantity: 1,
         image: item.image || "",
+        canteenId: canteenId,
+        canteenName: canteenName,
       },
     });
     showSnackbar(`${item.name} added to Cart`);
