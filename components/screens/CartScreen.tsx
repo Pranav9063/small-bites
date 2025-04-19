@@ -1,13 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../../lib/context/CartContext';
 import type { CartItem } from '../../lib/context/CartContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { addNewSavedOrderToFirestore } from '@/lib/services/firestoreService';
+import { useAuth } from '@/lib/context/AuthContext';
 
 export default function CartScreen({ id, name }: { id: string, name: string }) {
   const { cart, dispatch } = useCart();
+  const { user } = useAuth();
   const router = useRouter();
 
   // console.log("Cart data:", cart); // Debugging: Log cart data to verify image URLs
@@ -27,7 +30,7 @@ export default function CartScreen({ id, name }: { id: string, name: string }) {
       <Image
         source={
           item.image
-            ? { uri: item.image } // Use the image URL if available
+            ? { uri: item.image }
             : require('../../assets/images/canteenImg.png') // Fallback to a default image
         }
         style={styles.itemImage}
@@ -67,6 +70,28 @@ export default function CartScreen({ id, name }: { id: string, name: string }) {
     </View>
   );
 
+  function handleSaveOrder(): void {
+    if (cart.length === 0) return;
+    const orderId = Date.now().toString();
+    const savedOrder = {
+      orderId,
+      canteenId: id,
+      canteenName: name,
+      cart,
+    };
+
+    addNewSavedOrderToFirestore(user!.uid, savedOrder)
+      .then(() => {
+        console.log('Order saved successfully!');
+        Alert.alert(
+          'Order Saved Successfully',
+        );
+      })
+      .catch((error) => {
+        console.error('Error saving order:', error);
+      });
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
@@ -79,11 +104,6 @@ export default function CartScreen({ id, name }: { id: string, name: string }) {
 
       {cart.length > 0 ? (
         <>
-          {/* <View style={styles.canteenInfo}>
-            <Ionicons name="restaurant" size={20} color="#1976D2" />
-            <Text style={styles.canteenName}>{name}</Text>
-          </View> */}
-
           <FlatList
             data={cart}
             renderItem={renderItem}
@@ -91,6 +111,12 @@ export default function CartScreen({ id, name }: { id: string, name: string }) {
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
           />
+          {/* Save order */}
+          <View style={styles.saveOrderContainer}>
+            <TouchableOpacity style={styles.saveOrderButton} onPress={handleSaveOrder}>
+              <Ionicons name="bookmark-outline" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
 
           <View style={styles.footer}>
             <View style={styles.totalSection}>
@@ -144,6 +170,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F7',
+  },
+  saveOrderContainer: {
+    padding: 16,
+    paddingRight: 24,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  saveOrderButton: {
+    backgroundColor: '#1976D2',
+    padding: 14,
+    borderRadius: 50, // Make the button circular
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 56, // Ensure width and height are equal for circular shape
+    height: 56,
+  },
+  saveOrderText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',

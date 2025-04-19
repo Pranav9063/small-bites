@@ -107,7 +107,10 @@ const orders = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={styles.heading}>My Orders</Text>
+            {/* <Header title="My Orders" /> */}
+            <View style={styles.header}>
+                <Text style={styles.headerText}>Orders</Text>
+            </View>
 
             {userOrders ? (
                 <FlatList
@@ -137,10 +140,22 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f5f5f5',
     },
-    heading: {
-        fontSize: 24,
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+        backgroundColor: '#FFFFFF',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+    },
+    headerText: {
+        fontSize: 20,
         fontWeight: 'bold',
-        padding: 16,
         color: '#333',
     },
     listContainer: {

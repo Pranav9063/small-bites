@@ -3,6 +3,7 @@ import { doc, setDoc, getDoc, addDoc, collection, getDocs } from "@react-native-
 import { googleSignIn } from "./authService";
 import { deleteObject, getMetadata, ref } from "@react-native-firebase/storage";
 import { CanteenData, MenuItem, OrderDetails, UserExpense } from "@/assets/types/db";
+import { CartItem } from "../context/CartContext";
 
 export type NewUser = {
   id: string;
@@ -13,11 +14,19 @@ export type NewUser = {
   givenName: string | null;
 };
 
+export interface SavedOrder {
+  orderId: string;
+  canteenId: string;
+  canteenName: string;
+  cart: CartItem[];
+}
+
 export type FirestoreUser = {
   name: string | null;
   email: string | null;
   role: "user" | "admin" | "canteen";
   expenses: UserExpense[];
+  savedOrders: SavedOrder[];
   createdAt: Date;
 };
 
@@ -53,6 +62,7 @@ export const addMemberToFirestore = async (role: "user" | "admin" | "canteen") =
         email: user.email,
         role: role,
         expenses: [],
+        savedOrders: [],
         createdAt: new Date(),
       };
       await setDoc(userRef, newUser);
@@ -347,6 +357,61 @@ export const addNewOrderToFirestore = async (orderId: string, orderDetails: Orde
     return { success: true };
   } catch (error) {
     console.error("Error adding order:", error);
+    return { success: false, error };
+  }
+}
+
+export const addNewSavedOrderToFirestore = async (userId: string, orderDetails: SavedOrder) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists) {
+      const userData = userSnap.data() as FirestoreUser;
+      const savedOrders = userData.savedOrders || [];
+      savedOrders.push({ ...orderDetails });
+      await setDoc(userRef, { savedOrders }, { merge: true });
+      console.log("Saved order added successfully!");
+      return { success: true };
+    }
+  } catch (error) {
+    console.error("Error adding saved order:", error);
+    return { success: false, error };
+  }
+}
+
+export const fetchSavedOrdersByUserId = async (userId: string) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists) {
+      const userData = userSnap.data() as FirestoreUser;
+      return userData.savedOrders || [];
+    } else {
+      throw new Error("User not found.");
+    }
+  } catch (error) {
+    console.error("Error fetching saved orders:", error);
+    return null;
+  }
+}
+export const deleteSavedOrder = async (userId: string, orderId: string) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists) {
+      const userData = userSnap.data() as FirestoreUser;
+      const savedOrders = userData.savedOrders || [];
+      const updatedSavedOrders = savedOrders.filter((order) => order.orderId !== orderId);
+      await setDoc(userRef, { savedOrders: updatedSavedOrders }, { merge: true });
+      console.log("Saved order deleted successfully!");
+      return { success: true };
+    } else {
+      throw new Error("User not found.");
+    }
+  } catch (error) {
+    console.error("Error deleting saved order:", error);
     return { success: false, error };
   }
 }

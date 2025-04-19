@@ -33,7 +33,8 @@ type CartAction =
   }
   | { type: 'REMOVE_ITEM'; payload: { id: string } }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; delta: number } }
-  | { type: 'CLEAR_CART' };
+  | { type: 'CLEAR_CART' }
+  | { type: 'SET_CART'; payload: { items: CartItem[], canteenId?: string, canteenName?: string } };
 
 const initialState: CartState = {
   cart: [],
@@ -88,7 +89,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         currentCanteen: updatedCart.length === 0 ? null : state.currentCanteen,
       };
     }
-    case 'UPDATE_QUANTITY':
+    case 'UPDATE_QUANTITY': {
       const updatedCart = state.cart.map(item =>
         item.id === action.payload.id
           ? {
@@ -96,13 +97,47 @@ function cartReducer(state: CartState, action: CartAction): CartState {
             quantity: Math.max(0, item.quantity + action.payload.delta),
           }
           : item
-      ).filter(item => item.quantity > 0)
+      ).filter(item => item.quantity > 0);
       // If the current canteen is the one being removed, reset it
       return {
         ...state,
         cart: updatedCart,
         currentCanteen: updatedCart.length === 0 ? null : state.currentCanteen,
       };
+    }
+    case 'SET_CART': {
+      // Check if there are items in the new cart
+      if (action.payload.items.length === 0) {
+        return {
+          cart: [],
+          currentCanteen: null,
+        };
+      }
+
+      // Determine canteen info for the new cart
+      let newCurrentCanteen = state.currentCanteen;
+
+      // If explicit canteen info is provided, use that
+      if (action.payload.canteenId && action.payload.canteenName) {
+        newCurrentCanteen = {
+          id: action.payload.canteenId,
+          name: action.payload.canteenName,
+        };
+      }
+      // Otherwise, use the canteen info from the first item if available
+      else if (action.payload.items.length > 0) {
+        const firstItem = action.payload.items[0];
+        newCurrentCanteen = {
+          id: firstItem.canteenId,
+          name: firstItem.canteenName,
+        };
+      }
+
+      return {
+        cart: [...action.payload.items],
+        currentCanteen: newCurrentCanteen,
+      };
+    }
     default:
       return state;
   }
@@ -112,16 +147,30 @@ const CartContext = createContext<{
   cart: CartItem[];
   currentCanteen: CartState['currentCanteen'];
   dispatch: React.Dispatch<CartAction>;
+  setCart: (items: CartItem[], canteenId?: string, canteenName?: string) => void;
 } | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
+  // New function to set the entire cart
+  const setCart = (items: CartItem[], canteenId?: string, canteenName?: string) => {
+    dispatch({
+      type: 'SET_CART',
+      payload: {
+        items,
+        canteenId,
+        canteenName
+      }
+    });
+  };
+
   return (
     <CartContext.Provider value={{
       cart: state.cart,
       currentCanteen: state.currentCanteen,
-      dispatch
+      dispatch,
+      setCart
     }}>
       {children}
     </CartContext.Provider>

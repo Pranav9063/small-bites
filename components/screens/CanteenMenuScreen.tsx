@@ -45,7 +45,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
     const fetchMenuItems = async () => {
       try {
         const data = (await fetchCanteenById(canteenId)) as CanteenData;
-        console.log("Fetched menu items:", data.menu);
+        // console.log("Fetched menu items:", data.menu);
         // Add mock data if necessary for testing UI elements
         // IMPORTANT: Replace this mock data logic with your actual data structure
         const augmentedMenu = data.menu.map((item, index) => ({
