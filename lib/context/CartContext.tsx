@@ -18,19 +18,19 @@ export interface CartState {
   } | null;
 }
 
-type CartAction = 
-  | { 
-      type: 'ADD_ITEM'; 
-      payload: { 
-        id: string; 
-        name: string; 
-        price: number; 
-        quantity: number; 
-        image: string;
-        canteenId: string;
-        canteenName: string;
-      }; 
-    }
+type CartAction =
+  | {
+    type: 'ADD_ITEM';
+    payload: {
+      id: string;
+      name: string;
+      price: number;
+      quantity: number;
+      image: string;
+      canteenId: string;
+      canteenName: string;
+    };
+  }
   | { type: 'REMOVE_ITEM'; payload: { id: string } }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; delta: number } }
   | { type: 'CLEAR_CART' };
@@ -80,22 +80,28 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         cart: [],
         currentCanteen: null,
       };
-    case 'REMOVE_ITEM':
+    case 'REMOVE_ITEM': {
+      const updatedCart = state.cart.filter(item => item.id !== action.payload.id);
       return {
         ...state,
-        cart: state.cart.filter(item => item.id !== action.payload.id),
+        cart: updatedCart,
+        currentCanteen: updatedCart.length === 0 ? null : state.currentCanteen,
       };
+    }
     case 'UPDATE_QUANTITY':
+      const updatedCart = state.cart.map(item =>
+        item.id === action.payload.id
+          ? {
+            ...item,
+            quantity: Math.max(0, item.quantity + action.payload.delta),
+          }
+          : item
+      ).filter(item => item.quantity > 0)
+      // If the current canteen is the one being removed, reset it
       return {
         ...state,
-        cart: state.cart.map(item =>
-          item.id === action.payload.id
-            ? {
-                ...item,
-                quantity: Math.max(0, item.quantity + action.payload.delta),
-              }
-            : item
-        ).filter(item => item.quantity > 0),
+        cart: updatedCart,
+        currentCanteen: updatedCart.length === 0 ? null : state.currentCanteen,
       };
     default:
       return state;
@@ -112,10 +118,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
   return (
-    <CartContext.Provider value={{ 
-      cart: state.cart, 
+    <CartContext.Provider value={{
+      cart: state.cart,
       currentCanteen: state.currentCanteen,
-      dispatch 
+      dispatch
     }}>
       {children}
     </CartContext.Provider>
@@ -128,6 +134,6 @@ export function useCart() {
     throw new Error('useCart must be used within a CartProvider');
   }
   return context;
-} 
+}
 
 export default CartProvider;

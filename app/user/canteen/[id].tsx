@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLocalSearchParams } from 'expo-router';
-import { Stack } from 'expo-router';
 import CanteenMenuScreen from '@/components/screens/CanteenMenuScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

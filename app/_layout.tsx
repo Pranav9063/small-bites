@@ -1,9 +1,10 @@
+import React from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { configureOptions } from "@/constants/Config";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "@react-native-firebase/auth";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthProvider, useAuth } from "@/lib/context/AuthContext";

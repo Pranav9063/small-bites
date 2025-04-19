@@ -11,20 +11,6 @@ import { CanteenData } from '@/assets/types/db';
 
 SplashScreen.preventAutoHideAsync();
 
-type ItemType = {
-    name: string,
-    image: ImageSourcePropType | undefined,
-    rating: number,
-    id: string
-}
-
-const canteens = [
-    { id: "1", name: "MiniCampus", rating: 4.9, image: require("@/assets/images/icon.jpg") },
-    { id: "2", name: "Nescafe", rating: 4.8, image: require("@/assets/images/icon.jpg") },
-    { id: "3", name: "HK-Cafe", rating: 4.6, image: require("@/assets/images/icon.jpg") },
-    { id: "4", name: "Bittu", rating: 4.7, image: require("@/assets/images/icon.jpg") },
-];
-
 const UserHomeScreen = () => {
     const { user, signOutUser } = useAuth();
     const styles = createStyles();
@@ -204,7 +190,7 @@ const UserHomeScreen = () => {
                         </View>
 
                         {/* Scrollable Filter Buttons */}
-                        <View style={styles.categoriesContainer}>
+                        {/* <View style={styles.categoriesContainer}>
                             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                                 {["⭐Ratings", "✅Open", "🔥Popular", "📍Nearby"].map((filter, index) => (
                                     <TouchableOpacity
@@ -224,7 +210,7 @@ const UserHomeScreen = () => {
                                     </TouchableOpacity>
                                 ))}
                             </ScrollView>
-                        </View>
+                        </View> */}
                     </View>
 
                     {/* Canteen List */}
@@ -276,6 +262,7 @@ const createStyles = () =>
             backgroundColor: 'white',
             borderRadius: 16,
             marginBottom: 16,
+            marginHorizontal: 16,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 3 },
             shadowOpacity: 0.1,
@@ -341,7 +328,7 @@ const createStyles = () =>
             marginBottom: 8,
         },
         foodName: {
-            fontSize: 16,
+            fontSize: 22,
             fontWeight: '700',
             color: '#1a1a1a',
             flex: 1,

@@ -14,30 +14,11 @@ import {
 import { useTheme } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-// Assuming CartContext.tsx is in this relative path
 import { useCart } from "../../lib/context/CartContext";
-// Assuming firestoreService.ts is in this relative path
 import { fetchCanteenById } from "@/lib/services/firestoreService";
 import { Snackbar } from "react-native-paper";
-// Assuming db.ts defines these types in this relative path
 import { CanteenData, MenuItem } from "@/assets/types/db";
-// Assuming Theme is defined here
 import { Theme } from "@/constants/Theme";
-
-// Interface for MenuItem (ensure this matches your actual type)
-// export interface MenuItem {
-//   item_id: string;
-//   name: string;
-//   price: number;
-//   originalPrice?: number;
-//   description?: string;
-//   image?: string;
-//   category?: string;
-//   rating?: number;
-//   ratingCount?: number;
-//   isBestseller?: boolean;
-//   isCustomizable?: boolean;
-// }
 
 type CanteenMenuScreenProps = {
   canteenId: string;
@@ -68,11 +49,11 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
         // Add mock data if necessary for testing UI elements
         // IMPORTANT: Replace this mock data logic with your actual data structure
         const augmentedMenu = data.menu.map((item, index) => ({
-            ...item,
-            originalPrice: item.price + 20 + index,
-            rating: 4.0 + (index % 5) / 10.0,
-            ratingCount: 30 + index * 5,
-            category: item.category || (index % 2 === 0 ? 'All Day Breakfast' : 'Lunch')
+          ...item,
+          originalPrice: item.price + 20 + index,
+          rating: 4.0 + (index % 5) / 10.0,
+          ratingCount: 30 + index * 5,
+          category: item.category || (index % 2 === 0 ? 'All Day Breakfast' : 'Lunch')
         }))
         setMenuItems(augmentedMenu);
       } catch (error) {
@@ -96,7 +77,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
 
   // --- Categories ---
   const categories = Array.from(new Set(['All', ...menuItems.map(item => item.category || 'Other')]))
-                         .map(name => ({ name: name || 'Other' }));
+    .map(name => ({ name: name || 'Other' }));
 
   // --- Cart Actions ---
   const showSnackbar = (message: string) => {
@@ -128,16 +109,16 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
 
   const handleIncreaseQuantity = (itemId: string) => {
     dispatch({
-        type: "UPDATE_QUANTITY",
-        payload: { id: itemId, delta: 1 }
+      type: "UPDATE_QUANTITY",
+      payload: { id: itemId, delta: 1 }
     });
   };
 
   const handleDecreaseQuantity = (itemId: string) => {
-     dispatch({
-        type: "UPDATE_QUANTITY",
-        payload: { id: itemId, delta: -1 }
-     });
+    dispatch({
+      type: "UPDATE_QUANTITY",
+      payload: { id: itemId, delta: -1 }
+    });
   };
 
   // --- Favorite Action ---
@@ -168,33 +149,30 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
           <Text style={styles.itemName}>{item.name}</Text>
           {/* Rating */}
           {item.rating && item.ratingCount ? ( // Check both rating and count
-             <View style={styles.ratingContainer}>
-               <Ionicons name="star" size={14} color="#FFB300" />
-               <Text style={styles.ratingText}>
-                 {`${item.rating.toFixed(1)} (${item.ratingCount} ratings)`}
-               </Text>
-             </View>
-           ) : null /* Render nothing if no rating */}
+            <View style={styles.ratingContainer}>
+              <Ionicons name="star" size={14} color="#FFB300" />
+              <Text style={styles.ratingText}>
+                {`${item.rating.toFixed(1)} (${item.ratingCount} ratings)`}
+              </Text>
+            </View>
+          ) : null /* Render nothing if no rating */}
           {/* Price */}
           <View style={styles.priceContainer}>
-             <Text style={styles.currentPrice}>₹{item.price}</Text>
+            <Text style={styles.currentPrice}>₹{item.price}</Text>
           </View>
           {/* Description */}
           <Text style={styles.itemDescription} numberOfLines={2}>
             {descriptionText}
           </Text>
-          {/* Like/Share Icons */}
+          {/* Like Icons */}
           <View style={styles.itemActions}>
-             <TouchableOpacity onPress={() => toggleFavorite(item.item_id)}>
-               <Ionicons
-                  name={isFavorite ? "heart" : "heart-outline"}
-                  size={22}
-                  color={isFavorite ? "#FF5252" : "#757575"}
-                />
-             </TouchableOpacity>
-             <TouchableOpacity style={{ marginLeft: 15 }}>
-               <Ionicons name="share-social-outline" size={20} color="#757575" />
-             </TouchableOpacity>
+            <TouchableOpacity onPress={() => toggleFavorite(item.item_id)}>
+              <Ionicons
+                name={isFavorite ? "heart" : "heart-outline"}
+                size={22}
+                color={isFavorite ? "#FF5252" : "#757575"}
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -208,7 +186,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
                 onPress={() => handleAddItem(item)}
               >
                 <Text style={styles.addButtonText}>ADD</Text>
-                <Ionicons name="add" size={16} color={theme.colors.primary} style={{ marginLeft: 2 }}/>
+                <Ionicons name="add" size={16} color={theme.colors.primary} style={{ marginLeft: 2 }} />
               </TouchableOpacity>
             ) : (
               <View style={styles.quantitySelector}>
@@ -252,9 +230,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
         </TouchableOpacity>
         {/* Ensure canteenName is treated as text */}
         <Text style={styles.headerTitle}>{canteenName || 'Canteen Menu'}</Text>
-        <TouchableOpacity style={styles.menuButton}>
-          <Ionicons name="ellipsis-vertical" size={24} color="#212121" />
-        </TouchableOpacity>
+        <View style={{ width: 24 }}></View>
       </View>
 
       {/* Search Bar */}
@@ -274,8 +250,8 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
         </TouchableOpacity>
       </View>
 
-       {/* Categories Scroll */}
-       {categories.length > 1 && (
+      {/* Categories Scroll */}
+      {categories.length > 1 && (
         <View style={styles.categoriesWrapper}>
           <ScrollView
             horizontal
@@ -295,7 +271,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
                   style={[
                     styles.categoryButtonText,
                     selectedCategory === category.name &&
-                      styles.selectedCategoryText,
+                    styles.selectedCategoryText,
                   ]}
                 >
                   {category.name}
@@ -304,28 +280,28 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
             ))}
           </ScrollView>
         </View>
-       )}
+      )}
 
 
       {/* Menu List */}
       <FlatList
-         data={menuItems.filter(
-            (item) =>
-                item.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-                (selectedCategory === "All" || item.category === selectedCategory)
+        data={menuItems.filter(
+          (item) =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+            (selectedCategory === "All" || item.category === selectedCategory)
         )}
         renderItem={renderCanteenItem}
         keyExtractor={(item) => item.item_id}
         contentContainerStyle={styles.canteenList}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
-            <View style={styles.emptyListContainer}>
-                <Text style={styles.emptyListText}>No dishes found.</Text>
-                 {searchQuery || selectedCategory !== 'All' ? (
-                    <Text style={styles.emptyListSubText}>Try adjusting your search or filter.</Text>
-                 ) : null}
-            </View>
-         }
+          <View style={styles.emptyListContainer}>
+            <Text style={styles.emptyListText}>No dishes found.</Text>
+            {searchQuery || selectedCategory !== 'All' ? (
+              <Text style={styles.emptyListSubText}>Try adjusting your search or filter.</Text>
+            ) : null}
+          </View>
+        }
       />
 
       {/* Cart Button */}
@@ -340,15 +316,15 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
           }
         >
           <View style={styles.cartButtonContent}>
-             <View style={styles.cartInfo}>
-               <Text style={styles.cartItemCount}>
-                  {`${cartItemsCount} ${cartItemsCount === 1 ? "ITEM" : "ITEMS"}`}
-                </Text>
-                <Text style={styles.cartTotalAmount}>{`₹${cartTotalAmount.toFixed(2)}`}</Text>
+            <View style={styles.cartInfo}>
+              <Text style={styles.cartItemCount}>
+                {`${cartItemsCount} ${cartItemsCount === 1 ? "ITEM" : "ITEMS"}`}
+              </Text>
+              <Text style={styles.cartTotalAmount}>{`₹${cartTotalAmount.toFixed(2)}`}</Text>
             </View>
             <View style={styles.viewCartContainer}>
-                <Text style={styles.cartButtonText}>View Cart</Text>
-                <Ionicons name="chevron-forward" size={20} color="#fff" />
+              <Text style={styles.cartButtonText}>View Cart</Text>
+              <Ionicons name="chevron-forward" size={20} color="#fff" />
             </View>
           </View>
         </TouchableOpacity>
@@ -366,8 +342,8 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
           textColor: '#FFFFFF',
         }}
       >
-         {/* Ensure snackbar message is always rendered within Text */}
-         <Text style={styles.snackbarText}>{snackbarMessage}</Text>
+        {/* Ensure snackbar message is always rendered within Text */}
+        <Text style={styles.snackbarText}>{snackbarMessage}</Text>
       </Snackbar>
     </View>
   );
@@ -437,37 +413,37 @@ const createStyles = (theme: Theme) =>
       padding: 8,
     },
     categoriesWrapper: {
-        paddingVertical: 10,
-        backgroundColor: '#FFFFFF',
-        borderBottomWidth: 1,
-        borderBottomColor: '#EFEFEF',
-        marginBottom: 6,
+      paddingVertical: 10,
+      backgroundColor: '#FFFFFF',
+      borderBottomWidth: 1,
+      borderBottomColor: '#EFEFEF',
+      marginBottom: 6,
     },
     categoriesContainer: {
-        paddingHorizontal: 12,
+      paddingHorizontal: 12,
     },
     categoryButton: {
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 18,
-        backgroundColor: '#F0F0F0',
-        marginHorizontal: 5,
-        borderWidth: 1,
-        borderColor: 'transparent',
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 18,
+      backgroundColor: '#F0F0F0',
+      marginHorizontal: 5,
+      borderWidth: 1,
+      borderColor: 'transparent',
     },
     categoryButtonText: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: '#555',
+      fontSize: 14,
+      fontWeight: '500',
+      color: '#555',
     },
     selectedCategory: {
-        // Use theme colors safely
-        backgroundColor: theme.colors.inversePrimary || '#FFF0F0',
-        borderColor: theme.colors.primary || '#D32F2F',
+      // Use theme colors safely
+      backgroundColor: theme.colors.inversePrimary || '#FFF0F0',
+      borderColor: theme.colors.primary || '#D32F2F',
     },
     selectedCategoryText: {
-        color: theme.colors.primary || '#D32F2F',
-        fontWeight: 'bold',
+      color: theme.colors.primary || '#D32F2F',
+      fontWeight: 'bold',
     },
     canteenList: {
       paddingHorizontal: 16,
@@ -475,23 +451,23 @@ const createStyles = (theme: Theme) =>
       paddingTop: 10,
     },
     emptyListContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 50,
-        paddingHorizontal: 20,
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 50,
+      paddingHorizontal: 20,
     },
     emptyListText: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#666',
-        textAlign: 'center',
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#666',
+      textAlign: 'center',
     },
     emptyListSubText: {
-        fontSize: 14,
-        color: '#888',
-        marginTop: 5,
-        textAlign: 'center',
+      fontSize: 14,
+      color: '#888',
+      marginTop: 5,
+      textAlign: 'center',
     },
     itemCard: {
       flexDirection: "row",
@@ -507,21 +483,21 @@ const createStyles = (theme: Theme) =>
       padding: 12,
       justifyContent: 'space-between',
     },
-     bestsellerTag: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFF3E0',
-        borderRadius: 4,
-        paddingHorizontal: 6,
-        paddingVertical: 3,
-        alignSelf: 'flex-start',
-        marginBottom: 5,
+    bestsellerTag: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#FFF3E0',
+      borderRadius: 4,
+      paddingHorizontal: 6,
+      paddingVertical: 3,
+      alignSelf: 'flex-start',
+      marginBottom: 5,
     },
     bestsellerText: {
-        fontSize: 11,
-        fontWeight: 'bold',
-        color: '#E65100',
-        marginLeft: 4,
+      fontSize: 11,
+      fontWeight: 'bold',
+      color: '#E65100',
+      marginLeft: 4,
     },
     itemCategory: {
       fontSize: 12,
@@ -536,19 +512,19 @@ const createStyles = (theme: Theme) =>
       marginBottom: 4,
     },
     ratingContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 6,
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 6,
     },
     ratingText: {
-        fontSize: 13,
-        color: '#555',
-        marginLeft: 4,
+      fontSize: 13,
+      color: '#555',
+      marginLeft: 4,
     },
     priceContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 6,
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 6,
     },
     currentPrice: {
       fontSize: 16,
@@ -569,40 +545,43 @@ const createStyles = (theme: Theme) =>
       minHeight: 32,
     },
     itemActions: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 'auto',
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 'auto',
     },
     itemImageContainer: {
-      width: 130,
+      width: 150,
       alignItems: "center",
       paddingTop: 10,
       paddingBottom: 10,
       paddingRight: 10,
       justifyContent: 'space-between',
+      position: 'relative',
     },
     itemImage: {
-      width: 110,
-      height: 110,
+      width: 150,
+      height: 150,
       borderRadius: 10,
     },
     addQuantityContainer: {
-        alignItems: 'center',
-        width: '100%',
-        marginTop: 8,
+      alignItems: 'center',
+      width: '100%',
+      marginTop: 8,
+      position: 'absolute',
+      bottom: 10,
     },
     addButton: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "#FFF",
+      backgroundColor: theme.colors.inversePrimary || '#FFF0F0',
       borderWidth: 1.5,
       borderColor: theme.colors.primary || '#D32F2F',
       borderRadius: 8,
       paddingVertical: 6,
       paddingHorizontal: 18,
       minWidth: 90,
-      height: 32,
+      height: 40,
     },
     addButtonText: {
       color: theme.colors.primary || '#D32F2F',
@@ -620,12 +599,12 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.primary || '#D32F2F',
       borderRadius: 8,
       minWidth: 90,
-      height: 32,
+      height: 40,
     },
     quantityButton: {
-        paddingHorizontal: 10,
-        height: '100%',
-        justifyContent: 'center',
+      paddingHorizontal: 10,
+      height: '100%',
+      justifyContent: 'center',
     },
     quantityText: {
       color: "#FFFFFF",
@@ -634,64 +613,64 @@ const createStyles = (theme: Theme) =>
       minWidth: 25,
       textAlign: 'center',
     },
-     customizableText: {
-        fontSize: 11,
-        color: '#777',
-        marginTop: 5,
+    customizableText: {
+      fontSize: 11,
+      color: '#777',
+      marginTop: 5,
     },
     cartButton: {
-        position: "absolute",
-        bottom: 15,
-        left: 15,
-        right: 15,
-        backgroundColor: theme.colors.primary || '#D32F2F',
-        paddingVertical: 12,
-        borderRadius: 10,
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
+      position: "absolute",
+      bottom: 15,
+      left: 15,
+      right: 15,
+      backgroundColor: theme.colors.primary || '#D32F2F',
+      paddingVertical: 12,
+      borderRadius: 10,
+      elevation: 5,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
     },
     cartButtonContent: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingHorizontal: 16,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
     },
     cartInfo: {},
     cartItemCount: {
-        color: theme.colors.inversePrimary || "#FFEBEE", // Use theme color or fallback
-        fontSize: 11,
-        fontWeight: "bold",
-        marginBottom: 2,
+      color: theme.colors.inversePrimary || "#FFEBEE", // Use theme color or fallback
+      fontSize: 11,
+      fontWeight: "bold",
+      marginBottom: 2,
     },
     cartTotalAmount: {
-        color: "#FFFFFF",
-        fontSize: 16,
-        fontWeight: "bold",
+      color: "#FFFFFF",
+      fontSize: 16,
+      fontWeight: "bold",
     },
     viewCartContainer: {
-        flexDirection: "row",
-        alignItems: "center",
+      flexDirection: "row",
+      alignItems: "center",
     },
     cartButtonText: {
-        color: "#fff",
-        fontWeight: "bold",
-        fontSize: 15,
-        marginRight: 4,
+      color: "#fff",
+      fontWeight: "bold",
+      fontSize: 15,
+      marginRight: 4,
     },
     snackbar: {
-       backgroundColor: theme.colors.primary || '#D32F2F',
-       borderRadius: 8,
-       marginHorizontal: 15,
-       // Calculate marginBottom dynamically based on cart state
-       // This requires cartItemsCount to be accessible here or passed down
-       // For simplicity, using a fixed margin or adjust based on your state management
-       marginBottom: 85, // Adjust this value as needed
+      backgroundColor: theme.colors.primary || '#D32F2F',
+      borderRadius: 8,
+      marginHorizontal: 15,
+      // Calculate marginBottom dynamically based on cart state
+      // This requires cartItemsCount to be accessible here or passed down
+      // For simplicity, using a fixed margin or adjust based on your state management
+      marginBottom: 85, // Adjust this value as needed
     },
     snackbarText: {
-       color: '#FFFFFF',
+      color: '#FFFFFF',
     },
 
   });

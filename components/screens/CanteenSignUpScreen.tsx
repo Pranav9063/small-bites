@@ -109,9 +109,6 @@ const CanteenSignUpScreen: React.FC = () => {
 
             {/* Heading & Subheading */}
             <Text style={styles.heading}>Register Your Canteen</Text>
-            <Text style={styles.subheading}>
-              Join Small Bites and showcase your delicious menu to campus students
-            </Text>
 
             {/* Form */}
             <View style={styles.formContainer}>
@@ -209,6 +206,7 @@ const createStyles = (theme: Theme) =>
     container: {
       height: "100%",
       backgroundColor: "#fff",
+      paddingTop: 30,
     },
     innerContainer: {
       alignItems: "center",
@@ -233,7 +231,7 @@ const createStyles = (theme: Theme) =>
       fontSize: 28,
       fontWeight: "bold",
       color: "#333",
-      marginBottom: 12,
+      marginBottom: 30,
       textAlign: "center",
     },
     subheading: {

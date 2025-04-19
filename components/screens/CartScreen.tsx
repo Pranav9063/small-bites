@@ -10,7 +10,7 @@ export default function CartScreen({ id, name }: { id: string, name: string }) {
   const { cart, dispatch } = useCart();
   const router = useRouter();
 
-  console.log("Cart data:", cart); // Debugging: Log cart data to verify image URLs
+  // console.log("Cart data:", cart); // Debugging: Log cart data to verify image URLs
 
   const handleUpdateQuantity = (itemId: string, delta: number) => {
     dispatch({ type: 'UPDATE_QUANTITY', payload: { id: itemId, delta } });
@@ -42,9 +42,9 @@ export default function CartScreen({ id, name }: { id: string, name: string }) {
             <Ionicons name="trash-outline" size={18} color="#757575" />
           </TouchableOpacity>
         </View>
-        
+
         <Text style={styles.itemPrice}>₹{item.price.toFixed(2)}</Text>
-        
+
         <View style={styles.itemActions}>
           <View style={styles.quantityControls}>
             <TouchableOpacity
@@ -83,7 +83,7 @@ export default function CartScreen({ id, name }: { id: string, name: string }) {
             <Ionicons name="restaurant" size={20} color="#1976D2" />
             <Text style={styles.canteenName}>{name}</Text>
           </View> */}
-          
+
           <FlatList
             data={cart}
             renderItem={renderItem}
@@ -91,20 +91,20 @@ export default function CartScreen({ id, name }: { id: string, name: string }) {
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
           />
-          
+
           <View style={styles.footer}>
             <View style={styles.totalSection}>
               <View style={styles.totalRow}>
                 <Text style={styles.totalLabel}>Subtotal</Text>
                 <Text style={styles.totalValue}>₹{totalAmount.toFixed(2)}</Text>
               </View>
-              
+
               <View style={[styles.totalRow, styles.finalTotal]}>
                 <Text style={styles.grandTotalLabel}>Total</Text>
                 <Text style={styles.grandTotalValue}>₹{(totalAmount).toFixed(2)}</Text>
               </View>
             </View>
-            
+
             <TouchableOpacity
               style={styles.checkoutButton}
               onPress={() => router.push({

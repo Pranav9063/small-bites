@@ -1,3 +1,4 @@
+import React from "react";
 import { View, Text, StyleSheet, Animated, Image, Dimensions, ActivityIndicator } from "react-native";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import { useAuth } from "@/lib/context/AuthContext";
@@ -6,7 +7,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useRouter } from "expo-router";
 import { FC, useEffect, useRef, useState } from "react";
 import { Theme } from "@/constants/Theme";
-import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get('window');
 
