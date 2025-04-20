@@ -1,8 +1,8 @@
 import { db, storage } from "@/lib/services/firebaseConfig";
-import { doc, setDoc, getDoc, addDoc, collection, getDocs } from "@react-native-firebase/firestore";
+import { doc, setDoc, getDoc, addDoc, collection, getDocs, where, query } from "@react-native-firebase/firestore";
 import { googleSignIn } from "./authService";
 import { deleteObject, getMetadata, ref } from "@react-native-firebase/storage";
-import { CanteenData, MenuItem, OrderDetails, UserExpense } from "@/assets/types/db";
+import { CanteenData, MenuItem, OrderDetails, UserExpense, UserOrders } from "@/assets/types/db";
 import { CartItem } from "../context/CartContext";
 
 export type NewUser = {
@@ -349,17 +349,17 @@ export const fetchUserExpenses = async (userId: string) => {
   }
 }
 
-export const addNewOrderToFirestore = async (orderId: string, orderDetails: OrderDetails) => {
-  try {
-    const orderRef = doc(db, "orders", orderId);
-    await setDoc(orderRef, orderDetails);
-    console.log("Order added successfully!");
-    return { success: true };
-  } catch (error) {
-    console.error("Error adding order:", error);
-    return { success: false, error };
-  }
-}
+// export const addNewOrderToFirestore = async (orderId: string, orderDetails: OrderDetails) => {
+//   try {
+//     const orderRef = doc(db, "orders", orderId);
+//     await setDoc(orderRef, orderDetails);
+//     console.log("Order added successfully!");
+//     return { success: true };
+//   } catch (error) {
+//     console.error("Error adding order:", error);
+//     return { success: false, error };
+//   }
+// }
 
 export const addNewSavedOrderToFirestore = async (userId: string, orderDetails: SavedOrder) => {
   try {
@@ -415,3 +415,45 @@ export const deleteSavedOrder = async (userId: string, orderId: string) => {
     return { success: false, error };
   }
 }
+
+export const addCompletedOrderToFirestore = async (orderId: string, orderDetails: OrderDetails) => {
+  try {
+    const orderRef = doc(db, "completedOrders", orderId);
+    await setDoc(orderRef, orderDetails);
+    console.log("Completed order added successfully!");
+    return { success: true };
+  } catch (error) {
+    console.error("Error adding completed order:", error);
+    return { success: false, error };
+  }
+}
+
+export const fetchCompletedOrders = async (userId: string) => {
+  try {
+    const completedOrdersRef = collection(db, "completedOrders");
+    const q = query(completedOrdersRef, where("userId", "==", userId));
+    const completedOrdersSnap = await getDocs(q);
+
+    if (!completedOrdersSnap.empty) {
+      const data = completedOrdersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as [];
+      // convert to UserOrders type
+      const userOrders: UserOrders = data.reduce((acc, order: { id: string } & OrderDetails) => {
+        const temp = {
+          userId: order.userId,
+          canteenId: order.canteenId,
+          canteenName: order.canteenName,
+          cart: order.cart,
+          paymentMethod: order.paymentMethod,
+          scheduledTime: order.scheduledTime,
+          orderStatus: order.orderStatus,
+        }
+        acc[order.id] = temp;
+        return acc;
+      }, {} as UserOrders);
+      console.log(userOrders)
+      return userOrders;
+    }
+  } catch (error) {
+    console.error("Error fetching completed orders:", error);
+  }
+};

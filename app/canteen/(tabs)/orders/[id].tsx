@@ -11,7 +11,7 @@ type OrderStatus = 'pending' | 'preparing' | 'ready' | 'cancelled' | 'completed'
 const OrderDetail: React.FC = () => {
   const { id } = useLocalSearchParams();
   const [currentOrder, setCurrentOrder] = React.useState<OrderDetails>();
-  const statusSteps: OrderStatus[] = ['pending', 'preparing', 'ready', "completed"];
+  const statusSteps: OrderStatus[] = ['pending', 'preparing', 'ready'];
 
   useEffect(() => {
     if (!id) return;

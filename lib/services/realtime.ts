@@ -1,8 +1,8 @@
 
 import { OrderDetails, UserExpense, UserOrders } from "@/assets/types/db"
-import { equalTo, onValue, orderByChild, query, ref, set, update } from "@react-native-firebase/database"
+import { equalTo, onValue, orderByChild, query, ref, set, update, remove } from "@react-native-firebase/database"
 import { database } from "@/lib/services/firebaseConfig";
-import { addNewOrderToFirestore, addUserExpense, fetchCanteenByCanteenOwnerId } from "./firestoreService";
+import { addCompletedOrderToFirestore, addUserExpense, fetchCanteenByCanteenOwnerId } from "./firestoreService";
 
 export async function placeNewOrder(OrderDetails: OrderDetails) {
     try {
@@ -17,7 +17,6 @@ export async function placeNewOrder(OrderDetails: OrderDetails) {
             orderId: orderId,
             date: new Date()
         }
-        await addNewOrderToFirestore(orderId, OrderDetails);
         await addUserExpense(OrderDetails.userId, userExpense);
         console.log("Order placed successfully:", orderId);
     } catch (error) {
@@ -31,8 +30,8 @@ export async function subscribeToUserOrders(userId: string, callback: (orders: U
         const userOrdersQuery = ordersRef.orderByChild('userId').equalTo(userId);
         const unsubscribe = onValue(userOrdersQuery, (snapshot) => {
             const data = snapshot.val() || {} as UserOrders;
-            console.log(data)
-            console.log(typeof(data))
+            // console.log(data)
+            // console.log(typeof (data))
             callback(data);
         });
         return unsubscribe;
@@ -66,7 +65,6 @@ export async function subscribeToCanteenOrders(userId: string, callback: (orders
     }
 }
 
-
 export async function updateOrderStatus(orderId: string, status: string) {
     try {
         const orderRef = ref(database, `orders/${orderId}`);
@@ -74,5 +72,18 @@ export async function updateOrderStatus(orderId: string, status: string) {
         console.log("Order status updated successfully:", orderId);
     } catch (error) {
         console.error("Error updating order status:", error);
+    }
+}
+
+export async function updateOrderStatusToCompleted(orderId: string, orderDeatils: OrderDetails) {
+    try {
+        const orderRef = ref(database, `orders/${orderId}`);
+        await update(orderRef, { orderStatus: "completed" });
+        console.log("Order status updated to completed successfully:", orderId);
+        await addCompletedOrderToFirestore(orderId, { ...orderDeatils, orderStatus: "completed" });
+        console.log("Order added to completed orders in Firestore:", orderId);
+        await remove(orderRef);
+    } catch (error) {
+        console.error("Error updating order status to completed:", error);
     }
 }
