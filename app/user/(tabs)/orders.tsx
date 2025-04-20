@@ -245,7 +245,7 @@ const Orders = () => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerText}>My Orders</Text>
+                <Text style={styles.headerText}>Orders</Text>
             </View>
 
             <View style={styles.tabContainer}>
