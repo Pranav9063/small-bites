@@ -3,12 +3,12 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/lib/context/AuthContext';
-import { OrderDetails } from '@/assets/types/db';
+import { OrderDetails, UserOrders } from '@/assets/types/db';
 import { subscribeToCanteenOrders } from '@/lib/services/realtime';
 
 const OrdersScreen = () => {
   const router = useRouter();
-  const [orders, setOrders] = useState<OrderDetails[]>([]);
+  const [orders, setOrders] = useState<UserOrders>();
   const { user } = useAuth();
   useEffect(() => {
     if (!user) return;
@@ -75,7 +75,7 @@ const OrdersScreen = () => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={Object.entries(orders)}
+        data={Object.entries(orders || {})}
         keyExtractor={([key]) => key}
         renderItem={renderOrderCard}
         contentContainerStyle={styles.listContainer}

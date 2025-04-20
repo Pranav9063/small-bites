@@ -1,21 +1,92 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { UserOrders } from '@/assets/types/db';
+import { fetchCompletedOrdersByCanteenId } from '@/lib/services/firestoreService';
+import { useAuth } from '@/lib/context/AuthContext';
 
-const salesData = [
-  { id: "1", name: "Burger", price: 80, sold: 35, revenue: 2800, image: require("@/assets/images/canteenImg.png") },
-  { id: "2", name: "Fries", price: 100, sold: 25, revenue: 2500, image: require("@/assets/images/canteenImg.png") },
-  { id: "3", name: "Pizza", price: 200, sold: 20, revenue: 4000, image: require("@/assets/images/canteenImg.png") },
-  { id: "4", name: "Soda", price: 40, sold: 40, revenue: 1600, image: require("@/assets/images/canteenImg.png") },
-];
+// const salesData = [
+//   { id: "1", name: "Burger", price: 80, sold: 35, revenue: 2800, image: require("@/assets/images/canteenImg.png") },
+//   { id: "2", name: "Fries", price: 100, sold: 25, revenue: 2500, image: require("@/assets/images/canteenImg.png") },
+//   { id: "3", name: "Pizza", price: 200, sold: 20, revenue: 4000, image: require("@/assets/images/canteenImg.png") },
+//   { id: "4", name: "Soda", price: 40, sold: 40, revenue: 1600, image: require("@/assets/images/canteenImg.png") },
+// ];
+
+type SalesData = {
+  id: string;
+  name: string;
+  price: number;
+  sold: number;
+  revenue: number;
+  image: any;
+}[];
 
 const HistoryScreen = () => {
-  const totalRevenue = salesData.reduce((sum, item) => sum + item.revenue, 0);
-  const totalSold = salesData.reduce((sum, item) => sum + item.sold, 0);
-  const bestSeller = salesData.reduce((prev, current) =>
-    prev.sold > current.sold ? prev : current
-  );
+  const [canteenOrders, setCanteenOrders] = useState<UserOrders | null>();
+  const [salesData, setSalesData] = useState<SalesData>();
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchCanteenOrders = async () => {
+      if (!user) return;
+      try {
+        setIsLoading(true);
+        const completedOrders = await fetchCompletedOrdersByCanteenId(user.uid)
+        setCanteenOrders(completedOrders);
+        console.log("Fetched completed orders: ", completedOrders)
+      } catch (error) {
+        console.error("Error fetching canteen orders:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchCanteenOrders();
+  }, []);
+
+  useEffect(() => {
+    if (!canteenOrders) return;
+    const salesData = Object.values(canteenOrders).reduce((acc: SalesData, order) => {
+      order.cart.forEach((item) => {
+        const existingItem = acc.find((i) => i.id === item.id);
+        if (existingItem) {
+          existingItem.sold += item.quantity;
+          existingItem.revenue += item.price * item.quantity;
+        } else {
+          acc.push({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            sold: item.quantity,
+            revenue: item.price * item.quantity,
+            image: item.image,
+          });
+        }
+      });
+      return acc;
+    }, [] as SalesData);
+    setSalesData(salesData);
+  }, [canteenOrders]);
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ fontSize: 20, textAlign: 'center', marginTop: 20 }}>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (!canteenOrders || !salesData || salesData.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ fontSize: 20, textAlign: 'center', marginTop: 20 }}>No orders found</Text>
+      </View>
+    );
+  }
+
+  const totalRevenue = salesData.reduce((acc, item) => acc + item.revenue, 0) || 0;
+  const totalSold = salesData.reduce((acc, item) => acc + item.sold, 0) || 0;
+  const bestSeller = salesData.reduce((prev, current) => (prev.sold > current.sold ? prev : current), salesData[0]) || { name: '', sold: 0 };
 
   return (
     <View style={styles.container}>

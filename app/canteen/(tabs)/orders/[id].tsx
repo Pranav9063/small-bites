@@ -87,14 +87,14 @@ const OrderDetail: React.FC = () => {
               <Text style={styles.itemName}>{item.name}</Text>
               <Text style={styles.itemQuantity}>x{item.quantity}</Text>
             </View>
-            <Text style={styles.itemPrice}>₹{item.quantity * 100}</Text>
+            <Text style={styles.itemPrice}>₹{item.quantity * item.price}</Text>
           </View>
         ))}
       </View>
 
       <View style={styles.totalContainer}>
         <Text style={styles.totalLabel}>Total Amount:</Text>
-        <Text style={styles.totalAmount}>₹{currentOrder.cart.reduce((sum, item) => sum + item.quantity * 100, 0)}</Text>
+        <Text style={styles.totalAmount}>₹{currentOrder.cart.reduce((sum, item) => sum + item.quantity * item.price, 0)}</Text>
       </View>
 
       <View style={styles.deliveryInfo}>

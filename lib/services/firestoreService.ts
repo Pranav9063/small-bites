@@ -209,7 +209,7 @@ export const fetchCanteenByCanteenOwnerId = async (userId: string) => {
         const canteenSnap = await getDoc(canteenRef);
         if (canteenSnap.exists) {
           const canteenData = { id: canteenSnap.id, ...canteenSnap.data() };
-          console.log(canteenData);
+          // console.log(canteenData);
           return canteenData;
         } else {
           throw new Error("Canteen not found");
@@ -276,6 +276,7 @@ export const deleteMenuItemFromCanteen = async (userId: string, itemId: string) 
     if (!canteenId) {
       throw new Error("Canteen ID not found for user.");
     }
+    console.log(canteenId)
     const canteenRef = doc(db, "canteens", canteenId);
     const canteenSnap = await getDoc(canteenRef);
 
@@ -418,7 +419,7 @@ export const deleteSavedOrder = async (userId: string, orderId: string) => {
 
 export const addCompletedOrderToFirestore = async (orderId: string, orderDetails: OrderDetails) => {
   try {
-    const orderRef = doc(db, "completedOrders", orderId);
+    const orderRef = doc(db, "completed-orders", orderId);
     await setDoc(orderRef, orderDetails);
     console.log("Completed order added successfully!");
     return { success: true };
@@ -455,5 +456,38 @@ export const fetchCompletedOrders = async (userId: string) => {
     }
   } catch (error) {
     console.error("Error fetching completed orders:", error);
+  }
+};
+
+export const fetchCompletedOrdersByCanteenId = async (userId: string) => {
+  try {
+    const canteenId = await getCanteenIdFromUserId(userId);
+    const ordersRef = collection(db, "completedOrders");
+    const q = query(ordersRef, where("canteenId", "==", canteenId));
+    const ordersSnap = await getDocs(q);
+
+    if (!ordersSnap.empty) {
+      const data = ordersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as [];
+      // convert to UserOrders type
+      const canteenOrders: UserOrders = data.reduce((acc, order: { id: string } & OrderDetails) => {
+        const temp = {
+          userId: order.userId,
+          canteenId: order.canteenId,
+          canteenName: order.canteenName,
+          cart: order.cart,
+          paymentMethod: order.paymentMethod,
+          scheduledTime: order.scheduledTime,
+          orderStatus: order.orderStatus,
+        }
+        acc[order.id] = temp;
+        return acc;
+      }, {} as UserOrders);
+      return canteenOrders
+    } else {
+      console.log("No orders found for this canteen.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching orders:", error);
   }
 };

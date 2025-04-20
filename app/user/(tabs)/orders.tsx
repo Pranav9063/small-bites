@@ -19,7 +19,7 @@ const Orders = () => {
     const router = useRouter();
     const theme = useTheme();
     const styles = createStyles(theme); // Assuming you have a theme object to pass
-    const [pastOrders, setPastOrders] = useState<UserOrders>({});
+    const [pastOrders, setPastOrders] = useState<UserOrders>();
     const [isPastOrdersLoading, setIsPastOrdersLoading] = useState(true);
 
     useEffect(() => {
