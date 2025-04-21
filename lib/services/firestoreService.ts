@@ -462,7 +462,7 @@ export const fetchCompletedOrders = async (userId: string) => {
 export const fetchCompletedOrdersByCanteenId = async (userId: string) => {
   try {
     const canteenId = await getCanteenIdFromUserId(userId);
-    const ordersRef = collection(db, "completedOrders");
+    const ordersRef = collection(db, "completed-orders");
     const q = query(ordersRef, where("canteenId", "==", canteenId));
     const ordersSnap = await getDocs(q);
 
@@ -489,5 +489,63 @@ export const fetchCompletedOrdersByCanteenId = async (userId: string) => {
     }
   } catch (error) {
     console.error("Error fetching orders:", error);
+  }
+};
+
+export const submitOrderReview = async(reviewOrder: any) => {
+  try {
+    const timestamp = new Date().toISOString();
+    const reviewRef = doc(db, "reviews", reviewOrder.orderId);
+    await setDoc(reviewRef, {...reviewOrder, timestamp});
+    console.log("Review submitted successfully!");
+    return { success: true };
+  } catch (error) {
+    console.error("Error submitting review:", error);
+    return { success: false, error };
+  }
+}
+
+export const fetchUserReviews = async (userId: string) => {
+  try {
+    const reviewsRef = collection(db, "reviews");
+    const q = query(reviewsRef, where("userId", "==", userId));
+    const reviewsSnap = await getDocs(q); 
+
+    if (!reviewsSnap.empty) {
+      const reviews = reviewsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log("User reviews fetched successfully!");
+      return { success: true, reviews };
+    } else {
+      console.log("No reviews found for this user.");
+      return { success: true, reviews: [] };
+    }
+  } catch (error) {
+    console.error("Error fetching user reviews:", error);
+    return { success: false, error };
+  }
+};
+
+export const fetchCanteenReviews = async (userId: string) => {
+  try {
+    const canteenId = await getCanteenIdFromUserId(userId);
+    if (!canteenId) {
+      console.log("No canteenId found for this user.");
+      return { success: true, reviews: [], message: "no-canteen" };
+    }
+    const reviewsRef = collection(db, "reviews");
+    const q = query(reviewsRef, where("canteenId", "==", canteenId));
+    const reviewsSnap = await getDocs(q);
+
+    if (!reviewsSnap.empty) {
+      const reviews = reviewsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as any;
+      console.log("Canteen reviews fetched successfully!");
+      return { success: true, reviews };
+    } else {
+      console.log("No reviews found for this canteen.");
+      return { success: true, reviews: [] };
+    }
+  } catch (error) {
+    console.error("Error fetching canteen reviews:", error);
+    return { success: false, error };
   }
 };
