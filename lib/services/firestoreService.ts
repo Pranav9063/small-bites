@@ -431,7 +431,7 @@ export const addCompletedOrderToFirestore = async (orderId: string, orderDetails
 
 export const fetchCompletedOrders = async (userId: string) => {
   try {
-    const completedOrdersRef = collection(db, "completedOrders");
+    const completedOrdersRef = collection(db, "completed-orders");
     const q = query(completedOrdersRef, where("userId", "==", userId));
     const completedOrdersSnap = await getDocs(q);
 

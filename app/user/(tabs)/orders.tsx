@@ -143,7 +143,7 @@ const Orders = () => {
     const handleCompletedOrder = async (key: string, order: OrderDetails) => {
         try {
             await updateOrderStatusToCompleted(key, order);
-            setUserOrders((prevOrders) => {
+            setPastOrders((prevOrders) => {
                 if (!prevOrders) return prevOrders;
                 prevOrders[key] = order;
                 prevOrders[key].orderStatus = 'completed';
