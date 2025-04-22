@@ -4,7 +4,9 @@ import CartScreen from '../../components/screens/CartScreen';
 
 export default function CartPage() {
 
-  const { id, name } = useLocalSearchParams() as { id: string, name: string };
+  const { canteenId, canteenName } = useLocalSearchParams() as { canteenId: string, canteenName: string };
+  console.log('Cart Canteen ID:', canteenId);
+  console.log('Cart Canteen Name:', canteenName);
   return (
     <>
       <Stack.Screen
@@ -12,7 +14,7 @@ export default function CartPage() {
           headerShown: false,
         }}
       />
-      <CartScreen id={id} name={name} />
+      <CartScreen id={canteenId} name={canteenName} />
     </>
   );
 } 

@@ -22,7 +22,7 @@ const UserHomeScreen = () => {
     const [appIsReady, setAppIsReady] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isGridLayout, setIsGridLayout] = useState(false);
-    const [favorites, setFavorites] = useState<{[key: string]: boolean}>({});
+    const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
 
     const [fontsLoaded] = useFonts({
         Poppins_400Regular,
@@ -57,7 +57,7 @@ const UserHomeScreen = () => {
     const handleCanteenPress = useCallback((canteen: CanteenData) => {
         router.push({
             pathname: "/user/canteen/[id]",
-            params: { id: canteen.id, name: canteen.name },
+            params: { id: canteen.id, canteenName: canteen.name },
         });
     }, [router]);
 
@@ -73,30 +73,30 @@ const UserHomeScreen = () => {
     }, []);
 
     const renderItem = ({ item }: { item: CanteenData }) => (
-        <TouchableOpacity 
-            style={[styles.card, isGridLayout && styles.gridCard]} 
+        <TouchableOpacity
+            style={[styles.card, isGridLayout && styles.gridCard]}
             onPress={() => handleCanteenPress(item)}
             activeOpacity={0.7}
         >
             <View style={styles.imageContainer}>
-                <Image 
-                    source={item.image ? { uri: item.image } : require('@/assets/images/canteenImg.png')} 
-                    style={styles.foodImage} 
+                <Image
+                    source={item.image ? { uri: item.image } : require('@/assets/images/canteenImg.png')}
+                    style={styles.foodImage}
                     resizeMode="cover"
                 />
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.favoriteButton}
                     onPress={() => toggleFavorite(item.id)}
                     activeOpacity={0.8}
                 >
-                    <Ionicons 
-                        name={favorites[item.id] ? "heart" : "heart-outline"} 
-                        size={20} 
-                        color={favorites[item.id] ? "#FF3B30" : "#666"} 
+                    <Ionicons
+                        name={favorites[item.id] ? "heart" : "heart-outline"}
+                        size={20}
+                        color={favorites[item.id] ? "#FF3B30" : "#666"}
                     />
                 </TouchableOpacity>
             </View>
-            
+
             <View style={styles.cardContent}>
                 <View style={styles.titleContainer}>
                     <Text style={[styles.foodName, isGridLayout && styles.gridFoodName]} numberOfLines={1}>
@@ -120,8 +120,8 @@ const UserHomeScreen = () => {
                             <View style={styles.timeContainer}>
                                 <Ionicons name="time-outline" size={14} color="#666" />
                                 <Text style={styles.timeText}>
-                                    {item.timings ? 
-                                        `${item.timings.open} - ${item.timings.close}` : 
+                                    {item.timings ?
+                                        `${item.timings.open} - ${item.timings.close}` :
                                         'Timings N/A'}
                                 </Text>
                             </View>
@@ -181,10 +181,10 @@ const UserHomeScreen = () => {
                                 />
                             </View>
                             <TouchableOpacity style={styles.filterButton} onPress={toggleLayout}>
-                                <Ionicons 
-                                    name={isGridLayout ? "list-outline" : "grid-outline"} 
-                                    size={24} 
-                                    color="white" 
+                                <Ionicons
+                                    name={isGridLayout ? "list-outline" : "grid-outline"}
+                                    size={24}
+                                    color="white"
                                 />
                             </TouchableOpacity>
                         </View>

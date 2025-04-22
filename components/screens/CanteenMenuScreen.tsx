@@ -311,7 +311,7 @@ const CanteenMenuScreen: React.FC<CanteenMenuScreenProps> = ({
           onPress={() =>
             router.push({
               pathname: "/user/cart", // Ensure path is correct
-              params: { id: canteenId, name: canteenName },
+              params: { canteenId: canteenId, canteenName: canteenName },
             })
           }
         >
