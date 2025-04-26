@@ -1,50 +1,65 @@
-# Welcome to your Expo app 👋
+# Small Bites - Smart Canteen Application
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Small Bites is a smart canteen application designed to modernize the campus food ordering experience at NIT Delhi. Its primary goal is to provide a digital and user-centric platform to address issues like long queues, slow order processing, and limited menu transparency in campus canteens. The app allows students and faculty to pre-order meals and receive real-time updates on their orders. It also provides tools for canteen vendors to manage their menus and orders.
 
-## Get started
+## Key Features
 
-1. Install dependencies
+### User App Features:
 
-   ```bash
-   npm install
-   ```
+*   **Authentication & Profile Management:** Secure login using Google Sign-In and profile management.
+*   **Menu Browse:** Explore food items with details (description, price, calories, ratings).
+*   **Favorites Management:** Mark favorite food items and canteens for quick access.
+*   **Cart Management:** Add, remove, update item quantities, and review total cost.
+*   **Order Management:** Place orders, track real-time status (Ordered, Preparing, Ready), and view order history.
+*   **Search & Filters:** Search for canteens/dishes by keywords; filter by food type, price, dietary preferences.
+*   **Checkout & Payment:** Flexible checkout with online/cash payment options and pickup/delivery time slots.
+*   **Expense Tracker:** Automatic transaction logging with daily/weekly/monthly spending breakdowns, filters, and visual summaries.
+*   **Review System:** Submit reviews and star ratings for items; view others' reviews.
 
-2. Start the app
+### Canteen App Features:
 
-   ```bash
+*   **Canteen Registration & Profile Management:** Register and manage canteen profile, including operational hours.
+*   **Menu Management:** Add, edit, remove menu items; update availability, pricing, photos, and details.
+*   **Order Tracking:** View incoming orders in real-time, update statuses (Accepted, Preparing, Ready), and view past orders.
+*   **Analytics Dashboard:** Insights into total orders, revenue statistics, and top-selling items.
+*   **View User Reviews:** Access user feedback to improve service and quality.
+
+## Getting Started (Development)
+
+This project uses Expo.
+
+1.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+2.  **Start the app:**
+    ```bash
     npx expo start
-   ```
+    ```
 
-In the output, you'll find options to open the app in a
+    Follow the instructions in the terminal to open the app in an emulator, simulator, or the Expo Go app.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Project Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+The project follows a standard Expo project structure with file-based routing in the `app/` directory. Key directories include:
 
-## Get a fresh project
+*   `app/`: Contains the screens and navigation logic (user and canteen flows).
+*   `assets/`: Static assets like images.
+*   `components/`: Reusable UI components.
+*   `constants/`: Application constants (e.g., theme, config).
+*   `context/`: React Context providers (e.g., OrderContext).
+*   `functions/`: Firebase Cloud Functions (e.g., for payment integration).
+*   `lib/`: Core logic, hooks, services (Auth, Firebase, etc.).
 
-When you're ready, run:
+## Learn More
 
-```bash
-npm run reset-project
-```
+*   [Expo Documentation](https://docs.expo.dev/)
+*   [Expo Router Documentation](https://docs.expo.dev/router/introduction/)
+*   [Firebase Documentation](https://firebase.google.com/docs)
+*   [React Native Documentation](https://reactnative.dev/docs)
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Community
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+*   [Expo on GitHub](https://github.com/expo/expo)
+*   [Expo Discord Community](https://chat.expo.dev)
