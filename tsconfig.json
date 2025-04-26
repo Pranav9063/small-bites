@@ -12,6 +12,7 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "app.config.js"
+    "app.config.js",
+    "functions/index.js"
   ]
 }

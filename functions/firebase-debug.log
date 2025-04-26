@@ -1,0 +1,21 @@
+[debug] [2025-04-22T19:29:13.383Z] ----------------------------------------------------------------------
+[debug] [2025-04-22T19:29:13.386Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Pradneya Prabhudesai\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js functions:shell
+[debug] [2025-04-22T19:29:13.386Z] CLI Version:   14.2.0
+[debug] [2025-04-22T19:29:13.387Z] Platform:      win32
+[debug] [2025-04-22T19:29:13.387Z] Node Version:  v20.9.0
+[debug] [2025-04-22T19:29:13.387Z] Time:          Wed Apr 23 2025 00:59:13 GMT+0530 (India Standard Time)
+[debug] [2025-04-22T19:29:13.387Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-04-22T19:29:13.565Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-22T19:29:13.566Z] > authorizing via signed-in user (pradneya.prog@gmail.com)
+[debug] [2025-04-22T19:29:13.566Z] [iam] checking project small-bites-92c65 for permissions ["firebase.projects.get"]
+[debug] [2025-04-22T19:29:13.567Z] Checked if tokens are valid: false, expires at: 1745349547632
+[debug] [2025-04-22T19:29:13.567Z] Checked if tokens are valid: false, expires at: 1745349547632
+[debug] [2025-04-22T19:29:13.568Z] > refreshing access token with scopes: []
+[debug] [2025-04-22T19:29:13.569Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-04-22T19:29:13.569Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-04-22T19:29:13.983Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-04-22T19:29:13.983Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-04-22T19:29:13.992Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/small-bites-92c65:testIamPermissions [none]
+[debug] [2025-04-22T19:29:13.993Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/small-bites-92c65:testIamPermissions x-goog-quota-user=projects/small-bites-92c65
+[debug] [2025-04-22T19:29:13.993Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/small-bites-92c65:testIamPermissions {"permissions":["firebase.projects.get"]}

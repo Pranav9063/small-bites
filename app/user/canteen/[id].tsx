@@ -5,8 +5,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CanteenPage() {
   const { id, canteenName } = useLocalSearchParams();
-  console.log('Cart Canteen ID:', id);
-  console.log('Cart Canteen Name:', canteenName);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CanteenMenuScreen

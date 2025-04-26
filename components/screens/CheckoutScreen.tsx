@@ -9,6 +9,8 @@ import { placeNewOrder } from '@/lib/services/realtime';
 import { Theme } from '@/constants/Theme';
 import { useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import RazorpayCheckout, { SuccessResponse } from 'react-native-razorpay';
+import { createRazorpayOrder } from '@/lib/services/razorpay';
 
 type PaymentMethod = {
   id: string;
@@ -93,6 +95,7 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
   const handlePlaceOrder = async () => {
     try {
       setIsLoading(true);
+      const orderId = new Date().getTime().toString();
       if (!selectedPayment || !selectedTiming) {
         // Show error message
         return;
@@ -102,8 +105,12 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
         return;
       }
       if (selectedPayment != 'cash') {
-        Alert.alert("Please proceed with Cash on Delivery only.");
-        return;
+        const paymentResponse = await handlePayment(orderId);
+
+        if (!paymentResponse || !paymentResponse.razorpay_payment_id) {
+          Alert.alert("Payment failed. Please try again.");
+          return;
+        }
       }
       // Handle order placement
       const orderDetails = {
@@ -114,10 +121,11 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
         cart,
         paymentMethod: selectedPayment,
         scheduledTime: selectedTiming === 'schedule' ? new Date(`${new Date().toISOString().split('T')[0]}T${selectedTimeSlot?.time}:00`) : new Date(),
+        paymentStatus: selectedPayment === 'cash' ? 'pending' : 'completed',
       } as OrderDetails;
 
       // Call the function to place the order
-      await placeNewOrder(orderDetails);
+      await placeNewOrder(orderId, orderDetails);
       // Clear the cart 
       cart.forEach((item) => {
         dispatch({ type: 'REMOVE_ITEM', payload: { id: item.id } });
@@ -131,6 +139,42 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
       setIsLoading(false);
     }
   };
+
+  const handlePayment = async (receipt: string) => {
+    if (!user) return;
+
+    try {
+      const notes = {
+        canteenId: canteenId,
+        canteenName: canteenName,
+        userId: user.uid,
+      }
+      const order = await createRazorpayOrder(total, receipt, notes) as any;
+      const options = {
+        key: "rzp_test_k713TTQaQ5rHOC",
+        amount: order.amount,
+        currency: "INR",
+        name: "Small Bites",
+        description: "Order Payment",
+        image: "https://firebasestorage.googleapis.com/v0/b/small-bites-92c65.firebasestorage.app/o/Final_Logo_SmallBites-removebg-preview.png",
+        order_id: order.id,
+        prefill: {
+          name: user.displayName as string,
+          email: user.email as string,
+          contact: user.phoneNumber as string,
+        },
+        theme: {
+          color: "#4A90E2"
+        }
+      };
+      const paymentResponse = await RazorpayCheckout.open(options)
+      return paymentResponse;
+    } catch (error) {
+      console.error("Error during payment:", error);
+      Alert.alert("Payment failed. Please try again.");
+      return null;
+    }
+  }
 
   const handleTimingSelect = (timingId: string) => {
     setSelectedTiming(timingId);

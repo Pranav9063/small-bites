@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    // Use CommonJS for Cloud Functions Gen2
+    "module": "commonjs",
+    // Target a recent Node version runtime
+    "target": "es2020",
+    // Only include the ES libs you need—no DOM
+    "lib": ["es2020"],
+    // Emit into lib/
+    "outDir": "lib",
+    // Root of your source files
+    "rootDir": "src",
+    // Enable interop for esm imports
+    "esModuleInterop": true,
+    // Force consistent file casing
+    "forceConsistentCasingInFileNames": true,
+    // Don’t check .d.ts files in node_modules
+    "skipLibCheck": true,
+    // Your strictness flags
+    "strict": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true
+  },
+  // Only compile your src folder
+  "include": ["src"]
+}

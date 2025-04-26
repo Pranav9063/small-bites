@@ -11,15 +11,15 @@ type CanteenData = {
 }
 
 export interface MenuItem {
-  item_id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  description?: string;
-  image?: string;
-  category?: string;
-  rating?: number;
-  ratingCount?: number;
+    item_id: string;
+    name: string;
+    price: number;
+    originalPrice?: number;
+    description?: string;
+    image?: string;
+    category?: string;
+    rating?: number;
+    ratingCount?: number;
 }
 
 type OrderDetails = {
@@ -30,6 +30,7 @@ type OrderDetails = {
     cart: CartItem[];
     paymentMethod: string;
     scheduledTime: Date;
+    paymentStatus: "pending" | "completed" | "failed";
 };
 
 type UserExpense = {

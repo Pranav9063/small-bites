@@ -98,11 +98,11 @@ const Orders = () => {
     badge: any;
     text: any;
     icon:
-      | "check-circle"
-      | "hourglass-empty"
-      | "local-dining"
-      | "done-all"
-      | "cancel";
+    | "check-circle"
+    | "hourglass-empty"
+    | "local-dining"
+    | "done-all"
+    | "cancel";
   } => {
     switch (status) {
       case "ready":
@@ -156,12 +156,16 @@ const Orders = () => {
     selectedTab === "active"
       ? userOrders
         ? Object.entries(userOrders).filter(([_, order]) =>
-            isActiveOrder(order.orderStatus)
-          )
+          isActiveOrder(order.orderStatus)
+        ).sort((a, b) => {
+          return parseInt(b[0], 10) - parseInt(a[0], 10);
+        })
         : []
       : pastOrders
-      ? Object.entries(pastOrders)
-      : [];
+        ? Object.entries(pastOrders).sort((a, b) => {
+          return parseInt(b[0], 10) - parseInt(a[0], 10);
+        })
+        : [];
 
   const calculateTotal = (cart: any[]) => {
     return (
@@ -207,7 +211,7 @@ const Orders = () => {
   // Function to submit review
   const submitReview = async (reviewData: any) => {
     try {
-      await submitOrderReview({...reviewData, userId : user!.uid });
+      await submitOrderReview({ ...reviewData, userId: user!.uid });
 
       // Update the local state if needed (e.g., mark the order as reviewed)
       if (selectedOrder) {
@@ -406,7 +410,7 @@ const Orders = () => {
       </View>
 
       {(isLoading && selectedTab === "active") ||
-      (isPastOrdersLoading && selectedTab === "past") ? (
+        (isPastOrdersLoading && selectedTab === "past") ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
           <Text style={styles.loadingText}>

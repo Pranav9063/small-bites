@@ -4,10 +4,9 @@ import { equalTo, onValue, orderByChild, query, ref, set, update, remove } from 
 import { database } from "@/lib/services/firebaseConfig";
 import { addCompletedOrderToFirestore, addUserExpense, fetchCanteenByCanteenOwnerId } from "./firestoreService";
 
-export async function placeNewOrder(OrderDetails: OrderDetails) {
+export async function placeNewOrder(orderId: string, OrderDetails: OrderDetails) {
     try {
         console.log("Placing order:", OrderDetails);
-        const orderId = new Date().getTime().toString();
         const orderRef = ref(database, `orders/${orderId}`);
         await set(orderRef, OrderDetails);
         const userExpense: UserExpense = {
