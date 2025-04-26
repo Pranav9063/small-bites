@@ -116,8 +116,8 @@ const OrdersScreen = () => {
     };
 
     const filteredOrders = selectedTab === 'active'
-        ? (canteenOrders ? Object.entries(canteenOrders).filter(([_, order]) => isActiveOrder(order.orderStatus)) : [])
-        : (pastOrders ? Object.entries(pastOrders) : []);
+        ? (canteenOrders ? Object.entries(canteenOrders).filter(([_, order]) => isActiveOrder(order.orderStatus)) : []).sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
+        : (pastOrders ? Object.entries(pastOrders) : []).sort((a, b) => parseInt(b[0]) - parseInt(a[0]));
 
     const formatDate = (timestamp: number) => {
         if (!timestamp) return 'N/A';
