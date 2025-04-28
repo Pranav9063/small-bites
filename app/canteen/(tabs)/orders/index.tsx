@@ -168,6 +168,27 @@ const OrdersScreen = () => {
                     </View>
                 </View>
 
+                {/* Show delivery location if present */}
+                {order.delivery && (
+                    <View style={styles.deliveryInfoContainer}>
+                        <Text style={styles.deliveryInfoHeader}>Delivery Location</Text>
+                        <Text style={styles.deliveryInfoLabel}>
+                            Name: <Text style={styles.deliveryInfoValue}>{order.delivery.name}</Text>
+                        </Text>
+                        <Text style={styles.deliveryInfoLabel}>
+                            Phone: <Text style={styles.deliveryInfoValue}>{order.delivery.phone}</Text>
+                        </Text>
+                        <Text style={styles.deliveryInfoLabel}>
+                            Address: <Text style={styles.deliveryInfoValue}>{order.delivery.address}</Text>
+                        </Text>
+                        {order.delivery.landmark ? (
+                            <Text style={styles.deliveryInfoLabel}>
+                                Landmark: <Text style={styles.deliveryInfoValue}>{order.delivery.landmark}</Text>
+                            </Text>
+                        ) : null}
+                    </View>
+                )}
+
                 <View style={styles.divider} />
 
                 <View style={styles.itemsContainer}>
@@ -425,6 +446,30 @@ const createStyles = (theme: Theme) => StyleSheet.create({
         fontSize: 16,
         color: '#777',
         marginTop: 12,
+    },
+    deliveryInfoContainer: {
+        backgroundColor: "#F7F9FC",
+        borderRadius: 8,
+        padding: 10,
+        marginBottom: 10,
+        marginTop: 4,
+        borderWidth: 1,
+        borderColor: "#E0E0E0",
+    },
+    deliveryInfoHeader: {
+        fontWeight: "700",
+        fontSize: 15,
+        marginBottom: 4,
+        color: "#00796B",
+    },
+    deliveryInfoLabel: {
+        fontSize: 13,
+        color: "#333",
+        marginBottom: 2,
+    },
+    deliveryInfoValue: {
+        fontWeight: "600",
+        color: "#444",
     },
 });
 

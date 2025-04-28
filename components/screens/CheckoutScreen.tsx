@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, FlatList, Alert, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCart } from '../../lib/context/CartContext';
@@ -30,6 +30,13 @@ type TimeSlot = {
   label: string;
 };
 
+type DeliveryDetails = {
+  name: string;
+  phone: string;
+  address: string;
+  landmark: string;
+};
+
 export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: string, canteenName: string }) {
   const router = useRouter();
   const { cart, dispatch } = useCart();
@@ -39,6 +46,12 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [deliveryDetails, setDeliveryDetails] = useState<DeliveryDetails>({
+    name: user?.displayName || '',
+    phone: user?.phoneNumber || '',
+    address: '',
+    landmark: '',
+  });
   const theme = useTheme();
   const styles = createStyles(theme);
 
@@ -87,6 +100,11 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
       name: 'Schedule Collection',
       description: selectedTimeSlot && `Pickup at ${selectedTimeSlot.label}`
     },
+    {
+      id: 'delivery',
+      name: 'Delivery',
+      description: deliveryDetails.address ? `Deliver to: ${deliveryDetails.address}` : undefined
+    },
   ];
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -97,12 +115,18 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
       setIsLoading(true);
       const orderId = new Date().getTime().toString();
       if (!selectedPayment || !selectedTiming) {
-        // Show error message
+        Alert.alert("Please select payment and timing options.");
         return;
       }
       if (selectedTiming === 'schedule' && !selectedTimeSlot) {
-        // Show error message for missing scheduled time
+        Alert.alert("Please select a scheduled time.");
         return;
+      }
+      if (selectedTiming === 'delivery') {
+        if (!deliveryDetails.name || !deliveryDetails.phone || !deliveryDetails.address) {
+          Alert.alert("Please fill all delivery details.");
+          return;
+        }
       }
       if (selectedPayment != 'cash') {
         const paymentResponse = await handlePayment(orderId);
@@ -120,8 +144,12 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
         canteenName,
         cart,
         paymentMethod: selectedPayment,
-        scheduledTime: selectedTiming === 'schedule' ? new Date(`${new Date().toISOString().split('T')[0]}T${selectedTimeSlot?.time}:00`) : new Date(),
+        scheduledTime: selectedTiming === 'schedule'
+          ? new Date(`${new Date().toISOString().split('T')[0]}T${selectedTimeSlot?.time}:00`)
+          : new Date(),
         paymentStatus: selectedPayment === 'cash' ? 'pending' : 'completed',
+        delivery: selectedTiming === 'delivery' ? deliveryDetails : null,
+        orderType: selectedTiming, // 'now', 'schedule', or 'delivery'
       } as OrderDetails;
 
       // Call the function to place the order
@@ -232,7 +260,7 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
 
         {/* Collection Timing */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Collection Time</Text>
+          <Text style={styles.sectionTitle}>Collection / Delivery</Text>
           {orderTimings.map((timing) => (
             <TouchableOpacity
               key={timing.id}
@@ -248,7 +276,13 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
                   selectedTiming === timing.id && styles.selectedTimingIcon
                 ]}>
                   <Ionicons
-                    name={timing.id === 'now' ? 'time-outline' : 'calendar-outline'}
+                    name={
+                      timing.id === 'now'
+                        ? 'time-outline'
+                        : timing.id === 'schedule'
+                          ? 'calendar-outline'
+                          : 'bicycle-outline'
+                    }
                     size={24}
                     color={selectedTiming === timing.id ? "#FFFFFF" : theme.colors.primary}
                   />
@@ -258,7 +292,9 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
                     styles.optionTitle,
                     selectedTiming === timing.id && styles.selectedOptionText
                   ]}>{timing.name}</Text>
-                  {selectedTiming == "schedule" && <Text style={styles.optionSubtitle}>{timing.description}</Text>}
+                  {timing.description && (
+                    <Text style={styles.optionSubtitle}>{timing.description}</Text>
+                  )}
                 </View>
               </View>
               <View style={[
@@ -271,6 +307,49 @@ export default function CheckoutScreen({ canteenId, canteenName }: { canteenId: 
               </View>
             </TouchableOpacity>
           ))}
+          {/* Delivery address form */}
+          {selectedTiming === 'delivery' && (
+            <View style={styles.deliveryForm}>
+              <Text style={styles.deliveryFormLabel}>Name</Text>
+              <View style={styles.deliveryInputWrapper}>
+                <TextInput
+                  style={styles.deliveryInput}
+                  value={deliveryDetails.name}
+                  onChangeText={text => setDeliveryDetails({ ...deliveryDetails, name: text })}
+                  placeholder="Recipient Name"
+                />
+              </View>
+              <Text style={styles.deliveryFormLabel}>Phone</Text>
+              <View style={styles.deliveryInputWrapper}>
+                <TextInput
+                  style={styles.deliveryInput}
+                  value={deliveryDetails.phone}
+                  onChangeText={text => setDeliveryDetails({ ...deliveryDetails, phone: text })}
+                  placeholder="Phone Number"
+                  keyboardType="phone-pad"
+                />
+              </View>
+              <Text style={styles.deliveryFormLabel}>Address</Text>
+              <View style={styles.deliveryInputWrapper}>
+                <TextInput
+                  style={styles.deliveryInput}
+                  value={deliveryDetails.address}
+                  onChangeText={text => setDeliveryDetails({ ...deliveryDetails, address: text })}
+                  placeholder="Full Address"
+                  multiline
+                />
+              </View>
+              <Text style={styles.deliveryFormLabel}>Landmark (optional)</Text>
+              <View style={styles.deliveryInputWrapper}>
+                <TextInput
+                  style={styles.deliveryInput}
+                  value={deliveryDetails.landmark}
+                  onChangeText={text => setDeliveryDetails({ ...deliveryDetails, landmark: text })}
+                  placeholder="Nearby Landmark"
+                />
+              </View>
+            </View>
+          )}
         </View>
 
         {/* Payment Methods */}
@@ -654,6 +733,34 @@ const createStyles = (theme: Theme) => {
     },
     selectedTimeSlotText: {
       color: "#FFFFFF",
+    },
+    deliveryForm: {
+      marginTop: 16,
+      backgroundColor: "#F7F9FC",
+      borderRadius: 12,
+      padding: 12,
+      borderWidth: 1,
+      borderColor: "#E6E6E6",
+    },
+    deliveryFormLabel: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: "#1A1A1A",
+      marginTop: 8,
+      marginBottom: 4,
+    },
+    deliveryInputWrapper: {
+      backgroundColor: "#FFF",
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: "#E0E0E0",
+      marginBottom: 8,
+      paddingHorizontal: 8,
+    },
+    deliveryInput: {
+      fontSize: 15,
+      paddingVertical: 8,
+      color: "#1A1A1A",
     },
   });
   return styles;
